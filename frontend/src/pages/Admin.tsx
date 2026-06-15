@@ -42,6 +42,7 @@ export default function Admin() {
   const [loading, setLoading] = useState(false)
   const [uploadingFor, setUploadingFor] = useState<number | null>(null)
   const [noteFor, setNoteFor] = useState<Record<number, string>>({})
+  const [uploadErrorFor, setUploadErrorFor] = useState<Record<number, string>>({})
 
   async function login(e: React.FormEvent) {
     e.preventDefault()
@@ -79,7 +80,16 @@ export default function Admin() {
     await refresh()
   }
 
+  const ALLOWED_TYPES = ['application/pdf', 'image/png', 'image/jpeg', 'application/zip', 'application/x-zip-compressed']
+  const ALLOWED_EXTS = ['.pdf', '.png', '.jpg', '.jpeg', '.zip']
+
   async function uploadFile(projectId: number, file: File) {
+    const ext = '.' + file.name.split('.').pop()?.toLowerCase()
+    if (!ALLOWED_TYPES.includes(file.type) && !ALLOWED_EXTS.includes(ext)) {
+      setUploadErrorFor(e => ({ ...e, [projectId]: `Invalid file type "${ext}". Allowed: PDF, PNG, JPG, ZIP.` }))
+      return
+    }
+    setUploadErrorFor(e => ({ ...e, [projectId]: '' }))
     setUploadingFor(projectId)
     const form = new FormData()
     form.append('file', file)
@@ -91,7 +101,7 @@ export default function Admin() {
       await refresh()
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
-        alert(err.response?.data || 'Upload failed')
+        setUploadErrorFor(e => ({ ...e, [projectId]: err.response?.data || 'Upload failed.' }))
       }
     } finally {
       setUploadingFor(null)
@@ -201,6 +211,9 @@ export default function Admin() {
                   onChange={e => { if (e.target.files?.[0]) uploadFile(p.id, e.target.files[0]) }}
                 />
               </label>
+              {uploadErrorFor[p.id] && (
+                <p style={{ marginTop: 8, fontSize: 13, color: '#b91c1c' }}>{uploadErrorFor[p.id]}</p>
+              )}
             </div>
           </div>
         ))}
