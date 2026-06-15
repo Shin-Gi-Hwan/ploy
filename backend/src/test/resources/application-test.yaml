@@ -1,0 +1,28 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:ploy_test;DB_CLOSE_DELAY=-1;MODE=MySQL
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+
+  mail:
+    host: localhost
+    port: 25
+
+ploy:
+  admin:
+    username: testadmin
+    password: testpass
+  mail:
+    from: test@ploy.com
+    admin-address: admin@ploy.com
+  base-url: http://localhost:8080
+  storage:
+    path: ${java.io.tmpdir}/ploy-test-uploads
