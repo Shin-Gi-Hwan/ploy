@@ -1,263 +1,278 @@
 import { useState, type FormEvent } from 'react'
-import axios from 'axios'
+import { Link } from 'react-router-dom'
+import Layout from '../components/layout/Layout'
+import Breadcrumb from '../components/ui/Breadcrumb'
+import Button from '../components/ui/Button'
+import Input from '../components/ui/Input'
+import Textarea from '../components/ui/Textarea'
+import Select from '../components/ui/Select'
+import Card from '../components/ui/Card'
+import { submitBrief, getErrorMessage } from '../lib/api'
+import type { IntakeRequest, IntakeResponse } from '../types/api'
 
-type ProjectType = 'BUSINESS_CARD' | 'PRESENTATION' | 'WEBSITE'
+const TYPE_OPTIONS = [
+  { value: 'BUSINESS_CARD', label: 'Business Card' },
+  { value: 'PRESENTATION',  label: 'Presentation / Pitch Deck' },
+  { value: 'WEBSITE',       label: 'Website' },
+]
 
-interface IntakeResponse {
-  projectId: number
-  magicToken: string
-  trackingUrl: string
-}
-
-type FormState = {
-  name: string
-  email: string
-  phone: string
-  type: ProjectType | ''
-  visionText: string
-  colorPreferences: string
-  styleRefs: string
-  additionalNotes: string
-}
-
-const INITIAL: FormState = {
-  name: '', email: '', phone: '', type: '',
+const INITIAL: IntakeRequest = {
+  name: '', email: '', phone: '',
+  type: 'BUSINESS_CARD',
   visionText: '', colorPreferences: '', styleRefs: '', additionalNotes: '',
 }
 
-const C = {
-  cream:   '#f5f1eb',
-  surface: '#fdfcfa',
-  ink:     '#1a1715',
-  mid:     '#736b63',
-  low:     '#a89e94',
-  border:  '#e4ddd4',
-  sage:    '#8a9e86',
+// ─── Success state ─────────────────────────────────────────────────────────────
+
+function SuccessState({ result }: { result: IntakeResponse }) {
+  const trackingUrl = `/track/${result.magicToken}`
+  const fullUrl = `${window.location.origin}${trackingUrl}`
+
+  function copyLink() {
+    navigator.clipboard.writeText(fullUrl).catch(() => {})
+  }
+
+  return (
+    <div style={{ maxWidth: 520, margin: '0 auto', textAlign: 'center' }}>
+      <div style={{
+        width: 56, height: 56, borderRadius: '50%',
+        background: 'var(--mint-50)', border: '2px solid var(--mint-200)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        margin: '0 auto var(--space-6)',
+      }}>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M5 12l5 5L20 7" stroke="var(--mint-500)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </div>
+
+      <h1 style={{ fontSize: 28, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.02em', marginBottom: 'var(--space-3)' }}>
+        Brief received!
+      </h1>
+      <p style={{ fontSize: 16, color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: 'var(--space-8)' }}>
+        We're reviewing your project brief and will get started shortly.
+        Use the link below to track your project status and download files when they're ready.
+      </p>
+
+      <Card style={{ marginBottom: 'var(--space-5)', textAlign: 'left' }}>
+        <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 'var(--space-3)' }}>
+          Your tracking link
+        </p>
+        <div style={{
+          display: 'flex', gap: 'var(--space-2)', alignItems: 'center',
+          padding: 'var(--space-3)', background: 'var(--bg-subtle)',
+          borderRadius: 'var(--radius-md)', border: '1px solid var(--border-default)',
+        }}>
+          <code style={{ flex: 1, fontSize: 13, color: 'var(--text-primary)', wordBreak: 'break-all' }}>
+            {fullUrl}
+          </code>
+          <button
+            onClick={copyLink}
+            style={{
+              flexShrink: 0, padding: '6px 10px', background: '#fff',
+              border: '1px solid var(--border-default)', borderRadius: 'var(--radius-sm)',
+              fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)', cursor: 'pointer',
+            }}
+          >
+            Copy
+          </button>
+        </div>
+        <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 'var(--space-3)' }}>
+          We also sent this link to your email. Bookmark it to check back anytime.
+        </p>
+      </Card>
+
+      <div style={{ display: 'flex', gap: 'var(--space-3)', justifyContent: 'center', flexWrap: 'wrap' }}>
+        <Button as="a" href={trackingUrl} size="md">
+          View project status →
+        </Button>
+        <Button as="a" href="/" variant="secondary" size="md">
+          Back to home
+        </Button>
+      </div>
+
+      <p style={{ marginTop: 'var(--space-5)', fontSize: 13, color: 'var(--text-muted)' }}>
+        Project #{result.projectId}
+      </p>
+    </div>
+  )
 }
 
+// ─── Form section wrapper ──────────────────────────────────────────────────────
+
+function FormSection({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div style={{ marginBottom: 'var(--space-8)' }}>
+      <h2 style={{
+        fontSize: 13, fontWeight: 600, color: 'var(--text-muted)',
+        textTransform: 'uppercase', letterSpacing: '0.06em',
+        paddingBottom: 'var(--space-4)',
+        borderBottom: '1px solid var(--border-default)',
+        marginBottom: 'var(--space-5)',
+      }}>
+        {title}
+      </h2>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-5)' }}>
+        {children}
+      </div>
+    </div>
+  )
+}
+
+// ─── Main page ─────────────────────────────────────────────────────────────────
+
 export default function Intake() {
-  const [form, setForm] = useState<FormState>(INITIAL)
+  const [form, setForm] = useState<IntakeRequest>(INITIAL)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [result, setResult] = useState<IntakeResponse | null>(null)
 
-  const set = (field: keyof FormState) => (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-  ) => setForm(f => ({ ...f, [field]: e.target.value }))
+  function setField<K extends keyof IntakeRequest>(field: K) {
+    return (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+      setForm((f) => ({ ...f, [field]: e.target.value }))
+    }
+  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     setError(null)
     setSubmitting(true)
     try {
-      const { data } = await axios.post<IntakeResponse>('/api/projects', form)
+      const data = await submitBrief(form)
       setResult(data)
-    } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
-        if (err.response?.status === 429) {
-          setError("You've submitted too many briefs recently. Please wait an hour and try again.")
-        } else {
-          setError(err.response?.data || 'Something went wrong. Please try again.')
-        }
-      } else {
-        setError('Something went wrong. Please try again.')
-      }
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    } catch (err) {
+      setError(getErrorMessage(err))
     } finally {
       setSubmitting(false)
     }
   }
 
-  if (result) {
-    return (
-      <div style={S.page}>
-        <div style={{ ...S.card, textAlign: 'center', padding: '64px 48px' }}>
-          <div style={{
-            width: 48, height: 48, borderRadius: '50%',
-            border: `1.5px solid ${C.sage}`,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            margin: '0 auto 28px',
-            color: C.sage, fontSize: 20,
-          }}>✓</div>
-          <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 36, fontWeight: 500, color: C.ink, marginBottom: 16 }}>
-            Brief received.
-          </h1>
-          <p style={{ color: C.mid, lineHeight: 1.8, marginBottom: 36, fontSize: 15, fontWeight: 300, maxWidth: 400, margin: '0 auto 36px' }}>
-            We're reviewing your brief and will get started shortly. Track your project
-            status and download your files using this link:
-          </p>
-          <a href={`/track/${result.magicToken}`} style={S.btn}>
-            View your project
-          </a>
-          <p style={{ marginTop: 28, fontSize: 12, color: C.low, letterSpacing: '0.04em' }}>
-            We also sent this link to your email — bookmark it just in case.
-          </p>
+  return (
+    <Layout>
+      <div style={{ background: 'var(--bg-subtle)', borderBottom: '1px solid var(--border-default)', padding: 'var(--space-4) 0' }}>
+        <div className="container">
+          <Breadcrumb items={[{ label: 'Home', href: '/' }, { label: 'Start a Project' }]} />
         </div>
       </div>
-    )
-  }
 
-  return (
-    <div style={S.page}>
-      <div style={S.card}>
-        <div style={{ marginBottom: 36 }}>
-          <p style={{ fontSize: 11, fontWeight: 500, color: C.sage, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 12 }}>
-            Start your project
-          </p>
-          <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 36, fontWeight: 500, color: C.ink, marginBottom: 10 }}>
-            Tell us about your project
-          </h1>
-          <p style={{ color: C.mid, lineHeight: 1.8, fontWeight: 300, fontSize: 15 }}>
-            Share your vision and we'll take it from there. Takes about 3 minutes.
-          </p>
+      <div style={{ padding: 'var(--space-12) 0 var(--space-20)' }}>
+        <div className="container">
+          {result ? (
+            <SuccessState result={result} />
+          ) : (
+            <div style={{ maxWidth: 620, margin: '0 auto' }}>
+
+              {/* Page header */}
+              <div style={{ marginBottom: 'var(--space-10)' }}>
+                <span className="section-label">New project</span>
+                <h1 style={{ fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.025em', lineHeight: 1.2, marginBottom: 'var(--space-3)' }}>
+                  Tell us about your project
+                </h1>
+                <p style={{ fontSize: 16, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
+                  The more detail you share, the better we can match your vision. Takes about 3 minutes.
+                </p>
+              </div>
+
+              {/* Error alert */}
+              {error && (
+                <div className="alert alert-error" role="alert" style={{ marginBottom: 'var(--space-6)' }}>
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" style={{ flexShrink: 0, marginTop: 1 }}>
+                    <path d="M8 5v3M8 11h.01M15 8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                  </svg>
+                  {error}
+                </div>
+              )}
+
+              <Card>
+                <form onSubmit={handleSubmit} noValidate>
+                  <FormSection title="About you">
+                    <Input
+                      label="Your name"
+                      placeholder="Jane Smith"
+                      value={form.name}
+                      onChange={setField('name')}
+                      required
+                      autoComplete="name"
+                    />
+                    <Input
+                      label="Email address"
+                      type="email"
+                      placeholder="jane@example.com"
+                      value={form.email}
+                      onChange={setField('email')}
+                      required
+                      autoComplete="email"
+                    />
+                    <Input
+                      label="Phone"
+                      type="tel"
+                      placeholder="+1 555 000 0000"
+                      value={form.phone}
+                      onChange={setField('phone')}
+                      autoComplete="tel"
+                    />
+                  </FormSection>
+
+                  <FormSection title="Your project">
+                    <Select
+                      label="What do you need?"
+                      options={TYPE_OPTIONS}
+                      value={form.type}
+                      onChange={setField('type')}
+                      required
+                    />
+                    <Textarea
+                      label="Describe your vision"
+                      hint="What's this for? What do you want people to feel when they see it?"
+                      placeholder="I run a yoga studio and want a card that feels calm, premium, and modern…"
+                      value={form.visionText}
+                      onChange={setField('visionText')}
+                      required
+                      style={{ minHeight: 110 }}
+                    />
+                    <Input
+                      label="Colors and style"
+                      hint="Any colors you love (or hate)? Words that describe your vibe?"
+                      placeholder="Warm earth tones, no blues, something like Aesop's branding"
+                      value={form.colorPreferences}
+                      onChange={setField('colorPreferences')}
+                    />
+                    <Textarea
+                      label="References"
+                      hint="Paste links to designs you admire, or name brands with a look you like"
+                      placeholder="https://… or 'something like Notion's website'"
+                      value={form.styleRefs}
+                      onChange={setField('styleRefs')}
+                      style={{ minHeight: 80 }}
+                    />
+                    <Textarea
+                      label="Anything else?"
+                      placeholder="Special requirements, deadline, number of variants needed…"
+                      value={form.additionalNotes}
+                      onChange={setField('additionalNotes')}
+                      style={{ minHeight: 80 }}
+                    />
+                  </FormSection>
+
+                  <Button
+                    type="submit"
+                    size="lg"
+                    loading={submitting}
+                    disabled={submitting}
+                    style={{ width: '100%' }}
+                  >
+                    {submitting ? 'Submitting…' : 'Submit brief →'}
+                  </Button>
+
+                  <p style={{ marginTop: 'var(--space-4)', fontSize: 13, color: 'var(--text-muted)', textAlign: 'center' }}>
+                    By submitting you agree we'll contact you about your project.
+                  </p>
+                </form>
+              </Card>
+            </div>
+          )}
         </div>
-
-        {error && (
-          <div style={S.errorBanner}>{error}</div>
-        )}
-
-        <form onSubmit={handleSubmit} noValidate>
-          <Section label="About you">
-            <Field label="Your name" htmlFor="name" required>
-              <input id="name" style={S.input} value={form.name}
-                onChange={set('name')} required placeholder="Jane Smith" />
-            </Field>
-            <Field label="Email address" htmlFor="email" required>
-              <input id="email" type="email" style={S.input} value={form.email}
-                onChange={set('email')} required placeholder="jane@example.com" />
-            </Field>
-            <Field label="Phone" htmlFor="phone">
-              <input id="phone" type="tel" style={S.input} value={form.phone}
-                onChange={set('phone')} placeholder="+1 555 000 0000" />
-            </Field>
-          </Section>
-
-          <Section label="Your project">
-            <Field label="What do you need?" htmlFor="type" required>
-              <select id="type" style={S.input} value={form.type}
-                onChange={set('type')} required>
-                <option value="">Select one...</option>
-                <option value="BUSINESS_CARD">Business Card</option>
-                <option value="PRESENTATION">Presentation / Pitch Deck</option>
-                <option value="WEBSITE">Website</option>
-              </select>
-            </Field>
-            <Field label="Describe your vision" htmlFor="visionText" required
-              hint="What's this for? What do you want people to feel when they see it?">
-              <textarea id="visionText" style={{ ...S.input, minHeight: 100 }}
-                value={form.visionText} onChange={set('visionText')} required
-                placeholder="I run a yoga studio and want a card that feels calm, premium, and modern..." />
-            </Field>
-            <Field label="Colors and style" htmlFor="colorPreferences"
-              hint="Any colors you love (or hate)? Words that describe your vibe?">
-              <input id="colorPreferences" style={S.input} value={form.colorPreferences}
-                onChange={set('colorPreferences')}
-                placeholder="Warm earth tones, no blues, something like Aesop's branding" />
-            </Field>
-            <Field label="References" htmlFor="styleRefs"
-              hint="Paste links to designs you admire, or name brands with a look you like">
-              <textarea id="styleRefs" style={{ ...S.input, minHeight: 80 }}
-                value={form.styleRefs} onChange={set('styleRefs')}
-                placeholder="https://... or 'something like Notion's website'" />
-            </Field>
-            <Field label="Anything else?" htmlFor="additionalNotes">
-              <textarea id="additionalNotes" style={{ ...S.input, minHeight: 80 }}
-                value={form.additionalNotes} onChange={set('additionalNotes')}
-                placeholder="Special requirements, deadline, number of card variants needed..." />
-            </Field>
-          </Section>
-
-          <button type="submit" style={S.btn} disabled={submitting}>
-            {submitting ? 'Submitting…' : 'Submit brief'}
-          </button>
-        </form>
       </div>
-    </div>
+    </Layout>
   )
-}
-
-function Section({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div style={{ marginBottom: 36 }}>
-      <p style={{
-        fontSize: 10, fontWeight: 500, color: C.low,
-        letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 20,
-        paddingBottom: 12, borderBottom: `1px solid ${C.border}`,
-      }}>
-        {label}
-      </p>
-      {children}
-    </div>
-  )
-}
-
-function Field({ label, htmlFor, hint, required, children }: {
-  label: string; htmlFor: string; hint?: string; required?: boolean; children: React.ReactNode
-}) {
-  return (
-    <div style={{ marginBottom: 20 }}>
-      <label htmlFor={htmlFor} style={{
-        display: 'block', fontSize: 13, fontWeight: 500,
-        color: C.ink, marginBottom: hint ? 4 : 8,
-      }}>
-        {label}{required && <span style={{ color: C.low, marginLeft: 4 }}>*</span>}
-      </label>
-      {hint && <p style={{ fontSize: 12, color: C.low, marginBottom: 8, lineHeight: 1.5 }}>{hint}</p>}
-      {children}
-    </div>
-  )
-}
-
-const S = {
-  page: {
-    fontFamily: "'Inter', system-ui, sans-serif",
-    minHeight: '100vh',
-    background: '#f5f1eb',
-    padding: '56px 24px',
-  } as const,
-  card: {
-    maxWidth: 580,
-    margin: '0 auto',
-    background: '#fdfcfa',
-    borderRadius: 12,
-    padding: '48px 44px',
-    border: '1px solid #e4ddd4',
-  } as const,
-  input: {
-    width: '100%',
-    boxSizing: 'border-box' as const,
-    padding: '11px 14px',
-    border: '1px solid #e4ddd4',
-    borderRadius: 6,
-    fontSize: 14,
-    fontFamily: "'Inter', sans-serif",
-    outline: 'none',
-    resize: 'vertical' as const,
-    background: '#f5f1eb',
-    color: '#1a1715',
-  },
-  errorBanner: {
-    background: '#fdf2f2',
-    border: '1px solid #e4c5c5',
-    color: '#8b4040',
-    borderRadius: 6,
-    padding: '12px 16px',
-    marginBottom: 24,
-    fontSize: 13,
-  } as const,
-  btn: {
-    display: 'block',
-    width: '100%',
-    background: '#1a1715',
-    color: '#faf8f5',
-    border: 'none',
-    padding: '15px',
-    borderRadius: 6,
-    fontSize: 13,
-    fontWeight: 500,
-    letterSpacing: '0.08em',
-    cursor: 'pointer',
-    textDecoration: 'none',
-    textAlign: 'center' as const,
-    fontFamily: "'Inter', sans-serif",
-  },
 }

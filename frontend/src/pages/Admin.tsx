@@ -1,357 +1,374 @@
 import { useEffect, useState, useRef } from 'react'
-import axios from 'axios'
+import AdminLayout from '../components/layout/AdminLayout'
+import Button from '../components/ui/Button'
+import { StatusBadge } from '../components/ui/Badge'
+import Spinner from '../components/ui/Spinner'
+import Card from '../components/ui/Card'
+import {
+  getAdminProjects,
+  updateProjectStatus,
+  uploadDeliverable,
+  getErrorMessage,
+} from '../lib/api'
+import type { AdminProject, ProjectStatus } from '../types/api'
+import { PROJECT_TYPE_LABELS, PROJECT_STATUS_LABELS } from '../types/api'
 
-// Credentials are stored in component memory only — never in localStorage.
-// Sent as Authorization: Basic <base64> on every request (HTTP Basic).
+const ALL_STATUSES: ProjectStatus[] = ['BRIEF_SUBMITTED', 'IN_PROGRESS', 'REVIEW', 'DELIVERED']
+const ALLOWED_EXTS  = ['.pdf', '.png', '.jpg', '.jpeg', '.zip']
+const ALLOWED_TYPES = ['application/pdf', 'image/png', 'image/jpeg', 'application/zip', 'application/x-zip-compressed']
 
-type Status = 'BRIEF_SUBMITTED' | 'IN_PROGRESS' | 'REVIEW' | 'DELIVERED'
-type ProjectType = 'BUSINESS_CARD' | 'PRESENTATION' | 'WEBSITE'
+// ─── Login ────────────────────────────────────────────────────────────────────
 
-interface DeliverableView {
-  id: number; version: number; note: string | null; downloadUrl: string; uploadedAt: string
-}
-interface ClientView {
-  id: number; name: string; email: string; phone: string | null
-}
-interface Project {
-  id: number; type: ProjectType; status: Status; magicToken: string
-  createdAt: string; client: ClientView; deliverables: DeliverableView[]
-}
-
-const STATUS_LABELS: Record<Status, string> = {
-  BRIEF_SUBMITTED: 'Brief received',
-  IN_PROGRESS:     'In progress',
-  REVIEW:          'Ready for review',
-  DELIVERED:       'Delivered',
+interface LoginProps {
+  onLogin: (username: string, password: string) => Promise<void>
 }
 
-const ALL_STATUSES: Status[] = ['BRIEF_SUBMITTED', 'IN_PROGRESS', 'REVIEW', 'DELIVERED']
-
-const C = {
-  cream:   '#f5f1eb',
-  surface: '#fdfcfa',
-  ink:     '#1a1715',
-  mid:     '#736b63',
-  low:     '#a89e94',
-  border:  '#e4ddd4',
-  sage:    '#8a9e86',
-}
-
-function basicHeader(username: string, password: string) {
-  return 'Basic ' + btoa(`${username}:${password}`)
-}
-
-export default function Admin() {
-  const [authed, setAuthed] = useState(false)
+function Login({ onLogin }: LoginProps) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [authError, setAuthError] = useState(false)
-  const credsRef = useRef({ username: '', password: '' })
+  const [error, setError]       = useState<string | null>(null)
+  const [loading, setLoading]   = useState(false)
 
-  const [projects, setProjects] = useState<Project[]>([])
-  const [loading, setLoading] = useState(false)
-  const [uploadingFor, setUploadingFor] = useState<number | null>(null)
-  const [noteFor, setNoteFor] = useState<Record<number, string>>({})
-  const [uploadErrorFor, setUploadErrorFor] = useState<Record<number, string>>({})
-
-  async function login(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    setAuthError(false)
+    setError(null)
+    setLoading(true)
     try {
-      const res = await axios.get<Project[]>('/api/admin/projects', {
-        headers: { Authorization: basicHeader(username, password) },
-      })
-      credsRef.current = { username, password }
-      setProjects(res.data)
-      setAuthed(true)
+      await onLogin(username, password)
     } catch {
-      setAuthError(true)
+      setError('Invalid credentials. Please try again.')
+    } finally {
+      setLoading(false)
     }
   }
 
-  function api() {
-    return axios.create({
-      headers: { Authorization: basicHeader(credsRef.current.username, credsRef.current.password) },
-    })
+  return (
+    <div style={{
+      minHeight: '100svh', background: 'var(--bg-subtle)',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      padding: 'var(--space-6)',
+      fontFamily: 'var(--font-sans)',
+    }}>
+      <div style={{ width: '100%', maxWidth: 380 }}>
+        <div style={{ textAlign: 'center', marginBottom: 'var(--space-8)' }}>
+          <a href="/" style={{ fontSize: 22, fontWeight: 700, color: 'var(--mint-600)', letterSpacing: '-0.03em' }}>
+            Ploy
+          </a>
+          <p style={{ marginTop: 'var(--space-2)', fontSize: 14, color: 'var(--text-muted)' }}>
+            Admin dashboard
+          </p>
+        </div>
+
+        <Card>
+          <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 'var(--space-6)' }}>
+            Sign in
+          </h1>
+
+          {error && (
+            <div className="alert alert-error" role="alert" style={{ marginBottom: 'var(--space-5)' }}>
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+            <div className="field">
+              <label htmlFor="admin-username" className="field-label field-label-required">Username</label>
+              <input
+                id="admin-username"
+                type="text"
+                className="input"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                autoComplete="username"
+                required
+              />
+            </div>
+            <div className="field">
+              <label htmlFor="admin-password" className="field-label field-label-required">Password</label>
+              <input
+                id="admin-password"
+                type="password"
+                className="input"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+                required
+              />
+            </div>
+            <Button type="submit" size="md" loading={loading} style={{ marginTop: 'var(--space-2)' }}>
+              Sign in
+            </Button>
+          </form>
+        </Card>
+      </div>
+    </div>
+  )
+}
+
+// ─── Project card ─────────────────────────────────────────────────────────────
+
+interface ProjectCardProps {
+  project: AdminProject
+  onStatusChange: (id: number, status: ProjectStatus) => Promise<void>
+  onUpload: (id: number, file: File, note: string) => Promise<void>
+}
+
+function ProjectCard({ project: p, onStatusChange, onUpload }: ProjectCardProps) {
+  const [note, setNote]             = useState('')
+  const [uploading, setUploading]   = useState(false)
+  const [uploadError, setUploadError] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    const ext = '.' + file.name.split('.').pop()?.toLowerCase()
+    if (!ALLOWED_TYPES.includes(file.type) && !ALLOWED_EXTS.includes(ext)) {
+      setUploadError(`File type "${ext}" is not allowed. Use PDF, PNG, JPG, or ZIP.`)
+      if (fileInputRef.current) fileInputRef.current.value = ''
+      return
+    }
+
+    setUploadError(null)
+    setUploading(true)
+    try {
+      await onUpload(p.id, file, note)
+      setNote('')
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    } catch (err) {
+      setUploadError(getErrorMessage(err, 'Upload failed. Please try again.'))
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const createdDate = new Date(p.createdAt).toLocaleDateString('en-US', {
+    month: 'short', day: 'numeric', year: 'numeric',
+  })
+
+  return (
+    <Card style={{ marginBottom: 'var(--space-4)' }}>
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 'var(--space-4)', flexWrap: 'wrap', marginBottom: 'var(--space-5)', paddingBottom: 'var(--space-5)', borderBottom: '1px solid var(--border-default)' }}>
+        <div style={{ minWidth: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', marginBottom: 'var(--space-2)', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 500 }}>
+              #{p.id} · {PROJECT_TYPE_LABELS[p.type]}
+            </span>
+            <StatusBadge status={p.status} />
+          </div>
+          <h2 style={{ fontSize: 18, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 'var(--space-1)' }}>
+            {p.client.name}
+          </h2>
+          <p style={{ fontSize: 14, color: 'var(--text-secondary)' }}>
+            {p.client.email}
+            {p.client.phone && ` · ${p.client.phone}`}
+          </p>
+          <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 'var(--space-1)' }}>
+            Submitted {createdDate}
+          </p>
+        </div>
+
+        {/* Status selector */}
+        <div style={{ position: 'relative', flexShrink: 0 }}>
+          <select
+            value={p.status}
+            onChange={(e) => onStatusChange(p.id, e.target.value as ProjectStatus)}
+            className="select"
+            style={{ paddingRight: 32, minWidth: 160, fontSize: 13 }}
+            aria-label={`Change status for ${p.client.name}'s project`}
+          >
+            {ALL_STATUSES.map((s) => (
+              <option key={s} value={s}>{PROJECT_STATUS_LABELS[s]}</option>
+            ))}
+          </select>
+          <svg aria-hidden="true" style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--gray-400)' }} width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M3.5 5.5L7 9l3.5-3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </div>
+      </div>
+
+      {/* Client tracking link */}
+      <div style={{ marginBottom: 'var(--space-5)' }}>
+        <p style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 4 }}>Client tracking link</p>
+        <a
+          href={`/track/${p.magicToken}`}
+          target="_blank"
+          rel="noreferrer"
+          style={{ fontSize: 13, color: 'var(--mint-600)', textDecoration: 'underline', textUnderlineOffset: 3, wordBreak: 'break-all' }}
+        >
+          /track/{p.magicToken}
+        </a>
+      </div>
+
+      {/* Deliverables list */}
+      {p.deliverables.length > 0 && (
+        <div style={{ marginBottom: 'var(--space-5)', paddingBottom: 'var(--space-5)', borderBottom: '1px solid var(--border-default)' }}>
+          <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 'var(--space-3)' }}>
+            Deliverables
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+            {p.deliverables.map((d) => (
+              <div key={d.id} style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', padding: 'var(--space-3)', background: 'var(--bg-subtle)', borderRadius: 'var(--radius-md)' }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--mint-600)', minWidth: 28 }}>v{d.version}</span>
+                {d.note && (
+                  <span style={{ fontSize: 13, color: 'var(--text-secondary)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {d.note}
+                  </span>
+                )}
+                <a
+                  href={d.downloadUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{ fontSize: 13, color: 'var(--mint-600)', textDecoration: 'underline', textUnderlineOffset: 3, flexShrink: 0, marginLeft: 'auto' }}
+                >
+                  Download
+                </a>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Upload section */}
+      <div>
+        <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 'var(--space-3)' }}>
+          Upload deliverable
+        </p>
+        <input
+          type="text"
+          className="input"
+          placeholder="Note for client (optional)"
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+          style={{ marginBottom: 'var(--space-3)', fontSize: 14 }}
+        />
+        <label style={{ display: 'inline-block', cursor: uploading ? 'default' : 'pointer' }}>
+          <span
+            className="btn btn-secondary btn-sm"
+            style={{ cursor: uploading ? 'default' : 'pointer', opacity: uploading ? 0.5 : 1 }}
+            aria-busy={uploading}
+          >
+            {uploading ? (
+              <>
+                <span className="spinner spinner-sm" />
+                Uploading…
+              </>
+            ) : (
+              <>
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                  <path d="M7 10V3M4 6l3-3 3 3M2 12h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                Choose file
+              </>
+            )}
+          </span>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".pdf,.png,.jpg,.jpeg,.zip"
+            style={{ display: 'none' }}
+            disabled={uploading}
+            onChange={handleFileChange}
+            aria-label={`Upload file for ${p.client.name}'s project`}
+          />
+        </label>
+        <span style={{ marginLeft: 'var(--space-3)', fontSize: 12, color: 'var(--text-muted)' }}>
+          PDF, PNG, JPG, ZIP — max 20 MB
+        </span>
+
+        {uploadError && (
+          <div className="alert alert-error" role="alert" style={{ marginTop: 'var(--space-3)' }}>
+            {uploadError}
+          </div>
+        )}
+      </div>
+    </Card>
+  )
+}
+
+// ─── Main page ─────────────────────────────────────────────────────────────────
+
+export default function Admin() {
+  const [authed,   setAuthed]   = useState(false)
+  const [projects, setProjects] = useState<AdminProject[]>([])
+  const [loading,  setLoading]  = useState(false)
+  const credsRef = useRef({ username: '', password: '' })
+
+  async function login(username: string, password: string) {
+    const data = await getAdminProjects(username, password)
+    credsRef.current = { username, password }
+    setProjects(data)
+    setAuthed(true)
   }
 
   async function refresh() {
     setLoading(true)
     try {
-      const { data } = await api().get<Project[]>('/api/admin/projects')
+      const data = await getAdminProjects(credsRef.current.username, credsRef.current.password)
       setProjects(data)
     } finally {
       setLoading(false)
     }
   }
 
-  async function updateStatus(projectId: number, status: Status) {
-    await api().patch(`/api/admin/projects/${projectId}/status`, { status })
+  async function handleStatusChange(id: number, status: ProjectStatus) {
+    await updateProjectStatus(id, status, credsRef.current.username, credsRef.current.password)
     await refresh()
   }
 
-  const ALLOWED_TYPES = ['application/pdf', 'image/png', 'image/jpeg', 'application/zip', 'application/x-zip-compressed']
-  const ALLOWED_EXTS = ['.pdf', '.png', '.jpg', '.jpeg', '.zip']
-
-  async function uploadFile(projectId: number, file: File) {
-    const ext = '.' + file.name.split('.').pop()?.toLowerCase()
-    if (!ALLOWED_TYPES.includes(file.type) && !ALLOWED_EXTS.includes(ext)) {
-      setUploadErrorFor(e => ({ ...e, [projectId]: `Invalid file type "${ext}". Allowed: PDF, PNG, JPG, ZIP.` }))
-      return
-    }
-    setUploadErrorFor(e => ({ ...e, [projectId]: '' }))
-    setUploadingFor(projectId)
-    const form = new FormData()
-    form.append('file', file)
-    const note = noteFor[projectId] || ''
-    if (note) form.append('note', note)
-    try {
-      await api().post(`/api/admin/projects/${projectId}/deliverables`, form)
-      setNoteFor(n => ({ ...n, [projectId]: '' }))
-      await refresh()
-    } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
-        setUploadErrorFor(e => ({ ...e, [projectId]: err.response?.data || 'Upload failed.' }))
-      }
-    } finally {
-      setUploadingFor(null)
-    }
+  async function handleUpload(id: number, file: File, note: string) {
+    await uploadDeliverable(id, file, note || undefined, credsRef.current.username, credsRef.current.password)
+    await refresh()
   }
 
   useEffect(() => {
     if (authed) refresh()
   }, [authed])
 
-  if (!authed) {
-    return (
-      <div style={{
-        fontFamily: "'Inter', system-ui, sans-serif",
-        minHeight: '100vh',
-        background: C.cream,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '24px',
-      }}>
-        <div style={{
-          background: C.surface,
-          border: `1px solid ${C.border}`,
-          borderRadius: 12,
-          padding: '48px 44px',
-          width: '100%',
-          maxWidth: 380,
-        }}>
-          <p style={{ fontSize: 11, fontWeight: 500, color: C.sage, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 12 }}>
-            Admin
-          </p>
-          <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 32, fontWeight: 500, color: C.ink, marginBottom: 32 }}>
-            Sign in
-          </h1>
-          {authError && (
-            <div style={{
-              background: '#fdf2f2',
-              border: '1px solid #e4c5c5',
-              color: '#8b4040',
-              borderRadius: 6,
-              padding: '12px 16px',
-              marginBottom: 24,
-              fontSize: 13,
-            }}>
-              Wrong credentials. Please try again.
-            </div>
-          )}
-          <form onSubmit={login}>
-            <input
-              type="text" placeholder="Username" value={username}
-              onChange={e => setUsername(e.target.value)}
-              style={S.input} autoComplete="username" required
-            />
-            <input
-              type="password" placeholder="Password" value={password}
-              onChange={e => setPassword(e.target.value)}
-              style={{ ...S.input, marginTop: 12 }} autoComplete="current-password" required
-            />
-            <button type="submit" style={S.btn}>Sign in</button>
-          </form>
-        </div>
-      </div>
-    )
-  }
+  if (!authed) return <Login onLogin={login} />
 
   return (
-    <div style={{ fontFamily: "'Inter', system-ui, sans-serif", minHeight: '100vh', background: C.cream }}>
-      <header style={{
-        background: C.ink,
-        padding: '18px 32px',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-      }}>
-        <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 20, fontWeight: 500, color: '#faf8f5', letterSpacing: '0.02em' }}>
-          Ploy
-        </span>
-        <button onClick={refresh} style={{
-          background: 'transparent',
-          border: `1px solid rgba(255,255,255,0.2)`,
-          color: 'rgba(255,255,255,0.6)',
-          padding: '6px 16px',
-          borderRadius: 6,
-          cursor: 'pointer',
-          fontSize: 12,
-          fontFamily: "'Inter', sans-serif",
-          letterSpacing: '0.06em',
-        }}>
-          {loading ? 'Refreshing…' : 'Refresh'}
-        </button>
-      </header>
-
-      <main style={{ maxWidth: 860, margin: '0 auto', padding: '40px 24px' }}>
-        <p style={{ fontSize: 12, color: C.low, marginBottom: 28, letterSpacing: '0.04em' }}>
-          {projects.length} project{projects.length !== 1 ? 's' : ''}
-        </p>
-
-        {projects.map(p => (
-          <div key={p.id} style={{
-            background: C.surface,
-            border: `1px solid ${C.border}`,
-            borderRadius: 12,
-            padding: '28px',
-            marginBottom: 16,
+    <AdminLayout onRefresh={refresh} refreshing={loading}>
+      {/* Stats bar */}
+      <div style={{ display: 'flex', gap: 'var(--space-4)', marginBottom: 'var(--space-6)', flexWrap: 'wrap' }}>
+        {[
+          { label: 'Total',       value: projects.length },
+          { label: 'In Progress', value: projects.filter((p) => p.status === 'IN_PROGRESS').length },
+          { label: 'For Review',  value: projects.filter((p) => p.status === 'REVIEW').length },
+          { label: 'Delivered',   value: projects.filter((p) => p.status === 'DELIVERED').length },
+        ].map((stat) => (
+          <div key={stat.label} style={{
+            background: '#fff', border: '1px solid var(--border-default)',
+            borderRadius: 'var(--radius-md)', padding: 'var(--space-4) var(--space-5)',
+            minWidth: 100,
           }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16, marginBottom: 16, paddingBottom: 16, borderBottom: `1px solid ${C.border}` }}>
-              <div>
-                <p style={{ fontSize: 11, color: C.low, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 6 }}>
-                  #{p.id} · {p.type.replace('_', ' ')}
-                </p>
-                <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 22, fontWeight: 500, color: C.ink, marginBottom: 4 }}>
-                  {p.client.name}
-                </h2>
-                <p style={{ fontSize: 13, color: C.mid, fontWeight: 300 }}>
-                  {p.client.email}{p.client.phone ? ` · ${p.client.phone}` : ''}
-                </p>
-              </div>
-
-              <select
-                value={p.status}
-                onChange={e => updateStatus(p.id, e.target.value as Status)}
-                style={{
-                  padding: '9px 12px',
-                  borderRadius: 6,
-                  border: `1px solid ${C.border}`,
-                  fontSize: 13,
-                  fontFamily: "'Inter', sans-serif",
-                  cursor: 'pointer',
-                  background: C.cream,
-                  color: C.ink,
-                  outline: 'none',
-                }}
-              >
-                {ALL_STATUSES.map(s => (
-                  <option key={s} value={s}>{STATUS_LABELS[s]}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Tracking link */}
-            <p style={{ fontSize: 12, color: C.low, marginBottom: p.deliverables.length > 0 ? 0 : 16 }}>
-              Client link:{' '}
-              <a href={`/track/${p.magicToken}`} target="_blank" rel="noreferrer"
-                style={{ color: C.mid, textDecoration: 'underline', textUnderlineOffset: 3 }}>
-                /track/{p.magicToken.slice(0, 8)}…
-              </a>
+            <p style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
+              {stat.value}
             </p>
-
-            {/* Deliverables */}
-            {p.deliverables.length > 0 && (
-              <div style={{ marginTop: 16, paddingTop: 16, borderTop: `1px solid ${C.border}` }}>
-                <p style={{ fontSize: 10, fontWeight: 500, color: C.low, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 12 }}>
-                  Deliverables
-                </p>
-                {p.deliverables.map(d => (
-                  <div key={d.id} style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 8 }}>
-                    <span style={{ fontSize: 12, color: C.low, fontWeight: 500, minWidth: 24 }}>v{d.version}</span>
-                    {d.note && <span style={{ fontSize: 13, color: C.mid, fontStyle: 'italic', fontWeight: 300 }}>"{d.note}"</span>}
-                    <a href={d.downloadUrl} target="_blank" rel="noreferrer"
-                      style={{ fontSize: 12, color: C.ink, marginLeft: 'auto', textDecoration: 'underline', textUnderlineOffset: 3, whiteSpace: 'nowrap' }}>
-                      Download
-                    </a>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Upload new deliverable */}
-            <div style={{ marginTop: 16, paddingTop: 16, borderTop: `1px solid ${C.border}` }}>
-              <p style={{ fontSize: 10, fontWeight: 500, color: C.low, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 12 }}>
-                Upload files
-              </p>
-              <input
-                type="text"
-                placeholder="Note for client (optional)"
-                value={noteFor[p.id] || ''}
-                onChange={e => setNoteFor(n => ({ ...n, [p.id]: e.target.value }))}
-                style={{ ...S.input, marginBottom: 10, fontSize: 13 }}
-              />
-              <label style={{
-                display: 'inline-block',
-                padding: '9px 18px',
-                background: C.cream,
-                border: `1px solid ${C.border}`,
-                borderRadius: 6,
-                cursor: uploadingFor === p.id ? 'default' : 'pointer',
-                fontSize: 13,
-                color: C.mid,
-                fontFamily: "'Inter', sans-serif",
-              }}>
-                {uploadingFor === p.id ? 'Uploading…' : 'Choose file — PDF, PNG, JPG, ZIP (max 20 MB)'}
-                <input type="file" accept=".pdf,.png,.jpg,.jpeg,.zip" style={{ display: 'none' }}
-                  disabled={uploadingFor === p.id}
-                  onChange={e => { if (e.target.files?.[0]) uploadFile(p.id, e.target.files[0]) }}
-                />
-              </label>
-              {uploadErrorFor[p.id] && (
-                <p style={{ marginTop: 8, fontSize: 13, color: '#8b4040' }}>{uploadErrorFor[p.id]}</p>
-              )}
-            </div>
+            <p style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 2 }}>{stat.label}</p>
           </div>
         ))}
+      </div>
 
-        {projects.length === 0 && !loading && (
-          <p style={{ color: C.low, textAlign: 'center', marginTop: 80, fontSize: 14, fontWeight: 300 }}>
-            No projects yet.
-          </p>
-        )}
-      </main>
-    </div>
+      {/* Project list */}
+      {loading && projects.length === 0 ? (
+        <Spinner fullPage />
+      ) : projects.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: 'var(--space-20) 0', color: 'var(--text-muted)', fontSize: 15 }}>
+          No projects yet.
+        </div>
+      ) : (
+        projects.map((p) => (
+          <ProjectCard
+            key={p.id}
+            project={p}
+            onStatusChange={handleStatusChange}
+            onUpload={handleUpload}
+          />
+        ))
+      )}
+    </AdminLayout>
   )
-}
-
-const S = {
-  input: {
-    width: '100%',
-    boxSizing: 'border-box' as const,
-    padding: '11px 14px',
-    border: `1px solid ${C.border}`,
-    borderRadius: 6,
-    fontSize: 14,
-    fontFamily: "'Inter', sans-serif",
-    outline: 'none',
-    display: 'block',
-    background: C.cream,
-    color: C.ink,
-  },
-  btn: {
-    width: '100%',
-    marginTop: 20,
-    background: C.ink,
-    color: '#faf8f5',
-    border: 'none',
-    padding: '14px',
-    borderRadius: 6,
-    fontSize: 13,
-    fontWeight: 500,
-    letterSpacing: '0.08em',
-    cursor: 'pointer',
-    fontFamily: "'Inter', sans-serif",
-  } as React.CSSProperties,
 }

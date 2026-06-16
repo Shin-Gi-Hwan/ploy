@@ -1,231 +1,180 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
-import axios from 'axios'
+import { useParams, Link } from 'react-router-dom'
+import Layout from '../components/layout/Layout'
+import Breadcrumb from '../components/ui/Breadcrumb'
+import Card from '../components/ui/Card'
+import Button from '../components/ui/Button'
+import { StatusBadge } from '../components/ui/Badge'
+import Spinner from '../components/ui/Spinner'
+import StatusStepper from '../components/tracking/StatusStepper'
+import { getTracking } from '../lib/api'
+import type { TrackingResponse } from '../types/api'
+import { PROJECT_TYPE_LABELS } from '../types/api'
 
-type Status = 'BRIEF_SUBMITTED' | 'IN_PROGRESS' | 'REVIEW' | 'DELIVERED'
-type ProjectType = 'BUSINESS_CARD' | 'PRESENTATION' | 'WEBSITE'
+// ─── States ───────────────────────────────────────────────────────────────────
 
-interface DeliverableView {
-  id: number
-  version: number
-  note: string | null
-  downloadUrl: string
-}
-
-interface TrackingData {
-  projectId: number
-  type: ProjectType
-  status: Status
-  clientName: string
-  latestDeliverable: DeliverableView | null
-}
-
-const STATUS_LABELS: Record<Status, string> = {
-  BRIEF_SUBMITTED: 'Brief received',
-  IN_PROGRESS:     'In progress',
-  REVIEW:          'Ready for your review',
-  DELIVERED:       'Delivered',
-}
-
-const STATUS_STEPS: Status[] = ['BRIEF_SUBMITTED', 'IN_PROGRESS', 'REVIEW', 'DELIVERED']
-
-const TYPE_LABELS: Record<ProjectType, string> = {
-  BUSINESS_CARD: 'Business Card',
-  PRESENTATION:  'Presentation',
-  WEBSITE:       'Website',
-}
-
-const C = {
-  cream:   '#f5f1eb',
-  surface: '#fdfcfa',
-  ink:     '#1a1715',
-  mid:     '#736b63',
-  low:     '#a89e94',
-  border:  '#e4ddd4',
-  sage:    '#8a9e86',
-}
-
-export default function Tracking() {
-  const { token } = useParams<{ token: string }>()
-  const [data, setData] = useState<TrackingData | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [notFound, setNotFound] = useState(false)
-
-  useEffect(() => {
-    axios.get<TrackingData>(`/api/projects/track/${token}`)
-      .then(res => setData(res.data))
-      .catch(err => {
-        if (axios.isAxiosError(err) && err.response?.status === 404) {
-          setNotFound(true)
-        }
-      })
-      .finally(() => setLoading(false))
-  }, [token])
-
-  if (loading) {
-    return (
-      <PageShell>
-        <p style={{ color: C.low, fontSize: 14, fontWeight: 300 }}>Loading your project…</p>
-      </PageShell>
-    )
-  }
-
-  if (notFound || !data) {
-    return (
-      <PageShell>
-        <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 32, fontWeight: 500, color: C.ink, marginBottom: 16 }}>
-          Project not found
-        </h1>
-        <p style={{ color: C.mid, lineHeight: 1.8, fontWeight: 300, fontSize: 15 }}>
-          We couldn't find this project. Check your email for the correct link, or{' '}
-          <a href="/" style={{ color: C.ink, textDecoration: 'underline', textUnderlineOffset: 3 }}>contact us</a>.
-        </p>
-      </PageShell>
-    )
-  }
-
-  const currentStep = STATUS_STEPS.indexOf(data.status)
-
+function NotFound() {
   return (
-    <div style={{
-      fontFamily: "'Inter', system-ui, sans-serif",
-      minHeight: '100vh',
-      background: C.cream,
-      padding: '56px 24px',
-    }}>
-      <div style={{ maxWidth: 580, margin: '0 auto' }}>
-
-        {/* Header */}
-        <div style={{ marginBottom: 40 }}>
-          <p style={{ fontSize: 11, fontWeight: 500, color: C.sage, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 12 }}>
-            {TYPE_LABELS[data.type]} · #{data.projectId}
-          </p>
-          <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 36, fontWeight: 500, color: C.ink, lineHeight: 1.2 }}>
-            Hi {data.clientName} —<br />
-            <span style={{ color: C.mid, fontStyle: 'italic' }}>here's your project.</span>
-          </h1>
-        </div>
-
-        {/* Progress stepper */}
-        <div style={{
-          background: C.surface,
-          border: `1px solid ${C.border}`,
-          borderRadius: 12,
-          padding: '32px 28px',
-          marginBottom: 20,
-        }}>
-          <p style={{ fontSize: 10, fontWeight: 500, color: C.low, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 24, paddingBottom: 16, borderBottom: `1px solid ${C.border}` }}>
-            Status
-          </p>
-          {STATUS_STEPS.map((step, i) => {
-            const done = i < currentStep
-            const active = i === currentStep
-            return (
-              <div key={step} style={{
-                display: 'flex',
-                alignItems: 'flex-start',
-                gap: 16,
-                marginBottom: i < STATUS_STEPS.length - 1 ? 20 : 0,
-              }}>
-                <div style={{
-                  width: 22, height: 22, borderRadius: '50%', flexShrink: 0, marginTop: 1,
-                  background: done ? C.ink : 'transparent',
-                  border: `1.5px solid ${done ? C.ink : active ? C.sage : C.border}`,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                }}>
-                  {done
-                    ? <span style={{ color: C.cream, fontSize: 11, lineHeight: 1 }}>✓</span>
-                    : active
-                      ? <span style={{ width: 7, height: 7, borderRadius: '50%', background: C.sage, display: 'block' }} />
-                      : null
-                  }
-                </div>
-                <p style={{
-                  fontSize: 14,
-                  fontWeight: active ? 500 : 300,
-                  color: done ? C.ink : active ? C.ink : C.low,
-                  margin: 0,
-                  paddingTop: 2,
-                  letterSpacing: active ? '0.01em' : 0,
-                }}>
-                  {STATUS_LABELS[step]}
-                </p>
-              </div>
-            )
-          })}
-        </div>
-
-        {/* Deliverable */}
-        {data.latestDeliverable ? (
-          <div style={{
-            background: C.surface,
-            border: `1px solid ${C.border}`,
-            borderRadius: 12,
-            padding: '32px 28px',
-          }}>
-            <p style={{ fontSize: 10, fontWeight: 500, color: C.low, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 16, paddingBottom: 16, borderBottom: `1px solid ${C.border}` }}>
-              Your files — v{data.latestDeliverable.version}
-            </p>
-            {data.latestDeliverable.note && (
-              <p style={{
-                fontFamily: "'Cormorant Garamond', serif",
-                fontSize: 18,
-                fontStyle: 'italic',
-                color: C.mid,
-                lineHeight: 1.7,
-                marginBottom: 24,
-              }}>
-                "{data.latestDeliverable.note}"
-              </p>
-            )}
-            <a
-              href={data.latestDeliverable.downloadUrl}
-              download
-              style={{
-                display: 'inline-block',
-                background: C.ink,
-                color: '#faf8f5',
-                padding: '13px 28px',
-                borderRadius: 6,
-                fontWeight: 500,
-                fontSize: 13,
-                letterSpacing: '0.08em',
-                textDecoration: 'none',
-                fontFamily: "'Inter', sans-serif",
-              }}
-            >
-              Download files
-            </a>
-          </div>
-        ) : (
-          <div style={{
-            background: C.surface,
-            border: `1px solid ${C.border}`,
-            borderRadius: 12,
-            padding: '28px',
-            color: C.low,
-            fontSize: 14,
-            fontWeight: 300,
-            lineHeight: 1.7,
-          }}>
-            Your files will appear here once they're ready.
-          </div>
-        )}
-
+    <div style={{ textAlign: 'center', maxWidth: 440, margin: '0 auto' }}>
+      <div style={{
+        width: 56, height: 56, borderRadius: '50%',
+        background: 'var(--gray-100)', display: 'flex',
+        alignItems: 'center', justifyContent: 'center',
+        margin: '0 auto var(--space-6)',
+      }}>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 9v4M12 17h.01M21 12A9 9 0 1 1 3 12a9 9 0 0 1 18 0z" stroke="var(--gray-400)" strokeWidth="1.75" strokeLinecap="round" />
+        </svg>
       </div>
+      <h1 style={{ fontSize: 24, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 'var(--space-3)' }}>
+        Project not found
+      </h1>
+      <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: 'var(--space-8)' }}>
+        We couldn't find a project with this tracking link.
+        Check your email for the correct link.
+      </p>
+      <Button as="a" href="/" variant="secondary">← Back to home</Button>
     </div>
   )
 }
 
-function PageShell({ children }: { children: React.ReactNode }) {
+// ─── Main page ─────────────────────────────────────────────────────────────────
+
+export default function Tracking() {
+  const { token } = useParams<{ token: string }>()
+  const [data, setData] = useState<TrackingResponse | null>(null)
+  const [loading, setLoading]   = useState(true)
+  const [notFound, setNotFound] = useState(false)
+
+  useEffect(() => {
+    if (!token) { setNotFound(true); setLoading(false); return }
+
+    getTracking(token)
+      .then(setData)
+      .catch((err) => {
+        if (err?.response?.status === 404) setNotFound(true)
+      })
+      .finally(() => setLoading(false))
+  }, [token])
+
   return (
-    <div style={{
-      fontFamily: "'Inter', system-ui, sans-serif",
-      minHeight: '100vh',
-      background: '#f5f1eb',
-      padding: '80px 24px',
-    }}>
-      <div style={{ maxWidth: 480, margin: '0 auto' }}>{children}</div>
-    </div>
+    <Layout>
+      <div style={{ background: 'var(--bg-subtle)', borderBottom: '1px solid var(--border-default)', padding: 'var(--space-4) 0' }}>
+        <div className="container">
+          <Breadcrumb items={[{ label: 'Home', href: '/' }, { label: 'Project Status' }]} />
+        </div>
+      </div>
+
+      <div style={{ padding: 'var(--space-12) 0 var(--space-20)' }}>
+        <div className="container">
+          {loading  && <Spinner fullPage />}
+          {notFound && !loading && <NotFound />}
+
+          {data && !loading && (
+            <div style={{ maxWidth: 600, margin: '0 auto' }}>
+
+              {/* Header */}
+              <div style={{ marginBottom: 'var(--space-8)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-3)', flexWrap: 'wrap' }}>
+                  <span className="section-label" style={{ margin: 0 }}>
+                    {PROJECT_TYPE_LABELS[data.type]} · #{data.projectId}
+                  </span>
+                  <StatusBadge status={data.status} />
+                </div>
+                <h1 style={{ fontSize: 'clamp(26px, 4vw, 36px)', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.025em', lineHeight: 1.2 }}>
+                  Hi {data.clientName} —<br />
+                  here's your project.
+                </h1>
+              </div>
+
+              {/* Status stepper */}
+              <Card style={{ marginBottom: 'var(--space-5)' }}>
+                <h2 style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 'var(--space-6)' }}>
+                  Progress
+                </h2>
+                <StatusStepper status={data.status} />
+              </Card>
+
+              {/* Deliverable */}
+              {data.latestDeliverable ? (
+                <Card>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 'var(--space-4)', flexWrap: 'wrap', marginBottom: 'var(--space-5)' }}>
+                    <div>
+                      <h2 style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 'var(--space-2)' }}>
+                        Your files
+                      </h2>
+                      <span style={{
+                        display: 'inline-block', padding: '2px 8px',
+                        background: 'var(--mint-50)', color: 'var(--mint-700)',
+                        borderRadius: 'var(--radius-full)', fontSize: 12, fontWeight: 600,
+                      }}>
+                        Version {data.latestDeliverable.version}
+                      </span>
+                    </div>
+                  </div>
+
+                  {data.latestDeliverable.note && (
+                    <blockquote style={{
+                      margin: '0 0 var(--space-5)',
+                      padding: 'var(--space-4)',
+                      background: 'var(--bg-subtle)',
+                      borderLeft: '3px solid var(--mint-300)',
+                      borderRadius: '0 var(--radius-md) var(--radius-md) 0',
+                      fontSize: 15,
+                      color: 'var(--text-secondary)',
+                      lineHeight: 1.7,
+                      fontStyle: 'italic',
+                    }}>
+                      {data.latestDeliverable.note}
+                    </blockquote>
+                  )}
+
+                  <Button
+                    as="a"
+                    href={data.latestDeliverable.downloadUrl}
+                    size="md"
+                    download
+                  >
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                      <path d="M8 2v8M5 7l3 3 3-3M2 13h12" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                    Download files
+                  </Button>
+                </Card>
+              ) : (
+                <Card>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)' }}>
+                    <div style={{
+                      width: 44, height: 44, borderRadius: 'var(--radius-md)',
+                      background: 'var(--bg-muted)', display: 'flex',
+                      alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                    }}>
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                        <path d="M10 2v10M7 9l3 3 3-3M3 17h14" stroke="var(--gray-400)" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-primary)', marginBottom: 2 }}>
+                        Files not ready yet
+                      </p>
+                      <p style={{ fontSize: 14, color: 'var(--text-muted)' }}>
+                        Your download will appear here once the work is complete.
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+              )}
+
+              {/* Back link */}
+              <div style={{ marginTop: 'var(--space-8)', textAlign: 'center' }}>
+                <Link to="/" style={{ fontSize: 14, color: 'var(--text-muted)', textDecoration: 'underline', textUnderlineOffset: 3 }}>
+                  ← Back to Ploy
+                </Link>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </Layout>
   )
 }
