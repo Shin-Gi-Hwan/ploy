@@ -35,6 +35,16 @@ const TYPE_LABELS: Record<ProjectType, string> = {
   WEBSITE:       'Website',
 }
 
+const C = {
+  cream:   '#f5f1eb',
+  surface: '#fdfcfa',
+  ink:     '#1a1715',
+  mid:     '#736b63',
+  low:     '#a89e94',
+  border:  '#e4ddd4',
+  sage:    '#8a9e86',
+}
+
 export default function Tracking() {
   const { token } = useParams<{ token: string }>()
   const [data, setData] = useState<TrackingData | null>(null)
@@ -53,18 +63,22 @@ export default function Tracking() {
   }, [token])
 
   if (loading) {
-    return <PageShell><p style={{ color: '#6b7280' }}>Loading your project…</p></PageShell>
+    return (
+      <PageShell>
+        <p style={{ color: C.low, fontSize: 14, fontWeight: 300 }}>Loading your project…</p>
+      </PageShell>
+    )
   }
 
   if (notFound || !data) {
     return (
       <PageShell>
-        <h1 style={{ fontSize: 22, fontWeight: 700, color: '#111827', marginBottom: 12 }}>
+        <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 32, fontWeight: 500, color: C.ink, marginBottom: 16 }}>
           Project not found
         </h1>
-        <p style={{ color: '#6b7280', lineHeight: 1.7 }}>
+        <p style={{ color: C.mid, lineHeight: 1.8, fontWeight: 300, fontSize: 15 }}>
           We couldn't find this project. Check your email for the correct link, or{' '}
-          <a href="/" style={{ color: '#111827' }}>contact us</a>.
+          <a href="/" style={{ color: C.ink, textDecoration: 'underline', textUnderlineOffset: 3 }}>contact us</a>.
         </p>
       </PageShell>
     )
@@ -73,50 +87,94 @@ export default function Tracking() {
   const currentStep = STATUS_STEPS.indexOf(data.status)
 
   return (
-    <div style={{ fontFamily: 'system-ui, sans-serif', minHeight: '100vh', background: '#f9fafb', padding: '40px 24px' }}>
-      <div style={{ maxWidth: 600, margin: '0 auto' }}>
-        <p style={{ fontSize: 13, color: '#9ca3af', marginBottom: 4 }}>
-          {TYPE_LABELS[data.type]} · Project #{data.projectId}
-        </p>
-        <h1 style={{ fontSize: 26, fontWeight: 700, color: '#111827', marginBottom: 32 }}>
-          Hi {data.clientName} — here's your project status
-        </h1>
+    <div style={{
+      fontFamily: "'Inter', system-ui, sans-serif",
+      minHeight: '100vh',
+      background: C.cream,
+      padding: '56px 24px',
+    }}>
+      <div style={{ maxWidth: 580, margin: '0 auto' }}>
+
+        {/* Header */}
+        <div style={{ marginBottom: 40 }}>
+          <p style={{ fontSize: 11, fontWeight: 500, color: C.sage, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 12 }}>
+            {TYPE_LABELS[data.type]} · #{data.projectId}
+          </p>
+          <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 36, fontWeight: 500, color: C.ink, lineHeight: 1.2 }}>
+            Hi {data.clientName} —<br />
+            <span style={{ color: C.mid, fontStyle: 'italic' }}>here's your project.</span>
+          </h1>
+        </div>
 
         {/* Progress stepper */}
-        <div style={{ background: '#fff', borderRadius: 12, padding: '28px 24px', marginBottom: 24, boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
+        <div style={{
+          background: C.surface,
+          border: `1px solid ${C.border}`,
+          borderRadius: 12,
+          padding: '32px 28px',
+          marginBottom: 20,
+        }}>
+          <p style={{ fontSize: 10, fontWeight: 500, color: C.low, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 24, paddingBottom: 16, borderBottom: `1px solid ${C.border}` }}>
+            Status
+          </p>
           {STATUS_STEPS.map((step, i) => {
             const done = i < currentStep
             const active = i === currentStep
             return (
-              <div key={step} style={{ display: 'flex', alignItems: 'flex-start', gap: 16, marginBottom: i < STATUS_STEPS.length - 1 ? 20 : 0 }}>
+              <div key={step} style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: 16,
+                marginBottom: i < STATUS_STEPS.length - 1 ? 20 : 0,
+              }}>
                 <div style={{
-                  width: 28, height: 28, borderRadius: '50%', flexShrink: 0, marginTop: 1,
-                  background: done ? '#111827' : active ? '#111827' : '#e5e7eb',
+                  width: 22, height: 22, borderRadius: '50%', flexShrink: 0, marginTop: 1,
+                  background: done ? C.ink : 'transparent',
+                  border: `1.5px solid ${done ? C.ink : active ? C.sage : C.border}`,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
                   {done
-                    ? <span style={{ color: '#fff', fontSize: 14 }}>✓</span>
-                    : <span style={{ width: 8, height: 8, borderRadius: '50%', background: active ? '#fff' : '#9ca3af' }} />
+                    ? <span style={{ color: C.cream, fontSize: 11, lineHeight: 1 }}>✓</span>
+                    : active
+                      ? <span style={{ width: 7, height: 7, borderRadius: '50%', background: C.sage, display: 'block' }} />
+                      : null
                   }
                 </div>
-                <div>
-                  <p style={{ fontWeight: active ? 700 : 400, color: (done || active) ? '#111827' : '#9ca3af', margin: 0, fontSize: 15 }}>
-                    {STATUS_LABELS[step]}
-                  </p>
-                </div>
+                <p style={{
+                  fontSize: 14,
+                  fontWeight: active ? 500 : 300,
+                  color: done ? C.ink : active ? C.ink : C.low,
+                  margin: 0,
+                  paddingTop: 2,
+                  letterSpacing: active ? '0.01em' : 0,
+                }}>
+                  {STATUS_LABELS[step]}
+                </p>
               </div>
             )
           })}
         </div>
 
-        {/* Deliverable download */}
+        {/* Deliverable */}
         {data.latestDeliverable ? (
-          <div style={{ background: '#fff', borderRadius: 12, padding: '24px', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
-            <p style={{ fontSize: 13, fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 }}>
+          <div style={{
+            background: C.surface,
+            border: `1px solid ${C.border}`,
+            borderRadius: 12,
+            padding: '32px 28px',
+          }}>
+            <p style={{ fontSize: 10, fontWeight: 500, color: C.low, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 16, paddingBottom: 16, borderBottom: `1px solid ${C.border}` }}>
               Your files — v{data.latestDeliverable.version}
             </p>
             {data.latestDeliverable.note && (
-              <p style={{ color: '#374151', lineHeight: 1.7, marginBottom: 20, fontStyle: 'italic' }}>
+              <p style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: 18,
+                fontStyle: 'italic',
+                color: C.mid,
+                lineHeight: 1.7,
+                marginBottom: 24,
+              }}>
                 "{data.latestDeliverable.note}"
               </p>
             )}
@@ -124,19 +182,36 @@ export default function Tracking() {
               href={data.latestDeliverable.downloadUrl}
               download
               style={{
-                display: 'inline-block', background: '#111827', color: '#fff',
-                padding: '12px 24px', borderRadius: 8, fontWeight: 600,
-                fontSize: 15, textDecoration: 'none',
+                display: 'inline-block',
+                background: C.ink,
+                color: '#faf8f5',
+                padding: '13px 28px',
+                borderRadius: 6,
+                fontWeight: 500,
+                fontSize: 13,
+                letterSpacing: '0.08em',
+                textDecoration: 'none',
+                fontFamily: "'Inter', sans-serif",
               }}
             >
-              Download files ↓
+              Download files
             </a>
           </div>
         ) : (
-          <div style={{ background: '#fff', borderRadius: 12, padding: '24px', boxShadow: '0 1px 4px rgba(0,0,0,0.06)', color: '#6b7280', fontSize: 15 }}>
+          <div style={{
+            background: C.surface,
+            border: `1px solid ${C.border}`,
+            borderRadius: 12,
+            padding: '28px',
+            color: C.low,
+            fontSize: 14,
+            fontWeight: 300,
+            lineHeight: 1.7,
+          }}>
             Your files will appear here once they're ready.
           </div>
         )}
+
       </div>
     </div>
   )
@@ -144,7 +219,12 @@ export default function Tracking() {
 
 function PageShell({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ fontFamily: 'system-ui, sans-serif', minHeight: '100vh', background: '#f9fafb', padding: '80px 24px' }}>
+    <div style={{
+      fontFamily: "'Inter', system-ui, sans-serif",
+      minHeight: '100vh',
+      background: '#f5f1eb',
+      padding: '80px 24px',
+    }}>
       <div style={{ maxWidth: 480, margin: '0 auto' }}>{children}</div>
     </div>
   )

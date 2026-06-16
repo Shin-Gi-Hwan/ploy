@@ -25,6 +25,16 @@ const INITIAL: FormState = {
   visionText: '', colorPreferences: '', styleRefs: '', additionalNotes: '',
 }
 
+const C = {
+  cream:   '#f5f1eb',
+  surface: '#fdfcfa',
+  ink:     '#1a1715',
+  mid:     '#736b63',
+  low:     '#a89e94',
+  border:  '#e4ddd4',
+  sage:    '#8a9e86',
+}
+
 export default function Intake() {
   const [form, setForm] = useState<FormState>(INITIAL)
   const [submitting, setSubmitting] = useState(false)
@@ -57,27 +67,29 @@ export default function Intake() {
     }
   }
 
-  // Confirmation screen — shown regardless of whether the email delivered
   if (result) {
     return (
-      <div style={styles.page}>
-        <div style={styles.card}>
-          <div style={{ fontSize: 40, marginBottom: 16 }}>✓</div>
-          <h1 style={{ fontSize: 26, fontWeight: 700, color: '#111827', marginBottom: 12 }}>
-            Brief received!
+      <div style={S.page}>
+        <div style={{ ...S.card, textAlign: 'center', padding: '64px 48px' }}>
+          <div style={{
+            width: 48, height: 48, borderRadius: '50%',
+            border: `1.5px solid ${C.sage}`,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            margin: '0 auto 28px',
+            color: C.sage, fontSize: 20,
+          }}>✓</div>
+          <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 36, fontWeight: 500, color: C.ink, marginBottom: 16 }}>
+            Brief received.
           </h1>
-          <p style={{ color: '#4b5563', lineHeight: 1.7, marginBottom: 28 }}>
-            We're reviewing your brief and will get started shortly. Track your project status
-            and download your files using this link:
+          <p style={{ color: C.mid, lineHeight: 1.8, marginBottom: 36, fontSize: 15, fontWeight: 300, maxWidth: 400, margin: '0 auto 36px' }}>
+            We're reviewing your brief and will get started shortly. Track your project
+            status and download your files using this link:
           </p>
-          <a
-            href={`/track/${result.magicToken}`}
-            style={styles.trackingLink}
-          >
-            View your project →
+          <a href={`/track/${result.magicToken}`} style={S.btn}>
+            View your project
           </a>
-          <p style={{ marginTop: 24, fontSize: 13, color: '#9ca3af' }}>
-            We also sent this link to your email — but bookmark it just in case.
+          <p style={{ marginTop: 28, fontSize: 12, color: C.low, letterSpacing: '0.04em' }}>
+            We also sent this link to your email — bookmark it just in case.
           </p>
         </div>
       </div>
@@ -85,40 +97,43 @@ export default function Intake() {
   }
 
   return (
-    <div style={styles.page}>
-      <div style={styles.card}>
-        <h1 style={{ fontSize: 28, fontWeight: 700, color: '#111827', marginBottom: 8 }}>
-          Tell us about your project
-        </h1>
-        <p style={{ color: '#6b7280', marginBottom: 32, lineHeight: 1.6 }}>
-          Share your vision and we'll take it from there. Takes about 3 minutes.
-        </p>
+    <div style={S.page}>
+      <div style={S.card}>
+        <div style={{ marginBottom: 36 }}>
+          <p style={{ fontSize: 11, fontWeight: 500, color: C.sage, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 12 }}>
+            Start your project
+          </p>
+          <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 36, fontWeight: 500, color: C.ink, marginBottom: 10 }}>
+            Tell us about your project
+          </h1>
+          <p style={{ color: C.mid, lineHeight: 1.8, fontWeight: 300, fontSize: 15 }}>
+            Share your vision and we'll take it from there. Takes about 3 minutes.
+          </p>
+        </div>
 
         {error && (
-          <div style={styles.errorBanner}>{error}</div>
+          <div style={S.errorBanner}>{error}</div>
         )}
 
         <form onSubmit={handleSubmit} noValidate>
-          <fieldset style={styles.fieldset}>
-            <legend style={styles.legend}>About you</legend>
-            <Field label="Your name *" htmlFor="name">
-              <input id="name" style={styles.input} value={form.name}
+          <Section label="About you">
+            <Field label="Your name" htmlFor="name" required>
+              <input id="name" style={S.input} value={form.name}
                 onChange={set('name')} required placeholder="Jane Smith" />
             </Field>
-            <Field label="Email address *" htmlFor="email">
-              <input id="email" type="email" style={styles.input} value={form.email}
+            <Field label="Email address" htmlFor="email" required>
+              <input id="email" type="email" style={S.input} value={form.email}
                 onChange={set('email')} required placeholder="jane@example.com" />
             </Field>
-            <Field label="Phone (optional)" htmlFor="phone">
-              <input id="phone" type="tel" style={styles.input} value={form.phone}
+            <Field label="Phone" htmlFor="phone">
+              <input id="phone" type="tel" style={S.input} value={form.phone}
                 onChange={set('phone')} placeholder="+1 555 000 0000" />
             </Field>
-          </fieldset>
+          </Section>
 
-          <fieldset style={styles.fieldset}>
-            <legend style={styles.legend}>Your project</legend>
-            <Field label="What do you need? *" htmlFor="type">
-              <select id="type" style={styles.input} value={form.type}
+          <Section label="Your project">
+            <Field label="What do you need?" htmlFor="type" required>
+              <select id="type" style={S.input} value={form.type}
                 onChange={set('type')} required>
                 <option value="">Select one...</option>
                 <option value="BUSINESS_CARD">Business Card</option>
@@ -126,33 +141,33 @@ export default function Intake() {
                 <option value="WEBSITE">Website</option>
               </select>
             </Field>
-            <Field label="Describe your vision *" htmlFor="visionText"
+            <Field label="Describe your vision" htmlFor="visionText" required
               hint="What's this for? What do you want people to feel when they see it?">
-              <textarea id="visionText" style={{ ...styles.input, minHeight: 100 }}
+              <textarea id="visionText" style={{ ...S.input, minHeight: 100 }}
                 value={form.visionText} onChange={set('visionText')} required
                 placeholder="I run a yoga studio and want a card that feels calm, premium, and modern..." />
             </Field>
             <Field label="Colors and style" htmlFor="colorPreferences"
               hint="Any colors you love (or hate)? Words that describe your vibe?">
-              <input id="colorPreferences" style={styles.input} value={form.colorPreferences}
+              <input id="colorPreferences" style={S.input} value={form.colorPreferences}
                 onChange={set('colorPreferences')}
                 placeholder="Warm earth tones, no blues, something like Aesop's branding" />
             </Field>
             <Field label="References" htmlFor="styleRefs"
               hint="Paste links to designs you admire, or name brands with a look you like">
-              <textarea id="styleRefs" style={{ ...styles.input, minHeight: 80 }}
+              <textarea id="styleRefs" style={{ ...S.input, minHeight: 80 }}
                 value={form.styleRefs} onChange={set('styleRefs')}
                 placeholder="https://... or 'something like Notion's website'" />
             </Field>
             <Field label="Anything else?" htmlFor="additionalNotes">
-              <textarea id="additionalNotes" style={{ ...styles.input, minHeight: 80 }}
+              <textarea id="additionalNotes" style={{ ...S.input, minHeight: 80 }}
                 value={form.additionalNotes} onChange={set('additionalNotes')}
                 placeholder="Special requirements, deadline, number of card variants needed..." />
             </Field>
-          </fieldset>
+          </Section>
 
-          <button type="submit" style={styles.submitBtn} disabled={submitting}>
-            {submitting ? 'Submitting…' : 'Submit brief →'}
+          <button type="submit" style={S.btn} disabled={submitting}>
+            {submitting ? 'Submitting…' : 'Submit brief'}
           </button>
         </form>
       </div>
@@ -160,27 +175,89 @@ export default function Intake() {
   )
 }
 
-function Field({ label, htmlFor, hint, children }: {
-  label: string; htmlFor: string; hint?: string; children: React.ReactNode
-}) {
+function Section({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div style={{ marginBottom: 20 }}>
-      <label htmlFor={htmlFor} style={styles.label}>{label}</label>
-      {hint && <p style={styles.hint}>{hint}</p>}
+    <div style={{ marginBottom: 36 }}>
+      <p style={{
+        fontSize: 10, fontWeight: 500, color: C.low,
+        letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 20,
+        paddingBottom: 12, borderBottom: `1px solid ${C.border}`,
+      }}>
+        {label}
+      </p>
       {children}
     </div>
   )
 }
 
-const styles = {
-  page: { fontFamily: 'system-ui, sans-serif', minHeight: '100vh', background: '#f9fafb', padding: '40px 24px' } as const,
-  card: { maxWidth: 600, margin: '0 auto', background: '#fff', borderRadius: 16, padding: '40px 36px', boxShadow: '0 1px 4px rgba(0,0,0,0.08)' } as const,
-  fieldset: { border: 'none', padding: 0, margin: '0 0 28px 0' } as const,
-  legend: { fontSize: 13, fontWeight: 700, color: '#6b7280', letterSpacing: 1, textTransform: 'uppercase' as const, marginBottom: 16 },
-  label: { display: 'block', fontSize: 14, fontWeight: 600, color: '#374151', marginBottom: 4 } as const,
-  hint: { fontSize: 12, color: '#9ca3af', marginBottom: 6, marginTop: 0 } as const,
-  input: { width: '100%', boxSizing: 'border-box' as const, padding: '10px 12px', border: '1px solid #d1d5db', borderRadius: 8, fontSize: 15, fontFamily: 'inherit', outline: 'none', resize: 'vertical' as const },
-  errorBanner: { background: '#fef2f2', border: '1px solid #fca5a5', color: '#b91c1c', borderRadius: 8, padding: '12px 16px', marginBottom: 24, fontSize: 14 } as const,
-  submitBtn: { width: '100%', background: '#111827', color: '#fff', border: 'none', padding: '14px', borderRadius: 8, fontSize: 16, fontWeight: 600, cursor: 'pointer', marginTop: 8 } as const,
-  trackingLink: { display: 'inline-block', background: '#111827', color: '#fff', padding: '14px 28px', borderRadius: 8, fontWeight: 600, fontSize: 16, textDecoration: 'none' } as const,
+function Field({ label, htmlFor, hint, required, children }: {
+  label: string; htmlFor: string; hint?: string; required?: boolean; children: React.ReactNode
+}) {
+  return (
+    <div style={{ marginBottom: 20 }}>
+      <label htmlFor={htmlFor} style={{
+        display: 'block', fontSize: 13, fontWeight: 500,
+        color: C.ink, marginBottom: hint ? 4 : 8,
+      }}>
+        {label}{required && <span style={{ color: C.low, marginLeft: 4 }}>*</span>}
+      </label>
+      {hint && <p style={{ fontSize: 12, color: C.low, marginBottom: 8, lineHeight: 1.5 }}>{hint}</p>}
+      {children}
+    </div>
+  )
+}
+
+const S = {
+  page: {
+    fontFamily: "'Inter', system-ui, sans-serif",
+    minHeight: '100vh',
+    background: '#f5f1eb',
+    padding: '56px 24px',
+  } as const,
+  card: {
+    maxWidth: 580,
+    margin: '0 auto',
+    background: '#fdfcfa',
+    borderRadius: 12,
+    padding: '48px 44px',
+    border: '1px solid #e4ddd4',
+  } as const,
+  input: {
+    width: '100%',
+    boxSizing: 'border-box' as const,
+    padding: '11px 14px',
+    border: '1px solid #e4ddd4',
+    borderRadius: 6,
+    fontSize: 14,
+    fontFamily: "'Inter', sans-serif",
+    outline: 'none',
+    resize: 'vertical' as const,
+    background: '#f5f1eb',
+    color: '#1a1715',
+  },
+  errorBanner: {
+    background: '#fdf2f2',
+    border: '1px solid #e4c5c5',
+    color: '#8b4040',
+    borderRadius: 6,
+    padding: '12px 16px',
+    marginBottom: 24,
+    fontSize: 13,
+  } as const,
+  btn: {
+    display: 'block',
+    width: '100%',
+    background: '#1a1715',
+    color: '#faf8f5',
+    border: 'none',
+    padding: '15px',
+    borderRadius: 6,
+    fontSize: 13,
+    fontWeight: 500,
+    letterSpacing: '0.08em',
+    cursor: 'pointer',
+    textDecoration: 'none',
+    textAlign: 'center' as const,
+    fontFamily: "'Inter', sans-serif",
+  },
 }
