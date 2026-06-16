@@ -24,8 +24,8 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final EmailService emailService;
 
-    @Value("${ploy.base-url}")
-    private String baseUrl;
+    @Value("${ploy.frontend-url}")
+    private String frontendUrl;
 
     /*
      * Intake flow:
@@ -60,7 +60,7 @@ public class ProjectService {
         project.setBrief(brief);
         Project saved = projectRepository.save(project);
 
-        String trackingUrl = baseUrl + "/track/" + saved.getMagicToken();
+        String trackingUrl = frontendUrl + "/track/" + saved.getMagicToken();
 
         // Email failures must not roll back the transaction.
         // The magic token is displayed on the confirmation screen regardless.
@@ -85,7 +85,7 @@ public class ProjectService {
         TrackingResponse.DeliverableView deliverableView = null;
 
         if (latest != null) {
-            String downloadUrl = baseUrl + "/api/files/" + token + "/" + latest.getId();
+            String downloadUrl = "/api/files/" + token + "/" + latest.getId();
             deliverableView = new TrackingResponse.DeliverableView(
                     latest.getId(),
                     latest.getVersion(),

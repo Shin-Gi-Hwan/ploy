@@ -10,7 +10,6 @@ import com.prod.ploy.model.Project.ProjectStatus;
 import com.prod.ploy.repository.DeliverableRepository;
 import com.prod.ploy.repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,9 +33,6 @@ public class AdminProjectService {
     private final ProjectRepository projectRepository;
     private final DeliverableRepository deliverableRepository;
     private final StorageService storageService;
-
-    @Value("${ploy.base-url}")
-    private String baseUrl;
 
     @Transactional(readOnly = true)
     public List<AdminProjectResponse> listAll() {
@@ -70,7 +66,7 @@ public class AdminProjectService {
 
         Deliverable saved = deliverableRepository.save(deliverable);
 
-        String downloadUrl = baseUrl + "/api/files/" + project.getMagicToken() + "/" + saved.getId();
+        String downloadUrl = "/api/files/" + project.getMagicToken() + "/" + saved.getId();
         return new DeliverableUploadResponse(saved.getId(), saved.getVersion(), saved.getNote(), downloadUrl);
     }
 
@@ -99,7 +95,7 @@ public class AdminProjectService {
 
         var deliverableViews = p.getDeliverables().stream()
                 .map(d -> {
-                    String downloadUrl = baseUrl + "/api/files/" + p.getMagicToken() + "/" + d.getId();
+                    String downloadUrl = "/api/files/" + p.getMagicToken() + "/" + d.getId();
                     return new DeliverableView(
                             d.getId(), d.getVersion(), d.getNote(),
                             downloadUrl, d.getUploadedAt().toString());
