@@ -1,29 +1,35 @@
+import { useTranslation } from 'react-i18next'
+
 export default function CtaSection() {
+  const { t } = useTranslation()
+
   return (
     <section className="cta-section" aria-labelledby="cta-title">
       <div className="container">
         <div className="cta-box">
           <p className="section-label" style={{ color: 'rgba(255,255,255,0.7)' }}>
-            Ready to start?
+            {t('cta.label')}
           </p>
           <h2 id="cta-title" className="cta-title">
-            Your next project is<br />one brief away.
+            {t('cta.title1')}<br />{t('cta.title2')}
           </h2>
           <p className="cta-desc">
-            Fill out a short form, and we'll take it from there.<br />
-            No design experience. No back-and-forth. Just results.
+            {t('cta.subtitle1')}<br />
+            {t('cta.subtitle2')}
           </p>
           <div className="cta-actions">
             <a href="/start" className="btn btn-lg btn-cta-primary">
-              Start a Project →
+              {t('cta.startProject')}
             </a>
-            <a href="/#how-it-works" className="btn btn-lg btn-cta-secondary"
-              onClick={(e) => {
+            <a
+              href="/#how-it-works"
+              className="btn btn-lg btn-cta-secondary"
+              onClick={(e: React.MouseEvent) => {
                 e.preventDefault()
                 document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })
               }}
             >
-              See how it works
+              {t('cta.seeHow')}
             </a>
           </div>
         </div>

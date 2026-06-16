@@ -82,17 +82,18 @@ export interface StatusUpdateRequest {
 
 // ─── UI helpers ───────────────────────────────────────────────────────────────
 
+// These values are i18n keys — use t(PROJECT_TYPE_LABELS[type]) in components
 export const PROJECT_TYPE_LABELS: Record<ProjectType, string> = {
-  BUSINESS_CARD: 'Business Card',
-  PRESENTATION:  'Presentation',
-  WEBSITE:       'Website',
+  BUSINESS_CARD: 'type.BUSINESS_CARD',
+  PRESENTATION:  'type.PRESENTATION',
+  WEBSITE:       'type.WEBSITE',
 }
 
 export const PROJECT_STATUS_LABELS: Record<ProjectStatus, string> = {
-  BRIEF_SUBMITTED: 'Brief Received',
-  IN_PROGRESS:     'In Progress',
-  REVIEW:          'Ready for Review',
-  DELIVERED:       'Delivered',
+  BRIEF_SUBMITTED: 'status.BRIEF_SUBMITTED',
+  IN_PROGRESS:     'status.IN_PROGRESS',
+  REVIEW:          'status.REVIEW',
+  DELIVERED:       'status.DELIVERED',
 }
 
 export const PROJECT_STATUS_ORDER: ProjectStatus[] = [

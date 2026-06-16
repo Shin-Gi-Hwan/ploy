@@ -1,13 +1,16 @@
 import { Link } from 'react-router-dom'
-
-const LINKS = [
-  { label: 'How It Works', href: '/#how-it-works' },
-  { label: 'Services',     href: '/#services' },
-  { label: 'Start a Project', href: '/start' },
-  { label: 'Track Project',   href: '/track' },
-]
+import { useTranslation } from 'react-i18next'
 
 export default function Footer() {
+  const { t } = useTranslation()
+
+  const LINKS = [
+    { label: t('footer.links.howItWorks'),  href: '/#how-it-works' },
+    { label: t('footer.links.services'),    href: '/#services' },
+    { label: t('footer.links.startProject'), href: '/start' },
+    { label: t('footer.links.trackProject'), href: '/track' },
+  ]
+
   return (
     <footer className="footer" role="contentinfo">
       <div className="container">
@@ -16,11 +19,11 @@ export default function Footer() {
             <div>
               <Link to="/" className="footer-logo">Ploy</Link>
               <p className="footer-tagline" style={{ marginTop: 'var(--space-3)' }}>
-                Done-for-you design work.<br />
-                Business cards, decks, and websites — delivered.
+                {t('footer.tagline1')}<br />
+                {t('footer.tagline2')}
               </p>
             </div>
-            <nav aria-label="Footer navigation">
+            <nav aria-label={t('footer.ariaNav')}>
               <div className="footer-links">
                 {LINKS.map((l) => (
                   <Link key={l.href} to={l.href} className="footer-link">
@@ -32,8 +35,8 @@ export default function Footer() {
           </div>
 
           <div className="footer-bottom">
-            <span>© {new Date().getFullYear()} Ploy. All rights reserved.</span>
-            <span>Designed work, handled professionally.</span>
+            <span>{t('footer.copyright', { year: new Date().getFullYear() })}</span>
+            <span>{t('footer.designed')}</span>
           </div>
         </div>
       </div>

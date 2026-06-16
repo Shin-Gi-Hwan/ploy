@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 export interface BreadcrumbItem {
   label: string
@@ -10,8 +11,10 @@ interface BreadcrumbProps {
 }
 
 export default function Breadcrumb({ items }: BreadcrumbProps) {
+  const { t } = useTranslation()
+
   return (
-    <nav aria-label="Breadcrumb">
+    <nav aria-label={t('common.breadcrumbAria')}>
       <ol className="breadcrumb">
         {items.map((item, i) => {
           const isLast = i === items.length - 1

@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { useTranslation } from 'react-i18next'
 import Layout from '../components/layout/Layout'
 import Breadcrumb from '../components/ui/Breadcrumb'
 import Button from '../components/ui/Button'
@@ -7,13 +8,9 @@ import Textarea from '../components/ui/Textarea'
 import Select from '../components/ui/Select'
 import Card from '../components/ui/Card'
 import { submitBrief, getErrorMessage } from '../lib/api'
-import type { IntakeRequest, IntakeResponse } from '../types/api'
+import type { IntakeRequest, IntakeResponse, ProjectType } from '../types/api'
 
-const TYPE_OPTIONS = [
-  { value: 'BUSINESS_CARD', label: 'Business Card' },
-  { value: 'PRESENTATION',  label: 'Presentation / Pitch Deck' },
-  { value: 'WEBSITE',       label: 'Website' },
-]
+const PROJECT_TYPES: ProjectType[] = ['BUSINESS_CARD', 'PRESENTATION', 'WEBSITE']
 
 const INITIAL: IntakeRequest = {
   name: '', email: '', phone: '',
@@ -24,6 +21,7 @@ const INITIAL: IntakeRequest = {
 // ─── Success state ─────────────────────────────────────────────────────────────
 
 function SuccessState({ result }: { result: IntakeResponse }) {
+  const { t } = useTranslation()
   const trackingUrl = `/track/${result.magicToken}`
   const fullUrl = `${window.location.origin}${trackingUrl}`
 
@@ -45,16 +43,15 @@ function SuccessState({ result }: { result: IntakeResponse }) {
       </div>
 
       <h1 style={{ fontSize: 28, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.02em', marginBottom: 'var(--space-3)' }}>
-        Brief received!
+        {t('intake.success.title')}
       </h1>
       <p style={{ fontSize: 16, color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: 'var(--space-8)' }}>
-        We're reviewing your project brief and will get started shortly.
-        Use the link below to track your project status and download files when they're ready.
+        {t('intake.success.subtitle')}
       </p>
 
       <Card style={{ marginBottom: 'var(--space-5)', textAlign: 'left' }}>
         <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 'var(--space-3)' }}>
-          Your tracking link
+          {t('intake.success.trackingLinkLabel')}
         </p>
         <div style={{
           display: 'flex', gap: 'var(--space-2)', alignItems: 'center',
@@ -72,25 +69,25 @@ function SuccessState({ result }: { result: IntakeResponse }) {
               fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)', cursor: 'pointer',
             }}
           >
-            Copy
+            {t('intake.success.copy')}
           </button>
         </div>
         <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 'var(--space-3)' }}>
-          We also sent this link to your email. Bookmark it to check back anytime.
+          {t('intake.success.emailNote')}
         </p>
       </Card>
 
       <div style={{ display: 'flex', gap: 'var(--space-3)', justifyContent: 'center', flexWrap: 'wrap' }}>
         <Button as="a" href={trackingUrl} size="md">
-          View project status →
+          {t('intake.success.viewStatus')}
         </Button>
         <Button as="a" href="/" variant="secondary" size="md">
-          Back to home
+          {t('intake.success.backHome')}
         </Button>
       </div>
 
       <p style={{ marginTop: 'var(--space-5)', fontSize: 13, color: 'var(--text-muted)' }}>
-        Project #{result.projectId}
+        {t('intake.success.projectId', { id: result.projectId })}
       </p>
     </div>
   )
@@ -120,10 +117,16 @@ function FormSection({ title, children }: { title: string; children: React.React
 // ─── Main page ─────────────────────────────────────────────────────────────────
 
 export default function Intake() {
+  const { t } = useTranslation()
   const [form, setForm] = useState<IntakeRequest>(INITIAL)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [result, setResult] = useState<IntakeResponse | null>(null)
+
+  const TYPE_OPTIONS = PROJECT_TYPES.map((v) => ({
+    value: v,
+    label: t(`intake.typeOptions.${v}`),
+  }))
 
   function setField<K extends keyof IntakeRequest>(field: K) {
     return (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -150,7 +153,7 @@ export default function Intake() {
     <Layout>
       <div style={{ background: 'var(--bg-subtle)', borderBottom: '1px solid var(--border-default)', padding: 'var(--space-4) 0' }}>
         <div className="container">
-          <Breadcrumb items={[{ label: 'Home', href: '/' }, { label: 'Start a Project' }]} />
+          <Breadcrumb items={[{ label: t('common.home'), href: '/' }, { label: t('intake.breadcrumb') }]} />
         </div>
       </div>
 
@@ -161,18 +164,16 @@ export default function Intake() {
           ) : (
             <div style={{ maxWidth: 620, margin: '0 auto' }}>
 
-              {/* Page header */}
               <div style={{ marginBottom: 'var(--space-10)' }}>
-                <span className="section-label">New project</span>
+                <span className="section-label">{t('intake.label')}</span>
                 <h1 style={{ fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.025em', lineHeight: 1.2, marginBottom: 'var(--space-3)' }}>
-                  Tell us about your project
+                  {t('intake.title')}
                 </h1>
                 <p style={{ fontSize: 16, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-                  The more detail you share, the better we can match your vision. Takes about 3 minutes.
+                  {t('intake.subtitle')}
                 </p>
               </div>
 
-              {/* Error alert */}
               {error && (
                 <div className="alert alert-error" role="alert" style={{ marginBottom: 'var(--space-6)' }}>
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" style={{ flexShrink: 0, marginTop: 1 }}>
@@ -184,69 +185,69 @@ export default function Intake() {
 
               <Card>
                 <form onSubmit={handleSubmit} noValidate>
-                  <FormSection title="About you">
+                  <FormSection title={t('intake.sectionAbout')}>
                     <Input
-                      label="Your name"
-                      placeholder="Jane Smith"
+                      label={t('intake.name')}
+                      placeholder={t('intake.namePlaceholder')}
                       value={form.name}
                       onChange={setField('name')}
                       required
                       autoComplete="name"
                     />
                     <Input
-                      label="Email address"
+                      label={t('intake.email')}
                       type="email"
-                      placeholder="jane@example.com"
+                      placeholder={t('intake.emailPlaceholder')}
                       value={form.email}
                       onChange={setField('email')}
                       required
                       autoComplete="email"
                     />
                     <Input
-                      label="Phone"
+                      label={t('intake.phone')}
                       type="tel"
-                      placeholder="+1 555 000 0000"
+                      placeholder={t('intake.phonePlaceholder')}
                       value={form.phone}
                       onChange={setField('phone')}
                       autoComplete="tel"
                     />
                   </FormSection>
 
-                  <FormSection title="Your project">
+                  <FormSection title={t('intake.sectionProject')}>
                     <Select
-                      label="What do you need?"
+                      label={t('intake.projectType')}
                       options={TYPE_OPTIONS}
                       value={form.type}
                       onChange={setField('type')}
                       required
                     />
                     <Textarea
-                      label="Describe your vision"
-                      hint="What's this for? What do you want people to feel when they see it?"
-                      placeholder="I run a yoga studio and want a card that feels calm, premium, and modern…"
+                      label={t('intake.vision')}
+                      hint={t('intake.visionHint')}
+                      placeholder={t('intake.visionPlaceholder')}
                       value={form.visionText}
                       onChange={setField('visionText')}
                       required
                       style={{ minHeight: 110 }}
                     />
                     <Input
-                      label="Colors and style"
-                      hint="Any colors you love (or hate)? Words that describe your vibe?"
-                      placeholder="Warm earth tones, no blues, something like Aesop's branding"
+                      label={t('intake.colors')}
+                      hint={t('intake.colorsHint')}
+                      placeholder={t('intake.colorsPlaceholder')}
                       value={form.colorPreferences}
                       onChange={setField('colorPreferences')}
                     />
                     <Textarea
-                      label="References"
-                      hint="Paste links to designs you admire, or name brands with a look you like"
-                      placeholder="https://… or 'something like Notion's website'"
+                      label={t('intake.references')}
+                      hint={t('intake.referencesHint')}
+                      placeholder={t('intake.referencesPlaceholder')}
                       value={form.styleRefs}
                       onChange={setField('styleRefs')}
                       style={{ minHeight: 80 }}
                     />
                     <Textarea
-                      label="Anything else?"
-                      placeholder="Special requirements, deadline, number of variants needed…"
+                      label={t('intake.additional')}
+                      placeholder={t('intake.additionalPlaceholder')}
                       value={form.additionalNotes}
                       onChange={setField('additionalNotes')}
                       style={{ minHeight: 80 }}
@@ -260,11 +261,11 @@ export default function Intake() {
                     disabled={submitting}
                     style={{ width: '100%' }}
                   >
-                    {submitting ? 'Submitting…' : 'Submit brief →'}
+                    {submitting ? t('intake.submitting') : t('intake.submit')}
                   </Button>
 
                   <p style={{ marginTop: 'var(--space-4)', fontSize: 13, color: 'var(--text-muted)', textAlign: 'center' }}>
-                    By submitting you agree we'll contact you about your project.
+                    {t('intake.consent')}
                   </p>
                 </form>
               </Card>

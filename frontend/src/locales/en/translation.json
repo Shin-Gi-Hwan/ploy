@@ -1,0 +1,224 @@
+{
+  "nav": {
+    "howItWorks": "How It Works",
+    "services": "Services",
+    "reviews": "Reviews",
+    "trackProject": "Track Project",
+    "startProject": "Start a Project",
+    "ariaLabel": "Main navigation",
+    "ariaHome": "Ploy home",
+    "ariaOpenMenu": "Open menu",
+    "ariaCloseMenu": "Close menu"
+  },
+  "footer": {
+    "tagline1": "Done-for-you design work.",
+    "tagline2": "Business cards, decks, and websites — delivered.",
+    "copyright": "© {{year}} Ploy. All rights reserved.",
+    "designed": "Designed work, handled professionally.",
+    "ariaNav": "Footer navigation",
+    "links": {
+      "howItWorks": "How It Works",
+      "services": "Services",
+      "startProject": "Start a Project",
+      "trackProject": "Track Project"
+    }
+  },
+  "admin": {
+    "dashboard": "Admin dashboard",
+    "signIn": "Sign in",
+    "username": "Username",
+    "password": "Password",
+    "invalidCredentials": "Invalid credentials. Please try again.",
+    "total": "Total",
+    "inProgress": "In Progress",
+    "forReview": "For Review",
+    "delivered": "Delivered",
+    "noProjects": "No projects yet.",
+    "trackingLink": "Client tracking link",
+    "deliverables": "Deliverables",
+    "uploadDeliverable": "Upload deliverable",
+    "noteForClient": "Note for client (optional)",
+    "chooseFile": "Choose file",
+    "uploading": "Uploading…",
+    "fileFormats": "PDF, PNG, JPG, ZIP — max 20 MB",
+    "fileTypeError": "File type \"{{ext}}\" is not allowed. Use PDF, PNG, JPG, or ZIP.",
+    "uploadFailed": "Upload failed. Please try again.",
+    "submitted": "Submitted {{date}}",
+    "refresh": "Refresh",
+    "refreshing": "Refreshing…",
+    "download": "Download",
+    "version": "v{{version}}",
+    "changeStatus": "Change status for {{name}}'s project"
+  },
+  "hero": {
+    "badge": "Done-for-you design work",
+    "title1": "Design work,",
+    "title2": "handled.",
+    "subtitle": "Business cards, presentations, and websites — designed by professionals and delivered straight to your inbox. No design experience needed.",
+    "startProject": "Start a Project →",
+    "seeHow": "See how it works",
+    "trustedBy": "Trusted by",
+    "trustedCount": "500+",
+    "trustedSuffix": "freelancers and small businesses"
+  },
+  "howItWorks": {
+    "label": "How it works",
+    "title": "From brief to deliverable\nin three steps",
+    "subtitle": "Simple, fast, and transparent. No hidden steps, no chasing replies.",
+    "steps": [
+      {
+        "n": "01",
+        "title": "Share your brief",
+        "desc": "Tell us what you need — your brand, your audience, and references you love. Takes 3 minutes. No design jargon required."
+      },
+      {
+        "n": "02",
+        "title": "We get to work",
+        "desc": "A professional designer picks up your brief and creates something polished within a few days — not weeks."
+      },
+      {
+        "n": "03",
+        "title": "Review and download",
+        "desc": "You get a private tracking link. Review your files, request one round of revisions, then download and go."
+      }
+    ]
+  },
+  "services": {
+    "label": "Services",
+    "title": "Pick your project type",
+    "subtitle": "Three focused services done exceptionally well. Tell us what you need — we'll handle the rest.",
+    "startProject": "Start a Project →",
+    "turnaround": "Turnaround: {{days}}",
+    "items": [
+      {
+        "icon": "💳",
+        "title": "Business Card",
+        "desc": "A card that makes a first impression worth remembering. Print-ready files delivered in multiple formats.",
+        "days": "2–3 days",
+        "includes": ["2 design concepts", "Print-ready PDF", "Digital version", "1 revision"]
+      },
+      {
+        "icon": "📊",
+        "title": "Presentation",
+        "desc": "Pitch decks, investor briefs, and company overviews. Consistent slides that tell your story visually.",
+        "days": "3–5 days",
+        "includes": ["Up to 20 slides", "PowerPoint + PDF", "Brand-matched style", "1 revision"]
+      },
+      {
+        "icon": "🌐",
+        "title": "Website",
+        "desc": "A clean, fast site built for results — portfolio, landing page, or small business presence.",
+        "days": "5–7 days",
+        "includes": ["Up to 5 pages", "Mobile responsive", "SEO ready", "1 revision"]
+      }
+    ]
+  },
+  "reviews": {
+    "label": "Reviews",
+    "title": "What clients say",
+    "subtitle": "Real feedback from freelancers and business owners who've worked with us.",
+    "stars": "{{count}} out of 5 stars"
+  },
+  "cta": {
+    "label": "Ready to start?",
+    "title1": "Your next project is",
+    "title2": "one brief away.",
+    "subtitle1": "Fill out a short form, and we'll take it from there.",
+    "subtitle2": "No design experience. No back-and-forth. Just results.",
+    "startProject": "Start a Project →",
+    "seeHow": "See how it works"
+  },
+  "intake": {
+    "breadcrumb": "Start a Project",
+    "label": "New project",
+    "title": "Tell us about your project",
+    "subtitle": "The more detail you share, the better we can match your vision. Takes about 3 minutes.",
+    "sectionAbout": "About you",
+    "sectionProject": "Your project",
+    "name": "Your name",
+    "namePlaceholder": "Jane Smith",
+    "email": "Email address",
+    "emailPlaceholder": "jane@example.com",
+    "phone": "Phone",
+    "phonePlaceholder": "+1 555 000 0000",
+    "projectType": "What do you need?",
+    "vision": "Describe your vision",
+    "visionHint": "What's this for? What do you want people to feel when they see it?",
+    "visionPlaceholder": "I run a yoga studio and want a card that feels calm, premium, and modern…",
+    "colors": "Colors and style",
+    "colorsHint": "Any colors you love (or hate)? Words that describe your vibe?",
+    "colorsPlaceholder": "Warm earth tones, no blues, something like Aesop's branding",
+    "references": "References",
+    "referencesHint": "Paste links to designs you admire, or name brands with a look you like",
+    "referencesPlaceholder": "https://… or 'something like Notion's website'",
+    "additional": "Anything else?",
+    "additionalPlaceholder": "Special requirements, deadline, number of variants needed…",
+    "submit": "Submit brief →",
+    "submitting": "Submitting…",
+    "consent": "By submitting you agree we'll contact you about your project.",
+    "typeOptions": {
+      "BUSINESS_CARD": "Business Card",
+      "PRESENTATION": "Presentation / Pitch Deck",
+      "WEBSITE": "Website"
+    },
+    "success": {
+      "title": "Brief received!",
+      "subtitle": "We're reviewing your project brief and will get started shortly. Use the link below to track your project status and download files when they're ready.",
+      "trackingLinkLabel": "Your tracking link",
+      "copy": "Copy",
+      "emailNote": "We also sent this link to your email. Bookmark it to check back anytime.",
+      "viewStatus": "View project status →",
+      "backHome": "Back to home",
+      "projectId": "Project #{{id}}"
+    }
+  },
+  "tracking": {
+    "breadcrumb": "Project Status",
+    "greeting": "Hi {{name}} —\nhere's your project.",
+    "progress": "Progress",
+    "yourFiles": "Your files",
+    "version": "Version {{version}}",
+    "download": "Download files",
+    "notReady": "Files not ready yet",
+    "notReadyDesc": "Your download will appear here once the work is complete.",
+    "backToPloy": "← Back to Ploy",
+    "notFound": {
+      "title": "Project not found",
+      "subtitle": "We couldn't find a project with this tracking link. Check your email for the correct link.",
+      "backHome": "← Back to home"
+    }
+  },
+  "status": {
+    "BRIEF_SUBMITTED": "Brief Received",
+    "IN_PROGRESS": "In Progress",
+    "REVIEW": "Ready for Review",
+    "DELIVERED": "Delivered",
+    "descriptions": {
+      "BRIEF_SUBMITTED": "We've received your brief and it's in the queue.",
+      "IN_PROGRESS": "Your project is actively being worked on.",
+      "REVIEW": "Your files are ready. Download below and let us know if you need a revision.",
+      "DELIVERED": "Project complete. Thank you for working with us!"
+    }
+  },
+  "type": {
+    "BUSINESS_CARD": "Business Card",
+    "PRESENTATION": "Presentation",
+    "WEBSITE": "Website"
+  },
+  "errors": {
+    "tooManyRequests": "You've submitted too many requests recently. Please wait an hour and try again.",
+    "notFound": "Not found.",
+    "invalidCredentials": "Invalid credentials.",
+    "somethingWentWrong": "Something went wrong."
+  },
+  "common": {
+    "home": "Home",
+    "loading": "Loading…",
+    "breadcrumbAria": "Breadcrumb"
+  },
+  "lang": {
+    "ko": "한국어",
+    "en": "English",
+    "switchTo": "Switch language"
+  }
+}

@@ -1,8 +1,11 @@
+import { useTranslation } from 'react-i18next'
 import Button from '../ui/Button'
 
 const AVATARS = ['SR', 'DK', 'ML', 'PM', 'JR']
 
 export default function HeroSection() {
+  const { t } = useTranslation()
+
   return (
     <section className="hero" aria-labelledby="hero-title">
       <div className="hero-bg-grid" aria-hidden="true" />
@@ -11,22 +14,19 @@ export default function HeroSection() {
 
           <div className="hero-badge">
             <span className="hero-badge-dot" aria-hidden="true" />
-            Done-for-you design work
+            {t('hero.badge')}
           </div>
 
           <h1 id="hero-title" className="hero-title">
-            Design work,<br />
-            <span className="hero-title-accent">handled.</span>
+            {t('hero.title1')}<br />
+            <span className="hero-title-accent">{t('hero.title2')}</span>
           </h1>
 
-          <p className="hero-desc">
-            Business cards, presentations, and websites — designed by professionals
-            and delivered straight to your inbox. No design experience needed.
-          </p>
+          <p className="hero-desc">{t('hero.subtitle')}</p>
 
           <div className="hero-actions">
             <Button as="a" href="/start" size="lg">
-              Start a Project →
+              {t('hero.startProject')}
             </Button>
             <Button as="a" href="/#how-it-works" variant="secondary" size="lg"
               onClick={(e: React.MouseEvent) => {
@@ -34,7 +34,7 @@ export default function HeroSection() {
                 document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })
               }}
             >
-              See how it works
+              {t('hero.seeHow')}
             </Button>
           </div>
 
@@ -45,7 +45,7 @@ export default function HeroSection() {
               ))}
             </div>
             <p className="hero-proof-text">
-              Trusted by <strong>500+</strong> freelancers and small businesses
+              {t('hero.trustedBy')} <strong>{t('hero.trustedCount')}</strong> {t('hero.trustedSuffix')}
             </p>
           </div>
 

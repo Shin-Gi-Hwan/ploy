@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import AdminLayout from '../components/layout/AdminLayout'
 import Button from '../components/ui/Button'
 import { StatusBadge } from '../components/ui/Badge'
@@ -11,9 +12,8 @@ import {
   getErrorMessage,
 } from '../lib/api'
 import type { AdminProject, ProjectStatus } from '../types/api'
-import { PROJECT_TYPE_LABELS, PROJECT_STATUS_LABELS } from '../types/api'
+import { PROJECT_TYPE_LABELS, PROJECT_STATUS_LABELS, PROJECT_STATUS_ORDER } from '../types/api'
 
-const ALL_STATUSES: ProjectStatus[] = ['BRIEF_SUBMITTED', 'IN_PROGRESS', 'REVIEW', 'DELIVERED']
 const ALLOWED_EXTS  = ['.pdf', '.png', '.jpg', '.jpeg', '.zip']
 const ALLOWED_TYPES = ['application/pdf', 'image/png', 'image/jpeg', 'application/zip', 'application/x-zip-compressed']
 
@@ -24,6 +24,7 @@ interface LoginProps {
 }
 
 function Login({ onLogin }: LoginProps) {
+  const { t } = useTranslation()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError]       = useState<string | null>(null)
@@ -36,7 +37,7 @@ function Login({ onLogin }: LoginProps) {
     try {
       await onLogin(username, password)
     } catch {
-      setError('Invalid credentials. Please try again.')
+      setError(t('admin.invalidCredentials'))
     } finally {
       setLoading(false)
     }
@@ -55,13 +56,13 @@ function Login({ onLogin }: LoginProps) {
             Ploy
           </a>
           <p style={{ marginTop: 'var(--space-2)', fontSize: 14, color: 'var(--text-muted)' }}>
-            Admin dashboard
+            {t('admin.dashboard')}
           </p>
         </div>
 
         <Card>
           <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 'var(--space-6)' }}>
-            Sign in
+            {t('admin.signIn')}
           </h1>
 
           {error && (
@@ -72,7 +73,7 @@ function Login({ onLogin }: LoginProps) {
 
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
             <div className="field">
-              <label htmlFor="admin-username" className="field-label field-label-required">Username</label>
+              <label htmlFor="admin-username" className="field-label field-label-required">{t('admin.username')}</label>
               <input
                 id="admin-username"
                 type="text"
@@ -84,7 +85,7 @@ function Login({ onLogin }: LoginProps) {
               />
             </div>
             <div className="field">
-              <label htmlFor="admin-password" className="field-label field-label-required">Password</label>
+              <label htmlFor="admin-password" className="field-label field-label-required">{t('admin.password')}</label>
               <input
                 id="admin-password"
                 type="password"
@@ -96,7 +97,7 @@ function Login({ onLogin }: LoginProps) {
               />
             </div>
             <Button type="submit" size="md" loading={loading} style={{ marginTop: 'var(--space-2)' }}>
-              Sign in
+              {t('admin.signIn')}
             </Button>
           </form>
         </Card>
@@ -114,6 +115,7 @@ interface ProjectCardProps {
 }
 
 function ProjectCard({ project: p, onStatusChange, onUpload }: ProjectCardProps) {
+  const { t, i18n } = useTranslation()
   const [note, setNote]             = useState('')
   const [uploading, setUploading]   = useState(false)
   const [uploadError, setUploadError] = useState<string | null>(null)
@@ -125,7 +127,7 @@ function ProjectCard({ project: p, onStatusChange, onUpload }: ProjectCardProps)
 
     const ext = '.' + file.name.split('.').pop()?.toLowerCase()
     if (!ALLOWED_TYPES.includes(file.type) && !ALLOWED_EXTS.includes(ext)) {
-      setUploadError(`File type "${ext}" is not allowed. Use PDF, PNG, JPG, or ZIP.`)
+      setUploadError(t('admin.fileTypeError', { ext }))
       if (fileInputRef.current) fileInputRef.current.value = ''
       return
     }
@@ -137,13 +139,13 @@ function ProjectCard({ project: p, onStatusChange, onUpload }: ProjectCardProps)
       setNote('')
       if (fileInputRef.current) fileInputRef.current.value = ''
     } catch (err) {
-      setUploadError(getErrorMessage(err, 'Upload failed. Please try again.'))
+      setUploadError(getErrorMessage(err, 'admin.uploadFailed'))
     } finally {
       setUploading(false)
     }
   }
 
-  const createdDate = new Date(p.createdAt).toLocaleDateString('en-US', {
+  const createdDate = new Date(p.createdAt).toLocaleDateString(i18n.language, {
     month: 'short', day: 'numeric', year: 'numeric',
   })
 
@@ -154,7 +156,7 @@ function ProjectCard({ project: p, onStatusChange, onUpload }: ProjectCardProps)
         <div style={{ minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', marginBottom: 'var(--space-2)', flexWrap: 'wrap' }}>
             <span style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 500 }}>
-              #{p.id} · {PROJECT_TYPE_LABELS[p.type]}
+              #{p.id} · {t(PROJECT_TYPE_LABELS[p.type])}
             </span>
             <StatusBadge status={p.status} />
           </div>
@@ -166,7 +168,7 @@ function ProjectCard({ project: p, onStatusChange, onUpload }: ProjectCardProps)
             {p.client.phone && ` · ${p.client.phone}`}
           </p>
           <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 'var(--space-1)' }}>
-            Submitted {createdDate}
+            {t('admin.submitted', { date: createdDate })}
           </p>
         </div>
 
@@ -177,10 +179,10 @@ function ProjectCard({ project: p, onStatusChange, onUpload }: ProjectCardProps)
             onChange={(e) => onStatusChange(p.id, e.target.value as ProjectStatus)}
             className="select"
             style={{ paddingRight: 32, minWidth: 160, fontSize: 13 }}
-            aria-label={`Change status for ${p.client.name}'s project`}
+            aria-label={t('admin.changeStatus', { name: p.client.name })}
           >
-            {ALL_STATUSES.map((s) => (
-              <option key={s} value={s}>{PROJECT_STATUS_LABELS[s]}</option>
+            {PROJECT_STATUS_ORDER.map((s) => (
+              <option key={s} value={s}>{t(PROJECT_STATUS_LABELS[s])}</option>
             ))}
           </select>
           <svg aria-hidden="true" style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--gray-400)' }} width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -191,7 +193,7 @@ function ProjectCard({ project: p, onStatusChange, onUpload }: ProjectCardProps)
 
       {/* Client tracking link */}
       <div style={{ marginBottom: 'var(--space-5)' }}>
-        <p style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 4 }}>Client tracking link</p>
+        <p style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 4 }}>{t('admin.trackingLink')}</p>
         <a
           href={`/track/${p.magicToken}`}
           target="_blank"
@@ -206,12 +208,14 @@ function ProjectCard({ project: p, onStatusChange, onUpload }: ProjectCardProps)
       {p.deliverables.length > 0 && (
         <div style={{ marginBottom: 'var(--space-5)', paddingBottom: 'var(--space-5)', borderBottom: '1px solid var(--border-default)' }}>
           <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 'var(--space-3)' }}>
-            Deliverables
+            {t('admin.deliverables')}
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
             {p.deliverables.map((d) => (
               <div key={d.id} style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', padding: 'var(--space-3)', background: 'var(--bg-subtle)', borderRadius: 'var(--radius-md)' }}>
-                <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--mint-600)', minWidth: 28 }}>v{d.version}</span>
+                <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--mint-600)', minWidth: 28 }}>
+                  {t('admin.version', { version: d.version })}
+                </span>
                 {d.note && (
                   <span style={{ fontSize: 13, color: 'var(--text-secondary)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {d.note}
@@ -223,7 +227,7 @@ function ProjectCard({ project: p, onStatusChange, onUpload }: ProjectCardProps)
                   rel="noreferrer"
                   style={{ fontSize: 13, color: 'var(--mint-600)', textDecoration: 'underline', textUnderlineOffset: 3, flexShrink: 0, marginLeft: 'auto' }}
                 >
-                  Download
+                  {t('admin.download')}
                 </a>
               </div>
             ))}
@@ -234,12 +238,12 @@ function ProjectCard({ project: p, onStatusChange, onUpload }: ProjectCardProps)
       {/* Upload section */}
       <div>
         <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 'var(--space-3)' }}>
-          Upload deliverable
+          {t('admin.uploadDeliverable')}
         </p>
         <input
           type="text"
           className="input"
-          placeholder="Note for client (optional)"
+          placeholder={t('admin.noteForClient')}
           value={note}
           onChange={(e) => setNote(e.target.value)}
           style={{ marginBottom: 'var(--space-3)', fontSize: 14 }}
@@ -253,14 +257,14 @@ function ProjectCard({ project: p, onStatusChange, onUpload }: ProjectCardProps)
             {uploading ? (
               <>
                 <span className="spinner spinner-sm" />
-                Uploading…
+                {t('admin.uploading')}
               </>
             ) : (
               <>
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
                   <path d="M7 10V3M4 6l3-3 3 3M2 12h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
-                Choose file
+                {t('admin.chooseFile')}
               </>
             )}
           </span>
@@ -271,11 +275,11 @@ function ProjectCard({ project: p, onStatusChange, onUpload }: ProjectCardProps)
             style={{ display: 'none' }}
             disabled={uploading}
             onChange={handleFileChange}
-            aria-label={`Upload file for ${p.client.name}'s project`}
+            aria-label={t('admin.uploadDeliverable')}
           />
         </label>
         <span style={{ marginLeft: 'var(--space-3)', fontSize: 12, color: 'var(--text-muted)' }}>
-          PDF, PNG, JPG, ZIP — max 20 MB
+          {t('admin.fileFormats')}
         </span>
 
         {uploadError && (
@@ -291,6 +295,7 @@ function ProjectCard({ project: p, onStatusChange, onUpload }: ProjectCardProps)
 // ─── Main page ─────────────────────────────────────────────────────────────────
 
 export default function Admin() {
+  const { t } = useTranslation()
   const [authed,   setAuthed]   = useState(false)
   const [projects, setProjects] = useState<AdminProject[]>([])
   const [loading,  setLoading]  = useState(false)
@@ -334,10 +339,10 @@ export default function Admin() {
       {/* Stats bar */}
       <div style={{ display: 'flex', gap: 'var(--space-4)', marginBottom: 'var(--space-6)', flexWrap: 'wrap' }}>
         {[
-          { label: 'Total',       value: projects.length },
-          { label: 'In Progress', value: projects.filter((p) => p.status === 'IN_PROGRESS').length },
-          { label: 'For Review',  value: projects.filter((p) => p.status === 'REVIEW').length },
-          { label: 'Delivered',   value: projects.filter((p) => p.status === 'DELIVERED').length },
+          { label: t('admin.total'),      value: projects.length },
+          { label: t('admin.inProgress'), value: projects.filter((p) => p.status === 'IN_PROGRESS').length },
+          { label: t('admin.forReview'),  value: projects.filter((p) => p.status === 'REVIEW').length },
+          { label: t('admin.delivered'),  value: projects.filter((p) => p.status === 'DELIVERED').length },
         ].map((stat) => (
           <div key={stat.label} style={{
             background: '#fff', border: '1px solid var(--border-default)',
@@ -357,7 +362,7 @@ export default function Admin() {
         <Spinner fullPage />
       ) : projects.length === 0 ? (
         <div style={{ textAlign: 'center', padding: 'var(--space-20) 0', color: 'var(--text-muted)', fontSize: 15 }}>
-          No projects yet.
+          {t('admin.noProjects')}
         </div>
       ) : (
         projects.map((p) => (

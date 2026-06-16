@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import Button from '../ui/Button'
 
 interface AdminLayoutProps {
@@ -7,13 +8,15 @@ interface AdminLayoutProps {
 }
 
 export default function AdminLayout({ children, onRefresh, refreshing }: AdminLayoutProps) {
+  const { t } = useTranslation()
+
   return (
     <div className="admin-layout">
       <header className="admin-topbar">
-        <a href="/" className="admin-logo" aria-label="Ploy home">
+        <a href="/" className="admin-logo" aria-label={t('nav.ariaHome')}>
           Ploy
           <span style={{ color: 'var(--gray-400)', fontWeight: 400, fontSize: 13, marginLeft: 8 }}>
-            Admin
+            {t('admin.dashboard')}
           </span>
         </a>
         {onRefresh && (
@@ -24,7 +27,7 @@ export default function AdminLayout({ children, onRefresh, refreshing }: AdminLa
             loading={refreshing}
             disabled={refreshing}
           >
-            {refreshing ? 'Refreshing…' : 'Refresh'}
+            {refreshing ? t('admin.refreshing') : t('admin.refresh')}
           </Button>
         )}
       </header>

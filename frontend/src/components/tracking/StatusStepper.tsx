@@ -1,22 +1,17 @@
+import { useTranslation } from 'react-i18next'
 import type { ProjectStatus } from '../../types/api'
-import { PROJECT_STATUS_LABELS, PROJECT_STATUS_ORDER } from '../../types/api'
-
-const STATUS_DESCRIPTIONS: Record<ProjectStatus, string> = {
-  BRIEF_SUBMITTED: "We've received your brief and it's in the queue.",
-  IN_PROGRESS:     "Your project is actively being worked on.",
-  REVIEW:          "Your files are ready. Download below and let us know if you need a revision.",
-  DELIVERED:       "Project complete. Thank you for working with us!",
-}
+import { PROJECT_STATUS_ORDER } from '../../types/api'
 
 interface StatusStepperProps {
   status: ProjectStatus
 }
 
 export default function StatusStepper({ status }: StatusStepperProps) {
+  const { t } = useTranslation()
   const currentIndex = PROJECT_STATUS_ORDER.indexOf(status)
 
   return (
-    <div className="stepper" aria-label="Project status" role="list">
+    <div className="stepper" aria-label={t('tracking.progress')} role="list">
       {PROJECT_STATUS_ORDER.map((step, i) => {
         const done   = i < currentIndex
         const active = i === currentIndex
@@ -24,14 +19,12 @@ export default function StatusStepper({ status }: StatusStepperProps) {
 
         return (
           <div key={step} className="stepper-step" role="listitem">
-            {/* Connector line */}
             {!isLast && (
               <div className="stepper-line-wrap">
                 <div className={`stepper-line${done ? ' done' : ''}`} />
               </div>
             )}
 
-            {/* Circle indicator */}
             <div
               className={`stepper-indicator${done ? ' done' : active ? ' active' : ''}`}
               aria-hidden="true"
@@ -45,13 +38,12 @@ export default function StatusStepper({ status }: StatusStepperProps) {
               ) : null}
             </div>
 
-            {/* Label */}
             <div className="stepper-content">
               <p className={`stepper-title${(!done && !active) ? ' muted' : ''}`}>
-                {PROJECT_STATUS_LABELS[step]}
+                {t(`status.${step}`)}
               </p>
               {active && (
-                <p className="stepper-desc">{STATUS_DESCRIPTIONS[step]}</p>
+                <p className="stepper-desc">{t(`status.descriptions.${step}`)}</p>
               )}
             </div>
           </div>

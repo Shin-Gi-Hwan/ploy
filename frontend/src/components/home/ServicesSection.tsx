@@ -1,46 +1,29 @@
+import { useTranslation } from 'react-i18next'
 import Button from '../ui/Button'
 
-const SERVICES = [
-  {
-    icon: '💳',
-    title: 'Business Card',
-    desc: 'A card that makes a first impression worth remembering. Print-ready files delivered in multiple formats.',
-    turnaround: '2–3 days',
-    includes: ['2 design concepts', 'Print-ready PDF', 'Digital version', '1 revision'],
-  },
-  {
-    icon: '📊',
-    title: 'Presentation',
-    desc: 'Pitch decks, investor briefs, and company overviews. Consistent slides that tell your story visually.',
-    turnaround: '3–5 days',
-    includes: ['Up to 20 slides', 'PowerPoint + PDF', 'Brand-matched style', '1 revision'],
-  },
-  {
-    icon: '🌐',
-    title: 'Website',
-    desc: 'A clean, fast site built for results — portfolio, landing page, or small business presence.',
-    turnaround: '5–7 days',
-    includes: ['Up to 5 pages', 'Mobile responsive', 'SEO ready', '1 revision'],
-  },
-]
-
 export default function ServicesSection() {
+  const { t } = useTranslation()
+  const items = t('services.items', { returnObjects: true }) as Array<{
+    icon: string
+    title: string
+    desc: string
+    days: string
+    includes: string[]
+  }>
+
   return (
     <section id="services" className="services" aria-labelledby="services-title">
       <div className="container">
         <div className="section-header">
-          <span className="section-label">Services</span>
+          <span className="section-label">{t('services.label')}</span>
           <h2 id="services-title" className="section-title">
-            Pick your project type
+            {t('services.title')}
           </h2>
-          <p className="section-desc">
-            Three focused services done exceptionally well.
-            Tell us what you need — we'll handle the rest.
-          </p>
+          <p className="section-desc">{t('services.subtitle')}</p>
         </div>
 
         <div className="services-grid">
-          {SERVICES.map((s) => (
+          {items.map((s) => (
             <div key={s.title} className="service-card">
               <div className="service-icon" aria-hidden="true">{s.icon}</div>
               <h3 className="service-title">{s.title}</h3>
@@ -70,7 +53,7 @@ export default function ServicesSection() {
 
               <div className="service-meta">
                 <div className="service-meta-item">
-                  Turnaround: <span className="service-meta-value">{s.turnaround}</span>
+                  {t('services.turnaround', { days: s.days })}
                 </div>
               </div>
             </div>
@@ -79,7 +62,7 @@ export default function ServicesSection() {
 
         <div style={{ textAlign: 'center', marginTop: 'var(--space-10)' }}>
           <Button as="a" href="/start" size="lg">
-            Start a Project →
+            {t('services.startProject')}
           </Button>
         </div>
       </div>

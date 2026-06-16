@@ -1,4 +1,5 @@
 import axios from 'axios'
+import i18n from '../i18n'
 import type {
   IntakeRequest,
   IntakeResponse,
@@ -76,16 +77,15 @@ export async function uploadDeliverable(
 
 // ─── Error helpers ────────────────────────────────────────────────────────────
 
-export function getErrorMessage(err: unknown, fallback = 'Something went wrong.'): string {
+export function getErrorMessage(err: unknown, fallbackKey = 'errors.somethingWentWrong'): string {
+  const t = i18n.t.bind(i18n)
   if (axios.isAxiosError(err)) {
-    if (err.response?.status === 429) {
-      return "You've submitted too many requests recently. Please wait an hour and try again."
-    }
+    if (err.response?.status === 429) return t('errors.tooManyRequests')
     if (typeof err.response?.data === 'string' && err.response.data.length < 200) {
       return err.response.data
     }
-    if (err.response?.status === 404) return 'Not found.'
-    if (err.response?.status === 401) return 'Invalid credentials.'
+    if (err.response?.status === 404) return t('errors.notFound')
+    if (err.response?.status === 401) return t('errors.invalidCredentials')
   }
-  return fallback
+  return t(fallbackKey)
 }

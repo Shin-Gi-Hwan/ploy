@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import Layout from '../components/layout/Layout'
 import Breadcrumb from '../components/ui/Breadcrumb'
 import Card from '../components/ui/Card'
@@ -11,9 +12,8 @@ import { getTracking } from '../lib/api'
 import type { TrackingResponse } from '../types/api'
 import { PROJECT_TYPE_LABELS } from '../types/api'
 
-// ─── States ───────────────────────────────────────────────────────────────────
-
 function NotFound() {
+  const { t } = useTranslation()
   return (
     <div style={{ textAlign: 'center', maxWidth: 440, margin: '0 auto' }}>
       <div style={{
@@ -27,28 +27,25 @@ function NotFound() {
         </svg>
       </div>
       <h1 style={{ fontSize: 24, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 'var(--space-3)' }}>
-        Project not found
+        {t('tracking.notFound.title')}
       </h1>
       <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: 'var(--space-8)' }}>
-        We couldn't find a project with this tracking link.
-        Check your email for the correct link.
+        {t('tracking.notFound.subtitle')}
       </p>
-      <Button as="a" href="/" variant="secondary">← Back to home</Button>
+      <Button as="a" href="/" variant="secondary">{t('tracking.notFound.backHome')}</Button>
     </div>
   )
 }
 
-// ─── Main page ─────────────────────────────────────────────────────────────────
-
 export default function Tracking() {
   const { token } = useParams<{ token: string }>()
+  const { t } = useTranslation()
   const [data, setData] = useState<TrackingResponse | null>(null)
   const [loading, setLoading]   = useState(true)
   const [notFound, setNotFound] = useState(false)
 
   useEffect(() => {
     if (!token) { setNotFound(true); setLoading(false); return }
-
     getTracking(token)
       .then(setData)
       .catch(() => setNotFound(true))
@@ -59,7 +56,7 @@ export default function Tracking() {
     <Layout>
       <div style={{ background: 'var(--bg-subtle)', borderBottom: '1px solid var(--border-default)', padding: 'var(--space-4) 0' }}>
         <div className="container">
-          <Breadcrumb items={[{ label: 'Home', href: '/' }, { label: 'Project Status' }]} />
+          <Breadcrumb items={[{ label: t('common.home'), href: '/' }, { label: t('tracking.breadcrumb') }]} />
         </div>
       </div>
 
@@ -71,42 +68,40 @@ export default function Tracking() {
           {data && !loading && (
             <div style={{ maxWidth: 600, margin: '0 auto' }}>
 
-              {/* Header */}
               <div style={{ marginBottom: 'var(--space-8)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-3)', flexWrap: 'wrap' }}>
                   <span className="section-label" style={{ margin: 0 }}>
-                    {PROJECT_TYPE_LABELS[data.type]} · #{data.projectId}
+                    {t(PROJECT_TYPE_LABELS[data.type])} · #{data.projectId}
                   </span>
                   <StatusBadge status={data.status} />
                 </div>
                 <h1 style={{ fontSize: 'clamp(26px, 4vw, 36px)', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.025em', lineHeight: 1.2 }}>
-                  Hi {data.clientName} —<br />
-                  here's your project.
+                  {t('tracking.greeting', { name: data.clientName }).split('\n').map((line, i) => (
+                    <span key={i}>{line}{i === 0 && <br />}</span>
+                  ))}
                 </h1>
               </div>
 
-              {/* Status stepper */}
               <Card style={{ marginBottom: 'var(--space-5)' }}>
                 <h2 style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 'var(--space-6)' }}>
-                  Progress
+                  {t('tracking.progress')}
                 </h2>
                 <StatusStepper status={data.status} />
               </Card>
 
-              {/* Deliverable */}
               {data.latestDeliverable ? (
                 <Card>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 'var(--space-4)', flexWrap: 'wrap', marginBottom: 'var(--space-5)' }}>
                     <div>
                       <h2 style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 'var(--space-2)' }}>
-                        Your files
+                        {t('tracking.yourFiles')}
                       </h2>
                       <span style={{
                         display: 'inline-block', padding: '2px 8px',
                         background: 'var(--mint-50)', color: 'var(--mint-700)',
                         borderRadius: 'var(--radius-full)', fontSize: 12, fontWeight: 600,
                       }}>
-                        Version {data.latestDeliverable.version}
+                        {t('tracking.version', { version: data.latestDeliverable.version })}
                       </span>
                     </div>
                   </div>
@@ -127,16 +122,11 @@ export default function Tracking() {
                     </blockquote>
                   )}
 
-                  <Button
-                    as="a"
-                    href={data.latestDeliverable.downloadUrl}
-                    size="md"
-                    download
-                  >
+                  <Button as="a" href={data.latestDeliverable.downloadUrl} size="md" download>
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                       <path d="M8 2v8M5 7l3 3 3-3M2 13h12" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
-                    Download files
+                    {t('tracking.download')}
                   </Button>
                 </Card>
               ) : (
@@ -153,20 +143,19 @@ export default function Tracking() {
                     </div>
                     <div>
                       <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-primary)', marginBottom: 2 }}>
-                        Files not ready yet
+                        {t('tracking.notReady')}
                       </p>
                       <p style={{ fontSize: 14, color: 'var(--text-muted)' }}>
-                        Your download will appear here once the work is complete.
+                        {t('tracking.notReadyDesc')}
                       </p>
                     </div>
                   </div>
                 </Card>
               )}
 
-              {/* Back link */}
               <div style={{ marginTop: 'var(--space-8)', textAlign: 'center' }}>
                 <Link to="/" style={{ fontSize: 14, color: 'var(--text-muted)', textDecoration: 'underline', textUnderlineOffset: 3 }}>
-                  ← Back to Ploy
+                  {t('tracking.backToPloy')}
                 </Link>
               </div>
             </div>

@@ -1,37 +1,24 @@
-const STEPS = [
-  {
-    n: '01',
-    title: 'Share your brief',
-    desc: "Tell us what you need — your brand, your audience, and references you love. Takes 3 minutes. No design jargon required.",
-  },
-  {
-    n: '02',
-    title: 'We get to work',
-    desc: "A professional designer picks up your brief and creates something polished within a few days — not weeks.",
-  },
-  {
-    n: '03',
-    title: 'Review and download',
-    desc: "You get a private tracking link. Review your files, request one round of revisions, then download and go.",
-  },
-]
+import { useTranslation } from 'react-i18next'
 
 export default function HowItWorksSection() {
+  const { t } = useTranslation()
+  const steps = t('howItWorks.steps', { returnObjects: true }) as Array<{ n: string; title: string; desc: string }>
+
   return (
     <section id="how-it-works" className="how-it-works" aria-labelledby="how-title">
       <div className="container">
         <div className="section-header">
-          <span className="section-label">How it works</span>
+          <span className="section-label">{t('howItWorks.label')}</span>
           <h2 id="how-title" className="section-title">
-            From brief to deliverable<br />in three steps
+            {t('howItWorks.title').split('\n').map((line, i) => (
+              <span key={i}>{line}{i === 0 && <br />}</span>
+            ))}
           </h2>
-          <p className="section-desc">
-            Simple, fast, and transparent. No hidden steps, no chasing replies.
-          </p>
+          <p className="section-desc">{t('howItWorks.subtitle')}</p>
         </div>
 
         <div className="steps-grid">
-          {STEPS.map((step) => (
+          {steps.map((step) => (
             <div key={step.n} className="step-card">
               <div className="step-number" aria-hidden="true">{step.n}</div>
               <h3 className="step-title">{step.title}</h3>

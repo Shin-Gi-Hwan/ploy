@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 type SpinnerSize = 'sm' | 'md' | 'lg'
 
 interface SpinnerProps {
@@ -6,11 +8,14 @@ interface SpinnerProps {
   label?: string
 }
 
-export default function Spinner({ size = 'md', fullPage = false, label = 'Loading…' }: SpinnerProps) {
+export default function Spinner({ size = 'md', fullPage = false, label }: SpinnerProps) {
+  const { t } = useTranslation()
+  const ariaLabel = label ?? t('common.loading')
+
   const el = (
     <div
       role="status"
-      aria-label={label}
+      aria-label={ariaLabel}
       className={`spinner spinner-${size}`}
     />
   )
