@@ -51,9 +51,7 @@ export default function Tracking() {
 
     getTracking(token)
       .then(setData)
-      .catch((err) => {
-        if (err?.response?.status === 404) setNotFound(true)
-      })
+      .catch(() => setNotFound(true))
       .finally(() => setLoading(false))
   }, [token])
 
