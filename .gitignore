@@ -51,3 +51,4 @@ uploads/
 
 ### Claude Code local config ###
 .claude/
+.DS_Store
