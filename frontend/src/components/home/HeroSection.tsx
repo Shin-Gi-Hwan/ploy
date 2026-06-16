@@ -29,7 +29,7 @@ export default function HeroSection() {
               Start a Project →
             </Button>
             <Button as="a" href="/#how-it-works" variant="secondary" size="lg"
-              onClick={(e: React.MouseEvent) => {
+              onClick={(e) => {
                 e.preventDefault()
                 document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })
               }}
