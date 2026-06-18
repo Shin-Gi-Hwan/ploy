@@ -76,33 +76,27 @@ export default function Register() {
   return (
     <AuthLayout>
       {/* ── Brand ── */}
-      <div className="flex flex-col items-center mb-8">
-        <Link to="/" className="flex flex-col items-center gap-3 hover:opacity-80 transition-opacity">
-          <PloyMark size={38} />
-          <span
-            className="text-[22px] font-bold tracking-[0.14em] dark:text-white"
-            style={{ color: '#111a11', letterSpacing: '0.14em' }}
-          >
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 28 }}>
+        <Link to="/" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
+          <PloyMark size={40} />
+          <span style={{ fontSize: 22, fontWeight: 700, letterSpacing: '0.14em', color: '#111a11' }}>
             PLOY
           </span>
         </Link>
-        <p
-          className="mt-1.5 text-[12.5px] text-center leading-snug dark:text-[#8a9e8a]"
-          style={{ color: '#6b7b6b' }}
-        >
+        <p style={{ marginTop: 6, fontSize: 12.5, color: '#6b7b6b', textAlign: 'center', lineHeight: 1.4 }}>
           {isKo ? '크리에이티브 작업, 전문적으로 진행합니다.' : 'Creative Work, Professionally Delivered.'}
         </p>
       </div>
 
       {/* ── Form ── */}
-      <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-3">
+      <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+
         {/* Error banner */}
         <AnimatePresence>
           {error && (
             <motion.div
               role="alert"
-              className="rounded-xl px-4 py-3 text-[13px]"
-              style={{ background: '#fef2f2', color: '#b91c1c', border: '1px solid #fecaca' }}
+              style={{ background: '#fef2f2', color: '#b91c1c', border: '1px solid #fecaca', borderRadius: 12, padding: '10px 14px', fontSize: 13 }}
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
@@ -157,23 +151,28 @@ export default function Register() {
           leftIcon={<IconLock />}
         />
 
-        {/* Consent note */}
-        <p
-          className="text-[11px] text-center leading-relaxed dark:text-[#6a7e6a]"
-          style={{ color: '#9aaa9a' }}
-        >
+        {/* Consent */}
+        <p style={{ fontSize: 11, color: '#9aaa9a', textAlign: 'center', lineHeight: 1.6, margin: '2px 0' }}>
           {t('auth.registerConsent')}
         </p>
 
-        {/* Register — mint CTA */}
+        {/* Submit */}
         <motion.button
           type="submit"
           disabled={loading}
-          className="mt-1 w-full rounded-xl py-[11px] text-[14px] font-semibold disabled:opacity-50"
           style={{
+            marginTop: 4,
+            width: '100%',
+            padding: '11px 0',
+            borderRadius: 12,
+            border: 'none',
             background: '#3DD9B3',
             color: '#0d2a1e',
+            fontSize: 14,
+            fontWeight: 600,
             letterSpacing: '0.01em',
+            cursor: loading ? 'not-allowed' : 'pointer',
+            opacity: loading ? 0.6 : 1,
           }}
           whileHover={{ scale: loading ? 1 : 1.012 }}
           whileTap={{ scale: loading ? 1 : 0.988 }}
@@ -183,22 +182,27 @@ export default function Register() {
         </motion.button>
 
         {/* Divider */}
-        <div className="flex items-center gap-3 my-0.5">
-          <div className="flex-1 h-px bg-[#e8ece8] dark:bg-[#252e25]" />
-          <span className="text-[11px]" style={{ color: '#9aaa9a' }}>
-            {t('auth.or', '또는')}
-          </span>
-          <div className="flex-1 h-px bg-[#e8ece8] dark:bg-[#252e25]" />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '2px 0' }}>
+          <div style={{ flex: 1, height: 1, background: '#e8ece8' }} />
+          <span style={{ fontSize: 11, color: '#9aaa9a' }}>{t('auth.or', '또는')}</span>
+          <div style={{ flex: 1, height: 1, background: '#e8ece8' }} />
         </div>
 
         {/* Login link */}
-        <Link to="/login">
+        <Link to="/login" style={{ textDecoration: 'none' }}>
           <motion.div
-            className="w-full rounded-xl py-[11px] text-[14px] font-medium text-center cursor-pointer"
             style={{
+              width: '100%',
+              padding: '11px 0',
+              borderRadius: 12,
               border: '1.5px solid #d0d8d0',
               color: '#3a4a3a',
+              fontSize: 14,
+              fontWeight: 500,
+              textAlign: 'center',
               letterSpacing: '0.01em',
+              cursor: 'pointer',
+              boxSizing: 'border-box',
             }}
             whileHover={{ borderColor: '#3DD9B3', color: '#0d6b50', scale: 1.008 }}
             whileTap={{ scale: 0.988 }}
@@ -210,17 +214,17 @@ export default function Register() {
       </form>
 
       {/* ── Language switcher ── */}
-      <div className="mt-7 flex items-center justify-center gap-2 text-[11.5px]" style={{ color: '#9aaa9a' }}>
+      <div style={{ marginTop: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontSize: 11.5, color: '#9aaa9a' }}>
         <button
           onClick={() => i18n.changeLanguage('ko')}
-          className={`transition-colors hover:text-[#3DD9B3] ${isKo ? 'font-semibold text-[#3DD9B3]' : ''}`}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 11.5, color: isKo ? '#3DD9B3' : '#9aaa9a', fontWeight: isKo ? 600 : 400, padding: 0 }}
         >
           한국어
         </button>
         <span>·</span>
         <button
           onClick={() => i18n.changeLanguage('en')}
-          className={`transition-colors hover:text-[#3DD9B3] ${!isKo ? 'font-semibold text-[#3DD9B3]' : ''}`}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 11.5, color: !isKo ? '#3DD9B3' : '#9aaa9a', fontWeight: !isKo ? 600 : 400, padding: 0 }}
         >
           English
         </button>

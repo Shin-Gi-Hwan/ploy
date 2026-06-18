@@ -7,18 +7,11 @@ import { getErrorMessage } from '../lib/api'
 import Input from '../components/ui/Input'
 import AuthLayout from '../components/auth/AuthLayout'
 
-// ── P + Layer logo mark ───────────────────────────────────────────────────────
-// Three stacked rectangles offset diagonally — representing layered design files
-// (slides, business cards, e-books). Mint front, darker layers behind.
+// ── PloyMark logo ─────────────────────────────────────────────────────────────
 
 export function PloyMark({ size = 32 }: { size?: number }) {
-  const w = 20          // width of each layer
-  const h = 15          // height of each layer
-  const gap = 5         // diagonal offset per layer
-  const rx = 2.8        // corner radius
-  const vw = w + gap * 2
-  const vh = h + gap * 2
-
+  const w = 20; const h = 15; const gap = 5; const rx = 2.8
+  const vw = w + gap * 2; const vh = h + gap * 2
   return (
     <svg
       width={size}
@@ -27,11 +20,8 @@ export function PloyMark({ size = 32 }: { size?: number }) {
       fill="none"
       aria-hidden="true"
     >
-      {/* Back layer — dark forest green */}
       <rect x={gap * 2} y={gap * 2} width={w} height={h} rx={rx} fill="#1b3d2a" />
-      {/* Mid layer — medium mint */}
       <rect x={gap}     y={gap}     width={w} height={h} rx={rx} fill="#2dba9a" />
-      {/* Front layer — brand mint */}
       <rect x={0}       y={0}       width={w} height={h} rx={rx} fill="#3DD9B3" />
     </svg>
   )
@@ -100,33 +90,27 @@ export default function Login() {
   return (
     <AuthLayout>
       {/* ── Brand ── */}
-      <div className="flex flex-col items-center mb-8">
-        <Link to="/" className="flex flex-col items-center gap-3 hover:opacity-80 transition-opacity">
-          <PloyMark size={38} />
-          <span
-            className="text-[22px] font-bold tracking-[0.14em] dark:text-white"
-            style={{ color: '#111a11', letterSpacing: '0.14em' }}
-          >
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 28 }}>
+        <Link to="/" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
+          <PloyMark size={40} />
+          <span style={{ fontSize: 22, fontWeight: 700, letterSpacing: '0.14em', color: '#111a11' }}>
             PLOY
           </span>
         </Link>
-        <p
-          className="mt-1.5 text-[12.5px] text-center leading-snug dark:text-[#8a9e8a]"
-          style={{ color: '#6b7b6b' }}
-        >
+        <p style={{ marginTop: 6, fontSize: 12.5, color: '#6b7b6b', textAlign: 'center', lineHeight: 1.4 }}>
           {isKo ? '크리에이티브 작업, 전문적으로 진행합니다.' : 'Creative Work, Professionally Delivered.'}
         </p>
       </div>
 
       {/* ── Form ── */}
-      <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-3">
+      <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+
         {/* Error banner */}
         <AnimatePresence>
           {error && (
             <motion.div
               role="alert"
-              className="rounded-xl px-4 py-3 text-[13px]"
-              style={{ background: '#fef2f2', color: '#b91c1c', border: '1px solid #fecaca' }}
+              style={{ background: '#fef2f2', color: '#b91c1c', border: '1px solid #fecaca', borderRadius: 12, padding: '10px 14px', fontSize: 13 }}
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
@@ -159,38 +143,41 @@ export default function Login() {
           leftIcon={<IconLock />}
         />
 
-        {/* Remember me + Forgot password */}
-        <div className="flex items-center justify-between">
-          <label className="flex items-center gap-2 cursor-pointer select-none">
+        {/* Remember me + Forgot */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 7, cursor: 'pointer', userSelect: 'none' }}>
             <input
               type="checkbox"
               checked={rememberMe}
               onChange={e => setRememberMe(e.target.checked)}
-              className="w-3.5 h-3.5 rounded cursor-pointer"
-              style={{ accentColor: '#3DD9B3' }}
+              style={{ width: 14, height: 14, accentColor: '#3DD9B3', cursor: 'pointer' }}
             />
-            <span className="text-[12px]" style={{ color: '#8a9a8a' }}>
+            <span style={{ fontSize: 12, color: '#7a8a7a' }}>
               {t('auth.rememberMe', '로그인 상태 유지')}
             </span>
           </label>
-          <Link
-            to="#"
-            className="text-[12px] hover:opacity-70 transition-opacity"
-            style={{ color: '#8a9a8a' }}
-          >
+          <Link to="#" style={{ fontSize: 12, color: '#7a8a7a', textDecoration: 'none' }}>
             {t('auth.forgotPassword', '비밀번호 찾기')}
           </Link>
         </div>
 
-        {/* Sign in — mint CTA */}
+        {/* Submit */}
         <motion.button
           type="submit"
           disabled={loading}
-          className="mt-1 w-full rounded-xl py-[11px] text-[14px] font-semibold disabled:opacity-50"
           style={{
-            background: loading ? '#3DD9B3' : '#3DD9B3',
+            marginTop: 4,
+            width: '100%',
+            padding: '11px 0',
+            borderRadius: 12,
+            border: 'none',
+            background: '#3DD9B3',
             color: '#0d2a1e',
+            fontSize: 14,
+            fontWeight: 600,
             letterSpacing: '0.01em',
+            cursor: loading ? 'not-allowed' : 'pointer',
+            opacity: loading ? 0.6 : 1,
           }}
           whileHover={{ scale: loading ? 1 : 1.012 }}
           whileTap={{ scale: loading ? 1 : 0.988 }}
@@ -200,22 +187,27 @@ export default function Login() {
         </motion.button>
 
         {/* Divider */}
-        <div className="flex items-center gap-3 my-0.5">
-          <div className="flex-1 h-px bg-[#e8ece8] dark:bg-[#252e25]" />
-          <span className="text-[11px]" style={{ color: '#9aaa9a' }}>
-            {t('auth.or', '또는')}
-          </span>
-          <div className="flex-1 h-px bg-[#e8ece8] dark:bg-[#252e25]" />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '2px 0' }}>
+          <div style={{ flex: 1, height: 1, background: '#e8ece8' }} />
+          <span style={{ fontSize: 11, color: '#9aaa9a' }}>{t('auth.or', '또는')}</span>
+          <div style={{ flex: 1, height: 1, background: '#e8ece8' }} />
         </div>
 
         {/* Register link */}
-        <Link to="/register">
+        <Link to="/register" style={{ textDecoration: 'none' }}>
           <motion.div
-            className="w-full rounded-xl py-[11px] text-[14px] font-medium text-center cursor-pointer"
             style={{
+              width: '100%',
+              padding: '11px 0',
+              borderRadius: 12,
               border: '1.5px solid #d0d8d0',
               color: '#3a4a3a',
+              fontSize: 14,
+              fontWeight: 500,
+              textAlign: 'center',
               letterSpacing: '0.01em',
+              cursor: 'pointer',
+              boxSizing: 'border-box',
             }}
             whileHover={{ borderColor: '#3DD9B3', color: '#0d6b50', scale: 1.008 }}
             whileTap={{ scale: 0.988 }}
@@ -227,17 +219,17 @@ export default function Login() {
       </form>
 
       {/* ── Language switcher ── */}
-      <div className="mt-7 flex items-center justify-center gap-2 text-[11.5px]" style={{ color: '#9aaa9a' }}>
+      <div style={{ marginTop: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontSize: 11.5, color: '#9aaa9a' }}>
         <button
           onClick={() => i18n.changeLanguage('ko')}
-          className={`transition-colors hover:text-[#3DD9B3] ${isKo ? 'font-semibold text-[#3DD9B3]' : ''}`}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 11.5, color: isKo ? '#3DD9B3' : '#9aaa9a', fontWeight: isKo ? 600 : 400, padding: 0 }}
         >
           한국어
         </button>
         <span>·</span>
         <button
           onClick={() => i18n.changeLanguage('en')}
-          className={`transition-colors hover:text-[#3DD9B3] ${!isKo ? 'font-semibold text-[#3DD9B3]' : ''}`}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 11.5, color: !isKo ? '#3DD9B3' : '#9aaa9a', fontWeight: !isKo ? 600 : 400, padding: 0 }}
         >
           English
         </button>
