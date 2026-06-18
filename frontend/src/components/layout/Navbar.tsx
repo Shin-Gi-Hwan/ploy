@@ -1,19 +1,28 @@
 import { useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import Button from '../ui/Button'
+import { useAuth } from '../../context/AuthContext'
 
 export default function Navbar() {
   const [open, setOpen] = useState(false)
   const location = useLocation()
+  const navigate = useNavigate()
   const isHome = location.pathname === '/'
   const { t, i18n } = useTranslation()
+  const { isAuthenticated, user, logout } = useAuth()
 
   const NAV_LINKS = [
     { label: t('nav.howItWorks'), href: '/#how-it-works' },
     { label: t('nav.services'),   href: '/#services' },
     { label: t('nav.reviews'),    href: '/#reviews' },
   ]
+
+  const dashboardHref = user?.role === 'ADMIN'
+    ? '/admin'
+    : user?.role === 'FREELANCER'
+      ? '/freelancer'
+      : '/client'
 
   function scrollTo(e: React.MouseEvent<HTMLAnchorElement>, href: string) {
     if (href.startsWith('/#') && isHome) {
@@ -26,6 +35,12 @@ export default function Navbar() {
 
   function toggleLang() {
     i18n.changeLanguage(i18n.language === 'ko' ? 'en' : 'ko')
+  }
+
+  function handleLogout() {
+    logout()
+    navigate('/')
+    setOpen(false)
   }
 
   return (
@@ -54,9 +69,6 @@ export default function Navbar() {
 
           {/* Desktop actions */}
           <div className="navbar-actions">
-            <Link to="/track/demo" className="navbar-link">
-              {t('nav.trackProject')}
-            </Link>
             {/* Language switcher */}
             <button
               onClick={toggleLang}
@@ -71,9 +83,30 @@ export default function Navbar() {
             >
               {i18n.language === 'ko' ? 'EN' : '한'}
             </button>
-            <Button as="a" href="/start" size="sm">
-              {t('nav.startProject')}
-            </Button>
+
+            {isAuthenticated ? (
+              <>
+                <Link to={dashboardHref} className="navbar-link">
+                  {t('nav.dashboard')}
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="navbar-link"
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-sans)' }}
+                >
+                  {t('auth.logout')}
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" className="navbar-link">
+                  {t('nav.login')}
+                </Link>
+                <Button as="a" href="/register" size="sm">
+                  {t('nav.startProject')}
+                </Button>
+              </>
+            )}
           </div>
 
           {/* Mobile hamburger */}
@@ -106,9 +139,6 @@ export default function Navbar() {
               {link.label}
             </a>
           ))}
-          <a href="/start" className="navbar-mobile-link" onClick={() => setOpen(false)}>
-            {t('nav.trackProject')}
-          </a>
           <button
             onClick={() => { toggleLang(); setOpen(false) }}
             className="navbar-mobile-link"
@@ -120,11 +150,40 @@ export default function Navbar() {
           >
             {i18n.language === 'ko' ? t('lang.en') : t('lang.ko')}
           </button>
-          <div style={{ paddingTop: 'var(--space-2)' }}>
-            <Button as="a" href="/start" size="md" style={{ width: '100%' }}>
-              {t('nav.startProject')}
-            </Button>
-          </div>
+
+          {isAuthenticated ? (
+            <>
+              <Link
+                to={dashboardHref}
+                className="navbar-mobile-link"
+                onClick={() => setOpen(false)}
+              >
+                {t('nav.dashboard')}
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="navbar-mobile-link"
+                style={{ background: 'none', border: 'none', textAlign: 'left', cursor: 'pointer', fontFamily: 'var(--font-sans)', fontSize: 15, color: 'var(--text-secondary)', padding: 0 }}
+              >
+                {t('auth.logout')}
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                className="navbar-mobile-link"
+                onClick={() => setOpen(false)}
+              >
+                {t('nav.login')}
+              </Link>
+              <div style={{ paddingTop: 'var(--space-2)' }}>
+                <Button as="a" href="/register" size="md" style={{ width: '100%' }}>
+                  {t('nav.startProject')}
+                </Button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </header>

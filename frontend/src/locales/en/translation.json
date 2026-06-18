@@ -8,7 +8,9 @@
     "ariaLabel": "Main navigation",
     "ariaHome": "Ploy home",
     "ariaOpenMenu": "Open menu",
-    "ariaCloseMenu": "Close menu"
+    "ariaCloseMenu": "Close menu",
+    "login": "Sign in",
+    "dashboard": "Dashboard"
   },
   "footer": {
     "tagline1": "Done-for-you design work.",
@@ -48,7 +50,8 @@
     "refreshing": "Refreshing…",
     "download": "Download",
     "version": "v{{version}}",
-    "changeStatus": "Change status for {{name}}'s project"
+    "changeStatus": "Change status for {{name}}'s project",
+    "logout": "Sign out"
   },
   "hero": {
     "badge": "Done-for-you design work",
@@ -189,32 +192,122 @@
     }
   },
   "status": {
-    "BRIEF_SUBMITTED": "Brief Received",
+    "REQUESTED": "Requested",
+    "REVIEWING": "Under Review",
+    "APPROVED": "Approved",
+    "ASSIGNED": "Assigned",
     "IN_PROGRESS": "In Progress",
     "REVIEW": "Ready for Review",
+    "COMPLETED": "Completed",
+    "REJECTED": "Rejected",
+    "BRIEF_SUBMITTED": "Brief Received",
     "DELIVERED": "Delivered",
     "descriptions": {
-      "BRIEF_SUBMITTED": "We've received your brief and it's in the queue.",
+      "REQUESTED": "Your service request has been submitted and is awaiting review.",
+      "REVIEWING": "Our team is reviewing your request.",
+      "APPROVED": "Your request has been approved. Assigning a specialist now.",
+      "ASSIGNED": "A freelancer has been assigned. Work will begin shortly.",
       "IN_PROGRESS": "Your project is actively being worked on.",
       "REVIEW": "Your files are ready. Download below and let us know if you need a revision.",
-      "DELIVERED": "Project complete. Thank you for working with us!"
+      "COMPLETED": "Project complete. Thank you for working with us!",
+      "REJECTED": "Your request was not approved. Please check your messages for details.",
+      "BRIEF_SUBMITTED": "We've received your brief and it's in the queue.",
+      "DELIVERED": "Delivered"
     }
   },
   "type": {
     "BUSINESS_CARD": "Business Card",
     "PRESENTATION": "Presentation",
-    "WEBSITE": "Website"
+    "WEBSITE": "Website",
+    "LOGO": "Logo Design",
+    "DETAIL_PAGE": "Detail Page",
+    "MOBILE_APP": "Mobile App"
+  },
+  "auth": {
+    "brandTagline": "Smart outsourcing,\nmanaged professionally.",
+    "features": [
+      "Connect with professional designers & developers",
+      "Real-time project status tracking",
+      "Secure file delivery system",
+      "Transparent communication"
+    ],
+    "loginTitle": "Sign in",
+    "loginSubtitle": "Log in to manage your projects.",
+    "registerTitle": "Create an account",
+    "registerSubtitle": "Start working with professionals today.",
+    "email": "Email address",
+    "emailPlaceholder": "you@example.com",
+    "password": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "newPasswordPlaceholder": "At least 8 characters",
+    "confirmPassword": "Confirm password",
+    "confirmPasswordPlaceholder": "Re-enter your password",
+    "name": "Full name",
+    "namePlaceholder": "Jane Smith",
+    "loginSubmit": "Sign in →",
+    "registerSubmit": "Create account →",
+    "noAccount": "Don't have an account?",
+    "registerLink": "Sign up",
+    "forgotPassword": "Forgot password?",
+    "rememberMe": "Keep me signed in",
+    "or": "or",
+    "hasAccount": "Already have an account?",
+    "loginLink": "Sign in",
+    "registerConsent": "By signing up you agree to our Terms of Service and Privacy Policy.",
+    "passwordMismatch": "Passwords do not match.",
+    "passwordTooShort": "Password must be at least 8 characters.",
+    "logout": "Sign out"
+  },
+  "dashboard": {
+    "greeting": "Welcome back, {{name}} 👋",
+    "newRequest": "New service request →",
+    "recentProjects": "Recent projects",
+    "viewAll": "View all",
+    "view": "View",
+    "noProjects": "No projects yet. Submit your first service request to get started!",
+    "roleClient": "Client",
+    "roleFreelancer": "Freelancer",
+    "roleAdmin": "Admin",
+    "navAria": "Dashboard navigation",
+    "stats": {
+      "total": "Total projects",
+      "active": "In progress",
+      "completed": "Completed"
+    },
+    "nav": {
+      "overview": "Dashboard",
+      "myProjects": "My Projects",
+      "newRequest": "New Request",
+      "orders": "Orders",
+      "messages": "Messages",
+      "files": "Files",
+      "reviews": "Reviews",
+      "settings": "Settings",
+      "assignedProjects": "Assigned Projects",
+      "deliverables": "Deliverables",
+      "serviceRequests": "Service Requests",
+      "projects": "Projects",
+      "users": "Users",
+      "products": "Products",
+      "analytics": "Analytics"
+    },
+    "freelancer": {
+      "noProjects": "No projects assigned yet."
+    }
   },
   "errors": {
-    "tooManyRequests": "You've submitted too many requests recently. Please wait an hour and try again.",
+    "tooManyRequests": "You've submitted too many requests recently. Please wait and try again.",
     "notFound": "Not found.",
-    "invalidCredentials": "Invalid credentials.",
-    "somethingWentWrong": "Something went wrong."
+    "invalidCredentials": "Invalid email or password.",
+    "emailTaken": "An account with this email already exists.",
+    "somethingWentWrong": "Something went wrong. Please try again."
   },
   "common": {
     "home": "Home",
     "loading": "Loading…",
-    "breadcrumbAria": "Breadcrumb"
+    "breadcrumbAria": "Breadcrumb",
+    "close": "Close",
+    "openMenu": "Open menu"
   },
   "lang": {
     "ko": "한국어",

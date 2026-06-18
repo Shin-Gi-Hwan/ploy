@@ -90,15 +90,21 @@ public class AdminProjectService {
     }
 
     private AdminProjectResponse toAdminResponse(Project p) {
-        var client = p.getClient();
-        var clientView = new ClientView(client.getId(), client.getName(), client.getEmail(), client.getPhone());
+        ClientView clientView = null;
+        if (p.getClient() != null) {
+            var c = p.getClient();
+            clientView = new ClientView(c.getId(), c.getName(), c.getEmail(), c.getPhone());
+        } else if (p.getMember() != null) {
+            var m = p.getMember();
+            clientView = new ClientView(m.getId(), m.getName(), m.getEmail(), null);
+        }
 
         var deliverableViews = p.getDeliverables().stream()
                 .map(d -> {
                     String downloadUrl = "/api/files/" + p.getMagicToken() + "/" + d.getId();
                     return new DeliverableView(
                             d.getId(), d.getVersion(), d.getNote(),
-                            downloadUrl, d.getUploadedAt().toString());
+                            downloadUrl, d.getUploadedAt() != null ? d.getUploadedAt().toString() : null);
                 })
                 .toList();
 

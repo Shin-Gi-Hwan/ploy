@@ -13,11 +13,15 @@ import java.util.UUID;
 /*
  * Project state machine:
  *
- *   BRIEF_SUBMITTED → IN_PROGRESS → REVIEW → DELIVERED
+ *  Legacy (intake form, no auth):
+ *    BRIEF_SUBMITTED → IN_PROGRESS → REVIEW → DELIVERED
  *
- * Status is admin-driven. Client sees current status on the tracking page.
- * magicToken is a UUID generated at creation; used as the client's tracking link
- * key. Does not expire in v1 (explicit design decision — revisit in v2).
+ *  New (service request, member auth):
+ *    REQUESTED → REVIEWING → APPROVED → ASSIGNED → IN_PROGRESS → REVIEW → COMPLETED
+ *                                                             └→ REJECTED (at any point before COMPLETED)
+ *
+ * member is null for projects created via the legacy intake form.
+ * client is null for projects created via the member service-request flow.
  */
 @Entity
 @Table(name = "projects")
@@ -28,13 +32,27 @@ public class Project {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "client_id", nullable = false)
+    // ── Legacy: guest intake form ────────────────────────────────────────────
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "client_id")
     private Client client;
+
+    // ── New: registered member ───────────────────────────────────────────────
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    // Assigned freelancer (set after ASSIGNED status)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "freelancer_id")
+    private Member freelancer;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ProjectType type;
+
+    @Column
+    private String title;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -73,11 +91,24 @@ public class Project {
         return deliverables.isEmpty() ? null : deliverables.get(0);
     }
 
+    /** Convenience: name of the person who owns this project */
+    public String getOwnerName() {
+        if (member != null) return member.getName();
+        if (client != null) return client.getName();
+        return "Unknown";
+    }
+
     public enum ProjectType {
-        BUSINESS_CARD, PRESENTATION, WEBSITE
+        // Original types
+        BUSINESS_CARD, PRESENTATION, WEBSITE,
+        // New types (Phase 1)
+        LOGO, DETAIL_PAGE, MOBILE_APP
     }
 
     public enum ProjectStatus {
-        BRIEF_SUBMITTED, IN_PROGRESS, REVIEW, DELIVERED
+        // Legacy statuses (intake form flow)
+        BRIEF_SUBMITTED, IN_PROGRESS, REVIEW, DELIVERED,
+        // New statuses (member service-request flow)
+        REQUESTED, REVIEWING, APPROVED, ASSIGNED, COMPLETED, REJECTED
     }
 }
