@@ -10,10 +10,10 @@ export default function Home() {
   return (
     <Layout>
       <HeroSection />
-      <HowItWorksSection />
-      <ServicesSection />
       {/* Pass MOCK_REVIEWS now; swap for API data later without changing ReviewMarquee */}
       <ReviewMarquee reviews={MOCK_REVIEWS} />
+      <ServicesSection />
+      <HowItWorksSection />
       <CtaSection />
     </Layout>
   )
