@@ -1,8 +1,9 @@
 import { useTranslation } from 'react-i18next'
 import type { Review } from '../../lib/mock'
+import { buildHybridReviews } from '../../lib/mock'
 
 interface ReviewMarqueeProps {
-  reviews: Review[]
+  realReviews?: Review[]
 }
 
 function buildRows(reviews: Review[]) {
@@ -29,7 +30,7 @@ function StarRating({ rating }: { rating: number }) {
 
 function ReviewCard({ review }: { review: Review }) {
   return (
-    <article className="review-card" aria-label={`Review by ${review.author}`}>
+    <article className="review-card" aria-label={`${review.author} 리뷰`}>
       <StarRating rating={review.rating} />
       <p className="review-text">"{review.text}"</p>
       <footer className="review-footer">
@@ -41,8 +42,9 @@ function ReviewCard({ review }: { review: Review }) {
   )
 }
 
-export default function ReviewMarquee({ reviews }: ReviewMarqueeProps) {
+export default function ReviewMarquee({ realReviews = [] }: ReviewMarqueeProps) {
   const { t } = useTranslation()
+  const reviews = buildHybridReviews(realReviews)
   const { row1, row2 } = buildRows(reviews)
 
   return (

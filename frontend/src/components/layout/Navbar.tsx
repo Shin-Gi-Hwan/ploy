@@ -13,9 +13,11 @@ export default function Navbar() {
   const { isAuthenticated, user, logout } = useAuth()
 
   const NAV_LINKS = [
-    { label: t('nav.howItWorks'), href: '/#how-it-works' },
-    { label: t('nav.services'),   href: '/#services' },
+    { label: t('nav.portfolio'),  href: '/#portfolio' },
     { label: t('nav.reviews'),    href: '/#reviews' },
+    { label: t('nav.services'),   href: '/#services' },
+    { label: t('nav.howItWorks'), href: '/#how-it-works' },
+    { label: t('nav.faq'),        href: '/#faq' },
   ]
 
   const dashboardHref = user?.role === 'ADMIN'

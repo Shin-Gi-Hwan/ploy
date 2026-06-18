@@ -22,11 +22,11 @@ export default function CtaSection() {
               {t('cta.startProject')}
             </a>
             <a
-              href="/#how-it-works"
+              href="/#portfolio"
               className="btn btn-lg btn-cta-secondary"
               onClick={(e: React.MouseEvent) => {
                 e.preventDefault()
-                document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })
+                document.getElementById('portfolio')?.scrollIntoView({ behavior: 'smooth' })
               }}
             >
               {t('cta.seeHow')}

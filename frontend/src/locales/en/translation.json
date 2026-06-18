@@ -10,7 +10,9 @@
     "ariaOpenMenu": "Open menu",
     "ariaCloseMenu": "Close menu",
     "login": "Sign in",
-    "dashboard": "Dashboard"
+    "dashboard": "Dashboard",
+    "portfolio": "Portfolio",
+    "faq": "FAQ"
   },
   "footer": {
     "tagline1": "Done-for-you design work.",
@@ -128,8 +130,8 @@
     "title2": "one brief away.",
     "subtitle1": "Fill out a short form, and we'll take it from there.",
     "subtitle2": "No design experience. No back-and-forth. Just results.",
-    "startProject": "Start a Project →",
-    "seeHow": "See how it works"
+    "startProject": "Get a free consultation →",
+    "seeHow": "View portfolio"
   },
   "intake": {
     "breadcrumb": "Start a Project",
@@ -316,6 +318,57 @@
       "DETAIL_PAGE": "Detail Page",
       "OTHER": "Other"
     }
+  },
+  "portfolio": {
+    "label": "Portfolio",
+    "title": "See the work\nwe've delivered",
+    "subtitle": "Real deliverables created for real clients. Quality speaks for itself.",
+    "category": {
+      "PPT": "Presentation",
+      "LOGO": "Logo Design",
+      "BUSINESS_CARD": "Business Card",
+      "WEBSITE": "Website",
+      "DETAIL_PAGE": "Detail Page"
+    }
+  },
+  "faq": {
+    "label": "FAQ",
+    "title": "Frequently asked questions",
+    "subtitle": "Everything you need to know before getting started.",
+    "items": [
+      {
+        "q": "How many revisions are included?",
+        "a": "One round of revisions is included with every project. If you need more, we can discuss additional options. The more detail you provide in your brief, the more likely we'll nail it on the first pass."
+      },
+      {
+        "q": "How long does each project take?",
+        "a": "Turnaround times vary by service: Business cards 2–3 days, Presentations 3–5 days, Websites 5–7 days. If you have a tight deadline, mention it in your brief and we'll do our best to accommodate."
+      },
+      {
+        "q": "How does payment work?",
+        "a": "After reviewing your brief, we'll send a quote. Payment is required upfront before work begins. We accept card payments and bank transfers."
+      },
+      {
+        "q": "Who owns the final files?",
+        "a": "Once payment is complete and files are delivered, full ownership transfers to you. Source files (.ai, .psd, .fig, etc.) are included in the delivery."
+      },
+      {
+        "q": "What does the outsourcing process look like?",
+        "a": "Submit brief → Review & quote → Payment → Partner assignment → Production → Delivery → Revision (1 round) → Final files. Simple and transparent at every step."
+      },
+      {
+        "q": "What file formats will I receive?",
+        "a": "You'll receive print-ready and digital formats: PDF, PNG, JPG, and more depending on the service. Websites are delivered as deployable code. Just mention your format requirements in the brief."
+      },
+      {
+        "q": "What if I don't like the direction?",
+        "a": "Include as many references and details as possible in your brief to help us match your vision. After delivery you have one round of revisions. If there's a larger directional issue, our team will work with you directly to resolve it."
+      },
+      {
+        "q": "How do I track my project status?",
+        "a": "After submitting your brief, you'll receive a personal tracking link. Use it to monitor your project status in real time and download your completed files when they're ready."
+      }
+    ]
   },
   "partnerApply": {
     "title": "Become a Partner",
