@@ -27,10 +27,10 @@ function RequireAuth({ children, role }: { children: React.ReactNode; role?: Use
   }
 
   if (role && user?.role !== role) {
-    // Wrong role — send to their own dashboard
+    // Wrong role — FREELANCER/ADMIN go to their dashboard, regular users go home
     const home = user?.role === 'ADMIN' ? '/admin'
                : user?.role === 'FREELANCER' ? '/freelancer'
-               : '/client'
+               : '/'
     return <Navigate to={home} replace />
   }
 
@@ -40,9 +40,10 @@ function RequireAuth({ children, role }: { children: React.ReactNode; role?: Use
 function PublicOnly({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, user } = useAuth()
   if (!isAuthenticated) return <>{children}</>
+  // FREELANCER/ADMIN go to their dashboard; regular users go to home
   const home = user?.role === 'ADMIN' ? '/admin'
              : user?.role === 'FREELANCER' ? '/freelancer'
-             : '/client'
+             : '/'
   return <Navigate to={home} replace />
 }
 

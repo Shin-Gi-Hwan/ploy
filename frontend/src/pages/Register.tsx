@@ -53,7 +53,7 @@ export default function Register() {
   const [loading, setLoading]   = useState(false)
 
   useEffect(() => {
-    if (isAuthenticated) navigate('/client', { replace: true })
+    if (isAuthenticated) navigate('/', { replace: true })
   }, [isAuthenticated, navigate])
 
   async function handleSubmit(e: React.FormEvent) {
