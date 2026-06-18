@@ -45,9 +45,11 @@ frontend/.env*
 ### Local file storage ###
 uploads/
 
-### Secrets ###
+### Secrets — never commit real credentials ###
 .env
 *.env
+.env.dev
+.env.prod
 
 ### Claude Code local config ###
 .claude/

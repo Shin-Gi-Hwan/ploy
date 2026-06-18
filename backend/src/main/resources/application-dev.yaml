@@ -1,0 +1,37 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# application-dev.yaml — LOCAL DEVELOPMENT overrides
+#
+# Activated by: SPRING_PROFILES_ACTIVE=dev
+#
+# Design goals:
+#   - Verbose logging for debugging
+#   - DDL auto-update (schema changes applied automatically)
+#   - Permissive CORS (accepts localhost Vite dev server)
+#   - Sensible defaults so the app starts without every env var set
+# ──────────────────────────────────────────────────────────────────────────────
+
+spring:
+  # ── Database ────────────────────────────────────────────────────────────────
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:ploy}
+    username: ${DB_USERNAME:ploy}
+    password: ${DB_PASSWORD:ploy_dev_password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  # ── JPA / Hibernate ─────────────────────────────────────────────────────────
+  jpa:
+    hibernate:
+      ddl-auto: update          # Auto-create / alter tables on startup
+    show-sql: true              # Print SQL to console
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true        # Pretty-print SQL
+
+# ── Logging ───────────────────────────────────────────────────────────────────
+logging:
+  level:
+    root: INFO
+    com.prod.ploy: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG

@@ -1,0 +1,87 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# docker-compose.dev.yml — LOCAL DEVELOPMENT stack
+#
+# Usage:
+#   docker compose --env-file .env.dev -f docker-compose.dev.yml up -d
+#   docker compose --env-file .env.dev -f docker-compose.dev.yml down
+#   docker compose --env-file .env.dev -f docker-compose.dev.yml logs -f
+#
+# What this runs:
+#   - MySQL with exposed port 3306 (connect with DBeaver / TablePlus)
+#   - Backend with exposed port 8080 + SPRING_PROFILES_ACTIVE=dev
+#   - Frontend nginx on port 3000 (use port 5173 for Vite hot-reload instead)
+#
+# For frontend hot-reload (recommended):
+#   cd frontend && npm run dev    (runs on http://localhost:5173)
+#   The frontend container below is optional in that case.
+# ──────────────────────────────────────────────────────────────────────────────
+
+services:
+
+  # ── MySQL ──────────────────────────────────────────────────────────────────
+  mysql:
+    image: mysql:8.4
+    container_name: ploy-mysql-dev
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "3306:3306"               # Exposed so devs can inspect with GUI tools
+    volumes:
+      - mysql_dev_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  # ── Backend (Spring Boot) ──────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ploy-backend-dev
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      DB_HOST: mysql                  # Override .env.dev's "localhost"
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRY_MS: ${JWT_EXPIRY_MS}
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      ADMIN_USERNAME: ${ADMIN_USERNAME}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      MAIL_FROM: ${MAIL_FROM}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      FRONTEND_URL: ${FRONTEND_URL}
+      STORAGE_PATH: /data/uploads
+    ports:
+      - "8080:8080"               # Exposed for direct API calls / Postman
+    volumes:
+      - uploads_dev:/data/uploads
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ── Frontend (nginx) ───────────────────────────────────────────────────────
+  # Optional: use `npm run dev` for hot-reload instead.
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: ploy-frontend-dev
+    ports:
+      - "3000:80"                 # Port 3000 to avoid conflict with prod
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  mysql_dev_data:
+  uploads_dev:

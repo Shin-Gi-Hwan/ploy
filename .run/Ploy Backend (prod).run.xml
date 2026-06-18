@@ -1,0 +1,33 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Ploy Backend (prod)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <module name="ploy.backend.main" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.prod.ploy.PloyApplication" />
+    <option name="VM_PARAMETERS" value="-Dspring.profiles.active=prod" />
+    <option name="PROGRAM_PARAMETERS" value="" />
+    <option name="WORKING_DIRECTORY" value="$MODULE_WORKING_DIR$" />
+    <option name="ENABLE_LAUNCH_OPTIMIZATION" value="true" />
+    <envs>
+      <!-- WARNING: Replace ALL values below with real production credentials.  -->
+      <!-- Do NOT run this config pointing at the live production database       -->
+      <!-- unless you intend to do so. Use the dev config for daily development. -->
+      <env name="SPRING_PROFILES_ACTIVE" value="prod" />
+      <env name="DB_HOST" value="localhost" />
+      <env name="DB_PORT" value="3306" />
+      <env name="DB_NAME" value="ploy_prod" />
+      <env name="DB_USERNAME" value="ploy" />
+      <env name="DB_PASSWORD" value="REPLACE_ME" />
+      <env name="JWT_SECRET" value="REPLACE_ME_generate_with_openssl_rand_base64_64" />
+      <env name="JWT_EXPIRY_MS" value="604800000" />
+      <env name="ADMIN_USERNAME" value="admin" />
+      <env name="ADMIN_PASSWORD" value="REPLACE_ME" />
+      <env name="RESEND_API_KEY" value="REPLACE_ME" />
+      <env name="MAIL_FROM" value="noreply@ploy.kr" />
+      <env name="ADMIN_EMAIL" value="REPLACE_ME" />
+      <env name="FRONTEND_URL" value="https://ploy.kr" />
+      <env name="STORAGE_PATH" value="uploads" />
+    </envs>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
