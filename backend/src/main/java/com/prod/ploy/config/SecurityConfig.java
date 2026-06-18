@@ -49,8 +49,8 @@ public class SecurityConfig {
     @Value("${ploy.admin.password}")
     private String adminPassword;
 
-    @Value("${ploy.base-url:http://localhost:8080}")
-    private String baseUrl;
+    @Value("${ploy.frontend-url:http://localhost:5173}")
+    private String frontendUrl;
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http, JwtAuthFilter jwtAuthFilter) throws Exception {
@@ -78,7 +78,9 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of(
                 "http://localhost:5173",
-                baseUrl
+                "https://ploy.co.kr",
+                "https://www.ploy.co.kr",
+                frontendUrl
         ));
         config.setAllowedMethods(List.of("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
