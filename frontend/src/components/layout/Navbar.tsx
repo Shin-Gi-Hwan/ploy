@@ -20,7 +20,7 @@ export default function Navbar() {
 
   const dashboardHref = user?.role === 'ADMIN'
     ? '/admin'
-    : user?.role === 'FREELANCER'
+    : user?.role === 'OUTSOURCING_PARTNER'
       ? '/freelancer'
       : '/client'
 

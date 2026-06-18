@@ -69,7 +69,7 @@ export default function DashboardLayout({ children, title }: Props) {
 
   const roleLabel = user?.role === 'ADMIN'
     ? t('dashboard.roleAdmin')
-    : user?.role === 'FREELANCER'
+    : user?.role === 'OUTSOURCING_PARTNER'
       ? t('dashboard.roleFreelancer')
       : t('dashboard.roleClient')
 

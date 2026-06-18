@@ -45,7 +45,7 @@ function PublicOnly({ children }: { children: React.ReactNode }) {
   if (!isAuthenticated) return <>{children}</>
   // FREELANCER/ADMIN go to their dashboard; regular users go to home
   const home = user?.role === 'ADMIN' ? '/admin'
-             : user?.role === 'FREELANCER' ? '/freelancer'
+             : user?.role === 'OUTSOURCING_PARTNER' ? '/freelancer'
              : '/'
   return <Navigate to={home} replace />
 }
