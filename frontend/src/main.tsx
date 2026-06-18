@@ -17,6 +17,21 @@ import Partners          from './pages/Partners'
 import PartnerDetail     from './pages/PartnerDetail'
 import PartnerApply      from './pages/PartnerApply'
 
+// ─── Admin Console (Phase 1) ──────────────────────────────────────────────────
+import ConsoleLayout       from './console/components/layout/ConsoleLayout'
+import ConsoleDashboard    from './console/pages/Dashboard'
+import ConsoleUsers        from './console/pages/Users'
+import ConsolePartners     from './console/pages/Partners'
+import ConsoleProducts     from './console/pages/Products'
+import ConsoleOrders       from './console/pages/Orders'
+import ConsoleInquiries    from './console/pages/Inquiries'
+import ConsoleProjects     from './console/pages/Projects'
+import ConsoleChatMonitor  from './console/pages/ChatMonitor'
+import ConsoleReviews      from './console/pages/Reviews'
+import ConsoleNotifications from './console/pages/Notifications'
+import ConsoleAuditLogs    from './console/pages/AuditLogs'
+import ConsoleSettings     from './console/pages/Settings'
+
 import './index.css'
 
 // ─── Route guards ─────────────────────────────────────────────────────────────
@@ -30,8 +45,8 @@ function RequireAuth({ children, role }: { children: React.ReactNode; role?: Use
   }
 
   if (role && user?.role !== role) {
-    // Wrong role — FREELANCER/ADMIN go to their dashboard, regular users go home
-    const home = user?.role === 'ADMIN' ? '/admin'
+    // Wrong role — redirect to the appropriate home for each role
+    const home = user?.role === 'ADMIN' ? '/console'
                : user?.role === 'OUTSOURCING_PARTNER' ? '/freelancer'
                : '/'
     return <Navigate to={home} replace />
@@ -43,8 +58,8 @@ function RequireAuth({ children, role }: { children: React.ReactNode; role?: Use
 function PublicOnly({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, user } = useAuth()
   if (!isAuthenticated) return <>{children}</>
-  // FREELANCER/ADMIN go to their dashboard; regular users go to home
-  const home = user?.role === 'ADMIN' ? '/admin'
+  // Redirect authenticated users away from public-only pages
+  const home = user?.role === 'ADMIN' ? '/console'
              : user?.role === 'OUTSOURCING_PARTNER' ? '/freelancer'
              : '/'
   return <Navigate to={home} replace />
@@ -96,7 +111,23 @@ function AppRoutes() {
         </RequireAuth>
       } />
 
-      {/* Admin — uses own Basic Auth system (existing) */}
+      {/* Admin Console (Phase 1) — JWT + ADMIN role required */}
+      <Route path="/console" element={<RequireAuth role="ADMIN"><ConsoleLayout /></RequireAuth>}>
+        <Route index                  element={<ConsoleDashboard />} />
+        <Route path="users"           element={<ConsoleUsers />} />
+        <Route path="partners"        element={<ConsolePartners />} />
+        <Route path="products"        element={<ConsoleProducts />} />
+        <Route path="orders"          element={<ConsoleOrders />} />
+        <Route path="inquiries"       element={<ConsoleInquiries />} />
+        <Route path="projects"        element={<ConsoleProjects />} />
+        <Route path="chat"            element={<ConsoleChatMonitor />} />
+        <Route path="reviews"         element={<ConsoleReviews />} />
+        <Route path="notifications"   element={<ConsoleNotifications />} />
+        <Route path="audit"           element={<ConsoleAuditLogs />} />
+        <Route path="settings"        element={<ConsoleSettings />} />
+      </Route>
+
+      {/* Legacy admin — uses own Basic Auth system (unchanged) */}
       <Route path="/admin" element={<Admin />} />
 
       {/* Fallback */}
