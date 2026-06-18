@@ -28,15 +28,19 @@ function StarRating({ rating }: { rating: number }) {
   )
 }
 
+function maskName(name: string): string {
+  if (name.length <= 1) return name
+  if (name.length === 2) return name[0] + '*'
+  return name[0] + '*'.repeat(name.length - 2) + name[name.length - 1]
+}
+
 function ReviewCard({ review }: { review: Review }) {
   return (
-    <article className="review-card" aria-label={`${review.author} 리뷰`}>
+    <article className="review-card" aria-label="리뷰">
       <StarRating rating={review.rating} />
       <p className="review-text">"{review.text}"</p>
       <footer className="review-footer">
-        <span className="review-author">{review.author}</span>
-        <span className="review-meta">{review.role}</span>
-        <span className="review-service-badge">{review.service}</span>
+        <span className="review-author">{maskName(review.author)}</span>
       </footer>
     </article>
   )
