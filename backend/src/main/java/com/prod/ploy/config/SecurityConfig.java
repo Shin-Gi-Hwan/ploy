@@ -59,15 +59,13 @@ public class SecurityConfig {
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        // Auth endpoints — always public
-                        .requestMatchers("/api/auth/**").permitAll()
-                        // Legacy admin — HTTP Basic
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        // Member dashboards — JWT required
-                        .requestMatchers("/api/client/**").hasRole("CLIENT")
-                        .requestMatchers("/api/freelancer/**").hasRole("FREELANCER")
-                        // Everything else (public API, React static files)
-                        .anyRequest().permitAll())
+                    .requestMatchers("/api/auth/**").permitAll()
+                    .requestMatchers("/api/partners/**").permitAll()
+                    .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                    .requestMatchers("/api/client/**").hasRole("USER")
+                    .requestMatchers("/api/partner/**").hasAnyRole("USER", "OUTSOURCING_PARTNER")
+                    .requestMatchers("/api/freelancer/**").hasRole("OUTSOURCING_PARTNER")
+                    .anyRequest().permitAll())
                 // Add JWT filter before Spring's username/password filter
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 // Keep HTTP Basic for the in-memory admin user (legacy admin UI)

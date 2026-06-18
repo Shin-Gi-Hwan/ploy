@@ -1,6 +1,6 @@
 // ─── User & Auth ──────────────────────────────────────────────────────────────
 
-export type UserRole = 'CLIENT' | 'FREELANCER' | 'ADMIN'
+export type UserRole = 'USER' | 'OUTSOURCING_PARTNER' | 'ADMIN'
 
 export interface User {
   id: number
@@ -174,6 +174,59 @@ export interface DeliverableUploadResponse {
 
 export interface StatusUpdateRequest {
   status: ProjectStatus
+}
+
+// ─── Partner & Portfolio ──────────────────────────────────────────────────────
+
+export type PortfolioCategory = 'PPT' | 'LOGO' | 'BUSINESS_CARD' | 'WEBSITE' | 'DETAIL_PAGE' | 'OTHER'
+
+export type ApplicationStatus = 'PENDING' | 'APPROVED' | 'REJECTED'
+
+export interface PortfolioItem {
+  id: number
+  title: string
+  description: string | null
+  category: PortfolioCategory
+  thumbnailUrl: string | null
+  fileUrl: string | null
+  createdAt: string
+}
+
+export interface PartnerSummary {
+  id: number
+  displayName: string
+  bio: string | null
+  profileImageUrl: string | null
+  specialties: string | null
+  yearsOfExperience: number | null
+  averageRating: number
+  completedCount: number
+}
+
+export interface PartnerDetail extends PartnerSummary {
+  skills: string | null
+  portfolioItems: PortfolioItem[]
+}
+
+export interface PartnerApplicationRequest {
+  introduction: string
+  portfolioUrl?: string
+  displayName?: string
+  specialties?: string
+  yearsOfExperience?: number
+}
+
+export interface PartnerApplicationResponse {
+  id: number
+  memberId: number
+  memberName: string
+  memberEmail: string
+  status: ApplicationStatus
+  introduction: string
+  portfolioUrl: string | null
+  rejectionReason: string | null
+  appliedAt: string
+  reviewedAt: string | null
 }
 
 // ─── UI helpers ───────────────────────────────────────────────────────────────

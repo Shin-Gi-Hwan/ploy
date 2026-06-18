@@ -13,6 +13,9 @@ import Login             from './pages/Login'
 import Register          from './pages/Register'
 import ClientDashboard   from './pages/client/Dashboard'
 import FreelancerDashboard from './pages/freelancer/Dashboard'
+import Partners          from './pages/Partners'
+import PartnerDetail     from './pages/PartnerDetail'
+import PartnerApply      from './pages/PartnerApply'
 
 import './index.css'
 
@@ -29,7 +32,7 @@ function RequireAuth({ children, role }: { children: React.ReactNode; role?: Use
   if (role && user?.role !== role) {
     // Wrong role — FREELANCER/ADMIN go to their dashboard, regular users go home
     const home = user?.role === 'ADMIN' ? '/admin'
-               : user?.role === 'FREELANCER' ? '/freelancer'
+               : user?.role === 'OUTSOURCING_PARTNER' ? '/freelancer'
                : '/'
     return <Navigate to={home} replace />
   }
@@ -63,12 +66,16 @@ function AppRoutes() {
       {/* Legacy intake — keep accessible but prefer /client/request */}
       <Route path="/start" element={<Intake />} />
 
+      {/* Public partner pages */}
+      <Route path="/partners"     element={<Partners />} />
+      <Route path="/partners/:id" element={<PartnerDetail />} />
+      <Route path="/partner/apply" element={<RequireAuth><PartnerApply /></RequireAuth>} />
+
       {/* Client dashboard */}
       <Route path="/client/*" element={
-        <RequireAuth role="CLIENT">
+        <RequireAuth role="USER">
           <Routes>
             <Route index element={<ClientDashboard />} />
-            {/* Placeholder sub-routes — pages added in future phases */}
             <Route path="projects"  element={<ClientDashboard />} />
             <Route path="request"   element={<ClientDashboard />} />
             <Route path="orders"    element={<ClientDashboard />} />
@@ -80,9 +87,9 @@ function AppRoutes() {
         </RequireAuth>
       } />
 
-      {/* Freelancer dashboard */}
+      {/* Partner dashboard */}
       <Route path="/freelancer/*" element={
-        <RequireAuth role="FREELANCER">
+        <RequireAuth role="OUTSOURCING_PARTNER">
           <Routes>
             <Route index element={<FreelancerDashboard />} />
           </Routes>

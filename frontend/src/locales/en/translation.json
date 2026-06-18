@@ -265,8 +265,8 @@
     "viewAll": "View all",
     "view": "View",
     "noProjects": "No projects yet. Submit your first service request to get started!",
-    "roleClient": "Client",
-    "roleFreelancer": "Freelancer",
+    "roleClient": "Member",
+    "roleFreelancer": "Outsourcing Partner",
     "roleAdmin": "Admin",
     "navAria": "Dashboard navigation",
     "stats": {
@@ -294,6 +294,49 @@
     "freelancer": {
       "noProjects": "No projects assigned yet."
     }
+  },
+  "partners": {
+    "title": "Outsourcing Partners",
+    "subtitle": "Browse our verified professional partners — specialists in logos, presentations, websites, and more.",
+    "noPartners": "No partners available yet.",
+    "years": "{{years}} yrs experience",
+    "completedCount": "{{count}} completed",
+    "rating": "{{rating}} rating",
+    "specialties": "Specialties",
+    "skills": "Tools",
+    "portfolio": "Portfolio",
+    "noPortfolio": "No portfolio items yet.",
+    "viewProfile": "View profile →",
+    "backToList": "← All partners",
+    "category": {
+      "PPT": "Presentation",
+      "LOGO": "Logo",
+      "BUSINESS_CARD": "Business Card",
+      "WEBSITE": "Website",
+      "DETAIL_PAGE": "Detail Page",
+      "OTHER": "Other"
+    }
+  },
+  "partnerApply": {
+    "title": "Become a Partner",
+    "subtitle": "Want to work with Ploy as an outsourcing partner? Fill out the form below — we'll review and get back to you.",
+    "introduction": "Introduction",
+    "introductionPlaceholder": "Tell us about your specialties, experience, and working style. (min. 50 characters)",
+    "portfolioUrl": "Portfolio link (optional)",
+    "portfolioUrlPlaceholder": "https://behance.net/yourprofile",
+    "submit": "Apply as partner →",
+    "submitting": "Submitting…",
+    "successTitle": "Application submitted!",
+    "successDesc": "We'll review your application and contact you by email within 2–3 business days.",
+    "alreadyApplied": "You have already submitted a partner application.",
+    "checkStatus": "Check application status",
+    "status": {
+      "PENDING": "Under review",
+      "APPROVED": "Approved",
+      "REJECTED": "Not approved"
+    },
+    "loginRequired": "You need to be logged in to apply as a partner.",
+    "loginBtn": "Sign in"
   },
   "errors": {
     "tooManyRequests": "You've submitted too many requests recently. Please wait and try again.",

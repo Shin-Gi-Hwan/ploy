@@ -67,7 +67,7 @@ export default function Login() {
     const from = (location.state as { from?: string })?.from
     if (from) { navigate(from, { replace: true }); return }
     navigate(
-      user?.role === 'ADMIN' ? '/admin' : user?.role === 'FREELANCER' ? '/freelancer' : '/',
+      user?.role === 'ADMIN' ? '/admin' : user?.role === 'OUTSOURCING_PARTNER' ? '/freelancer' : '/',
       { replace: true },
     )
   }, [isAuthenticated, user, navigate, location])

@@ -13,6 +13,10 @@ import type {
   ServiceRequestPayload,
   ServiceRequestResponse,
   Project,
+  PartnerSummary,
+  PartnerDetail,
+  PartnerApplicationRequest,
+  PartnerApplicationResponse,
 } from '../types/api'
 
 // ─── Base client ──────────────────────────────────────────────────────────────
@@ -72,6 +76,28 @@ export async function getMyProjects(): Promise<Project[]> {
 
 export async function getMyProject(id: number): Promise<Project> {
   const res = await client.get<Project>(`/client/projects/${id}`)
+  return res.data
+}
+
+// ─── Partner endpoints ────────────────────────────────────────────────────────
+
+export async function getPartners(): Promise<PartnerSummary[]> {
+  const res = await client.get<PartnerSummary[]>('/partners')
+  return res.data
+}
+
+export async function getPartner(id: number): Promise<PartnerDetail> {
+  const res = await client.get<PartnerDetail>(`/partners/${id}`)
+  return res.data
+}
+
+export async function applyAsPartner(data: PartnerApplicationRequest): Promise<PartnerApplicationResponse> {
+  const res = await client.post<PartnerApplicationResponse>('/partner/apply', data)
+  return res.data
+}
+
+export async function getMyPartnerApplication(): Promise<PartnerApplicationResponse> {
+  const res = await client.get<PartnerApplicationResponse>('/partner/application')
   return res.data
 }
 

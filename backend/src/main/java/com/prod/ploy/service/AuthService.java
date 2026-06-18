@@ -30,7 +30,7 @@ public class AuthService {
         member.setName(req.name().trim());
         member.setEmail(req.email().trim().toLowerCase());
         member.setPasswordHash(passwordEncoder.encode(req.password()));
-        member.setRole(Member.UserRole.CLIENT);
+        member.setRole(Member.UserRole.USER);
 
         Member saved = memberRepository.save(member);
         return toAuthResponse(saved);

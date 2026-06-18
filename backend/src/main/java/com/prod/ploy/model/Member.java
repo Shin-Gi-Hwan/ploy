@@ -41,7 +41,7 @@ public class Member implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private UserRole role = UserRole.CLIENT;
+    private UserRole role = UserRole.USER;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -77,6 +77,6 @@ public class Member implements UserDetails {
     public boolean isEnabled()            { return true; }
 
     public enum UserRole {
-        CLIENT, FREELANCER, ADMIN
+        USER, OUTSOURCING_PARTNER, ADMIN
     }
 }

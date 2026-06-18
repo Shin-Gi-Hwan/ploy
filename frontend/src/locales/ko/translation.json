@@ -265,8 +265,8 @@
     "viewAll": "전체 보기",
     "view": "보기",
     "noProjects": "아직 진행 중인 프로젝트가 없습니다. 첫 번째 서비스를 신청해 보세요!",
-    "roleClient": "클라이언트",
-    "roleFreelancer": "프리랜서",
+    "roleClient": "일반 회원",
+    "roleFreelancer": "외주 파트너",
     "roleAdmin": "관리자",
     "navAria": "대시보드 네비게이션",
     "stats": {
@@ -294,6 +294,49 @@
     "freelancer": {
       "noProjects": "배정된 프로젝트가 없습니다."
     }
+  },
+  "partners": {
+    "title": "외주 파트너",
+    "subtitle": "검증된 전문 외주 파트너를 만나보세요. 로고, PPT, 웹사이트 등 다양한 분야의 전문가들이 함께합니다.",
+    "noPartners": "현재 등록된 파트너가 없습니다.",
+    "years": "경력 {{years}}년",
+    "completedCount": "완료 {{count}}건",
+    "rating": "평점 {{rating}}",
+    "specialties": "전문 분야",
+    "skills": "사용 도구",
+    "portfolio": "포트폴리오",
+    "noPortfolio": "아직 등록된 포트폴리오가 없습니다.",
+    "viewProfile": "프로필 보기 →",
+    "backToList": "← 파트너 목록",
+    "category": {
+      "PPT": "PPT",
+      "LOGO": "로고",
+      "BUSINESS_CARD": "명함",
+      "WEBSITE": "웹사이트",
+      "DETAIL_PAGE": "상세 페이지",
+      "OTHER": "기타"
+    }
+  },
+  "partnerApply": {
+    "title": "파트너 신청",
+    "subtitle": "Ploy 외주 파트너로 활동하고 싶으신가요? 아래 양식을 작성해 주세요. 검토 후 안내드리겠습니다.",
+    "introduction": "자기소개",
+    "introductionPlaceholder": "본인의 전문 분야, 경력, 작업 스타일을 자세히 소개해 주세요. (50자 이상)",
+    "portfolioUrl": "포트폴리오 링크 (선택)",
+    "portfolioUrlPlaceholder": "https://behance.net/yourprofile",
+    "submit": "파트너 신청하기 →",
+    "submitting": "신청 중…",
+    "successTitle": "신청이 완료되었습니다!",
+    "successDesc": "검토 후 이메일로 안내드리겠습니다. 보통 2–3 영업일 내에 처리됩니다.",
+    "alreadyApplied": "이미 파트너 신청을 하셨습니다.",
+    "checkStatus": "신청 현황 확인",
+    "status": {
+      "PENDING": "검토 중",
+      "APPROVED": "승인됨",
+      "REJECTED": "반려됨"
+    },
+    "loginRequired": "파트너 신청을 위해 로그인이 필요합니다.",
+    "loginBtn": "로그인하기"
   },
   "errors": {
     "tooManyRequests": "요청이 너무 많습니다. 잠시 후 다시 시도해 주세요.",
