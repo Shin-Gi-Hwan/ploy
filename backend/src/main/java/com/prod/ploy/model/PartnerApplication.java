@@ -39,6 +39,6 @@ public class PartnerApplication {
     void prePersist() { appliedAt = LocalDateTime.now(); }
 
     public enum ApplicationStatus {
-        PENDING, APPROVED, REJECTED
+        PENDING, APPROVED, REJECTED, DISABLED
     }
 }

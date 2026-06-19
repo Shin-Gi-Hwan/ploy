@@ -7,12 +7,15 @@ import com.prod.ploy.model.Member;
 import com.prod.ploy.model.PartnerApplication;
 import com.prod.ploy.model.Project;
 import com.prod.ploy.repository.MemberRepository;
+import com.prod.ploy.repository.OrderRepository;
 import com.prod.ploy.repository.PartnerApplicationRepository;
+import com.prod.ploy.repository.PaymentRepository;
 import com.prod.ploy.repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -25,6 +28,8 @@ public class ConsoleDashboardService {
     private final MemberRepository memberRepository;
     private final ProjectRepository projectRepository;
     private final PartnerApplicationRepository partnerApplicationRepository;
+    private final PaymentRepository paymentRepository;
+    private final OrderRepository orderRepository;
 
     // ── Stats ─────────────────────────────────────────────────────────────────
 
@@ -33,7 +38,11 @@ public class ConsoleDashboardService {
         LocalDateTime startOfYesterday = startOfToday.minusDays(1);
 
         // ── Today's KPIs ──────────────────────────────────────────────────────
-        long todayOrders    = projectRepository.countByCreatedAtAfter(startOfToday);
+        // Today's orders: use real Order table (falls back to project count if no orders exist)
+        long todayOrders    = orderRepository.count() > 0
+                ? orderRepository.searchOrders(null, null, org.springframework.data.domain.PageRequest.of(0, 1)).getTotalElements()
+                : projectRepository.countByCreatedAtAfter(startOfToday);
+        // Use projects as proxy for inquiries (no separate inquiry entity yet)
         long todayInquiries = projectRepository.countByStatusAndCreatedAtAfter(
                                   Project.ProjectStatus.REQUESTED, startOfToday)
                             + projectRepository.countByStatusAndCreatedAtAfter(
@@ -47,8 +56,10 @@ public class ConsoleDashboardService {
               + projectRepository.countByStatus(Project.ProjectStatus.REVIEW);
 
         long pendingApprovals = projectRepository.countByStatus(Project.ProjectStatus.REQUESTED);
-        long newMembers       = memberRepository.countByCreatedAtAfter(startOfToday);
-        long todayRevenue     = 0L; // no payment table yet
+        long newMembers   = memberRepository.countByCreatedAtAfter(startOfToday);
+        // Real payment revenue from Payment table; returns 0 until real payments are processed
+        long todayRevenue = paymentRepository.sumApprovedAmountAfter(
+                com.prod.ploy.model.Payment.PaymentStatus.APPROVED, startOfToday).longValue();
 
         // ── Yesterday's KPIs (for change calculation) ─────────────────────────
         long yesterdayOrders    = projectRepository.countByCreatedAtBetween(startOfYesterday, startOfToday);
@@ -138,8 +149,11 @@ public class ConsoleDashboardService {
                                  Project.ProjectStatus.REQUESTED, start, end)
                            + projectRepository.countByStatusAndCreatedAtBetween(
                                  Project.ProjectStatus.BRIEF_SUBMITTED, start, end);
+            // Real payment revenue per day; 0 until payment data exists
+            long revenue   = paymentRepository.sumApprovedAmountBetween(
+                                 com.prod.ploy.model.Payment.PaymentStatus.APPROVED, start, end).longValue();
 
-            result.add(new RevenueDataPoint(date.toString(), 0L, orders, inquiries));
+            result.add(new RevenueDataPoint(date.toString(), revenue, orders, inquiries));
         }
 
         return result;
@@ -183,6 +197,7 @@ public class ConsoleDashboardService {
             case PENDING  -> "PARTNER_APPLIED";
             case APPROVED -> "PARTNER_APPROVED";
             case REJECTED -> "PARTNER_REJECTED";
+            case DISABLED -> "PARTNER_REJECTED";
         };
     }
 
@@ -191,6 +206,7 @@ public class ConsoleDashboardService {
             case PENDING  -> "파트너 신청을 제출";
             case APPROVED -> "파트너로 승인";
             case REJECTED -> "파트너 신청이 거절";
+            case DISABLED -> "파트너 자격이 비활성화";
         };
     }
 }

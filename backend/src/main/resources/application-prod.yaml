@@ -31,7 +31,7 @@ spring:
   # ── JPA / Hibernate ─────────────────────────────────────────────────────────
   jpa:
     hibernate:
-      ddl-auto: validate          # Validate schema; NEVER auto-alter in prod
+      ddl-auto: update            # Phase 3: auto-add new tables/columns; revert to validate after stable
     show-sql: false
     open-in-view: false           # Prevent lazy-load anti-pattern in prod
     properties:

@@ -43,8 +43,14 @@ public class Member implements UserDetails {
     @Column(nullable = false)
     private UserRole role = UserRole.USER;
 
+    @Column(nullable = false)
+    private boolean active = true;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @Column
+    private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Project> projects = new ArrayList<>();
@@ -52,6 +58,12 @@ public class Member implements UserDetails {
     @PrePersist
     void prePersist() {
         createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    void preUpdate() {
+        updatedAt = LocalDateTime.now();
     }
 
     // ── UserDetails ──────────────────────────────────────────────────────────
