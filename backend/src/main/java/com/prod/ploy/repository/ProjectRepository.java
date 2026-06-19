@@ -26,5 +26,8 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     long countByStatus(Project.ProjectStatus status);
     long countByCreatedAtAfter(LocalDateTime dateTime);
+    long countByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
+    long countByStatusAndCreatedAtAfter(Project.ProjectStatus status, LocalDateTime dateTime);
+    long countByStatusAndCreatedAtBetween(Project.ProjectStatus status, LocalDateTime start, LocalDateTime end);
     List<Project> findTop10ByOrderByCreatedAtDesc();
 }

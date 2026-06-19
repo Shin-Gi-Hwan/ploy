@@ -813,6 +813,11 @@
     grid-template-columns: repeat(2, 1fr);
   }
 
+  /* 6-card KPI grid: 2 columns on tablet */
+  .cs-kpi-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
   .cs-grid-2 {
     grid-template-columns: 1fr;
   }
@@ -826,6 +831,11 @@
   .cs-stat-grid {
     grid-template-columns: 1fr 1fr;
     gap: 12px;
+  }
+
+  /* 6-card KPI grid: 1 column on mobile */
+  .cs-kpi-grid {
+    grid-template-columns: 1fr !important;
   }
 
   .cs-search { display: none; }

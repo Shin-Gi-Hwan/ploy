@@ -1,6 +1,5 @@
 import axios from 'axios'
 
-// Reuses the same base URL + JWT interceptor logic as the main api.ts
 const client = axios.create({ baseURL: '/api' })
 
 client.interceptors.request.use(config => {
@@ -12,21 +11,55 @@ client.interceptors.request.use(config => {
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
 export interface DashboardStats {
+  // Primary KPIs
+  todayOrders: number
+  todayInquiries: number
+  activeProjects: number
+  pendingApprovals: number
+  newMembers: number
+  todayRevenue: number
+  // Day-over-day changes
+  orderChange: number
+  inquiryChange: number
+  projectChange: number
+  approvalChange: number
+  memberChange: number
+  revenueChange: number
+  // Supplementary totals
   totalMembers: number
-  newMembersToday: number
+  totalProjects: number
   totalPartners: number
   pendingPartnerApplications: number
-  totalProjects: number
-  activeProjects: number
-  newProjectsToday: number
-  pendingApprovals: number
   projectsByStatus: Record<string, number>
 }
 
+export type ActivityType =
+  | 'INQUIRY_SUBMITTED'
+  | 'INQUIRY_REVIEWING'
+  | 'INQUIRY_APPROVED'
+  | 'INQUIRY_REJECTED'
+  | 'PROJECT_ASSIGNED'
+  | 'PROJECT_STARTED'
+  | 'DRAFT_UPLOADED'
+  | 'ORDER_COMPLETED'
+  | 'MEMBER_REGISTERED'
+  | 'PARTNER_APPLIED'
+  | 'PARTNER_APPROVED'
+  | 'PARTNER_REJECTED'
+
 export interface ActivityItem {
-  type: 'project' | 'member' | 'partner'
-  description: string
-  timestamp: string // ISO string from backend
+  id: number
+  type: ActivityType
+  message: string
+  targetId: number
+  createdAt: string // ISO string
+}
+
+export interface RevenueDataPoint {
+  date: string   // "YYYY-MM-DD"
+  revenue: number
+  orders: number
+  inquiries: number
 }
 
 // ─── API calls ─────────────────────────────────────────────────────────────────
@@ -38,5 +71,10 @@ export async function getDashboardStats(): Promise<DashboardStats> {
 
 export async function getDashboardActivity(): Promise<ActivityItem[]> {
   const res = await client.get<ActivityItem[]>('/console/dashboard/activity')
+  return res.data
+}
+
+export async function getDashboardRevenue(): Promise<RevenueDataPoint[]> {
+  const res = await client.get<RevenueDataPoint[]>('/console/dashboard/revenue')
   return res.data
 }

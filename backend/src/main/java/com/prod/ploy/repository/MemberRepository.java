@@ -13,5 +13,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     long countByRole(Member.UserRole role);
     long countByCreatedAtAfter(LocalDateTime dateTime);
+    long countByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
     List<Member> findTop10ByOrderByCreatedAtDesc();
 }

@@ -2,6 +2,7 @@ package com.prod.ploy.controller;
 
 import com.prod.ploy.dto.ActivityItem;
 import com.prod.ploy.dto.DashboardStatsResponse;
+import com.prod.ploy.dto.RevenueDataPoint;
 import com.prod.ploy.service.ConsoleDashboardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -26,5 +27,10 @@ public class ConsoleDashboardController {
     @GetMapping("/activity")
     public ResponseEntity<List<ActivityItem>> activity() {
         return ResponseEntity.ok(service.getRecentActivity());
+    }
+
+    @GetMapping("/revenue")
+    public ResponseEntity<List<RevenueDataPoint>> revenue() {
+        return ResponseEntity.ok(service.getRevenueLast7Days());
     }
 }
