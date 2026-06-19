@@ -10,4 +10,7 @@ public interface PartnerApplicationRepository extends JpaRepository<PartnerAppli
     Optional<PartnerApplication> findByMemberId(Long memberId);
     boolean existsByMemberId(Long memberId);
     List<PartnerApplication> findAllByOrderByAppliedAtDesc();
+
+    long countByStatus(PartnerApplication.ApplicationStatus status);
+    List<PartnerApplication> findTop5ByOrderByAppliedAtDesc();
 }

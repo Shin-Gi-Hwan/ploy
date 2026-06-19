@@ -5,6 +5,7 @@ import com.prod.ploy.model.Project;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,4 +23,8 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     // Single project access — verifies ownership in one query
     Optional<Project> findByIdAndMember(Long id, Member member);
+
+    long countByStatus(Project.ProjectStatus status);
+    long countByCreatedAtAfter(LocalDateTime dateTime);
+    List<Project> findTop10ByOrderByCreatedAtDesc();
 }

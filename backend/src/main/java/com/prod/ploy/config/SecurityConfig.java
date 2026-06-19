@@ -62,6 +62,7 @@ public class SecurityConfig {
                     .requestMatchers("/api/auth/**").permitAll()
                     .requestMatchers("/api/partners/**").permitAll()
                     .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                    .requestMatchers("/api/console/**").hasRole("ADMIN")
                     .requestMatchers("/api/client/**").hasRole("USER")
                     .requestMatchers("/api/partner/**").hasAnyRole("USER", "OUTSOURCING_PARTNER")
                     .requestMatchers("/api/freelancer/**").hasRole("OUTSOURCING_PARTNER")
