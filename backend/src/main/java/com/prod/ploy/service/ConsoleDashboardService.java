@@ -10,11 +10,11 @@ import com.prod.ploy.repository.PartnerApplicationRepository;
 import com.prod.ploy.repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -58,6 +58,7 @@ public class ConsoleDashboardService {
         );
     }
 
+    @Transactional(readOnly = true)
     public List<ActivityItem> getRecentActivity() {
         List<ActivityItem> items = new ArrayList<>();
 
