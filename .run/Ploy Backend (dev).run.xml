@@ -1,11 +1,5 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Ploy Backend (dev)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
-    <module name="ploy.backend.main" />
-    <option name="SPRING_BOOT_MAIN_CLASS" value="com.prod.ploy.PloyApplication" />
-    <option name="VM_PARAMETERS" value="-Dspring.profiles.active=dev" />
-    <option name="PROGRAM_PARAMETERS" value="" />
-    <option name="WORKING_DIRECTORY" value="$MODULE_WORKING_DIR$" />
-    <option name="ENABLE_LAUNCH_OPTIMIZATION" value="true" />
     <envs>
       <env name="SPRING_PROFILES_ACTIVE" value="dev" />
       <env name="DB_HOST" value="localhost" />
@@ -23,6 +17,10 @@
       <env name="FRONTEND_URL" value="http://localhost:5173" />
       <env name="STORAGE_PATH" value="uploads" />
     </envs>
+    <module name="com.prod.ploy.ploy.main" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.prod.ploy.PloyApplication" />
+    <option name="VM_PARAMETERS" value="-Dspring.profiles.active=dev" />
+    <option name="WORKING_DIRECTORY" value="$MODULE_WORKING_DIR$" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

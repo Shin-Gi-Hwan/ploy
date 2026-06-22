@@ -16,6 +16,7 @@ import FreelancerDashboard from './pages/freelancer/Dashboard'
 import Partners          from './pages/Partners'
 import PartnerDetail     from './pages/PartnerDetail'
 import PartnerApply      from './pages/PartnerApply'
+import OAuthCallback     from './pages/OAuthCallback'
 
 // ─── Admin Console (Phase 1) ──────────────────────────────────────────────────
 import ConsoleLayout       from './console/components/layout/ConsoleLayout'
@@ -75,8 +76,10 @@ function AppRoutes() {
       <Route path="/track/:token" element={<Tracking />} />
 
       {/* Auth — redirect away if already logged in */}
-      <Route path="/login"    element={<PublicOnly><Login /></PublicOnly>} />
-      <Route path="/register" element={<PublicOnly><Register /></PublicOnly>} />
+      <Route path="/login"          element={<PublicOnly><Login /></PublicOnly>} />
+      <Route path="/register"       element={<PublicOnly><Register /></PublicOnly>} />
+      {/* OAuth2 social login callback — backend redirects here with JWT in URL */}
+      <Route path="/oauth2/success" element={<OAuthCallback />} />
 
       {/* Legacy intake — keep accessible but prefer /client/request */}
       <Route path="/start" element={<Intake />} />

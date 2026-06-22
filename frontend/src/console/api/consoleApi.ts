@@ -284,6 +284,290 @@ export async function updatePartnerActive(id: number, active: boolean): Promise<
   return res.data
 }
 
+// ─── Project API ─────────────────────────────────────────────────────────────────
+
+export type ProjectStatus =
+  | 'BRIEF_SUBMITTED' | 'IN_PROGRESS' | 'REVIEW' | 'DELIVERED'
+  | 'REQUESTED' | 'REVIEWING' | 'APPROVED' | 'ASSIGNED' | 'COMPLETED' | 'REJECTED'
+
+export type ProjectType = 'BUSINESS_CARD' | 'PRESENTATION' | 'WEBSITE' | 'LOGO' | 'DETAIL_PAGE' | 'MOBILE_APP'
+
+export interface ConsoleProjectListItem {
+  id: number
+  title: string
+  type: ProjectType
+  status: ProjectStatus
+  ownerName: string
+  ownerEmail: string | null
+  freelancerName: string | null
+  hasDeliverable: boolean
+  createdAt: string
+  updatedAt: string | null
+}
+
+export interface DeliverableItem {
+  id: number
+  fileUrl: string
+  version: number
+  note: string | null
+  uploadedAt: string
+}
+
+export interface ConsoleProjectDetail extends ConsoleProjectListItem {
+  adminNote: string | null
+  rejectionReason: string | null
+  ownerId: number | null
+  isGuest: boolean
+  freelancerId: number | null
+  freelancerEmail: string | null
+  deliverables: DeliverableItem[]
+}
+
+export async function getProjects(page = 0, size = 20, status?: string, q?: string): Promise<PageResponse<ConsoleProjectListItem>> {
+  const res = await client.get<PageResponse<ConsoleProjectListItem>>('/console/projects', {
+    params: { page, size, status: status || undefined, q: q || undefined },
+  })
+  return res.data
+}
+
+export async function getProjectDetail(id: number): Promise<ConsoleProjectDetail> {
+  const res = await client.get<ConsoleProjectDetail>(`/console/projects/${id}`)
+  return res.data
+}
+
+export async function updateProjectStatus(id: number, status: string): Promise<ConsoleProjectListItem> {
+  const res = await client.patch<ConsoleProjectListItem>(`/console/projects/${id}/status`, { status })
+  return res.data
+}
+
+export async function addProjectNote(id: number, note: string): Promise<ConsoleProjectListItem> {
+  const res = await client.post<ConsoleProjectListItem>(`/console/projects/${id}/notes`, { note })
+  return res.data
+}
+
+export async function assignProjectPartner(id: number, freelancerId: number | null): Promise<ConsoleProjectListItem> {
+  const res = await client.patch<ConsoleProjectListItem>(`/console/projects/${id}/assign`, { freelancerId })
+  return res.data
+}
+
+// ─── Inquiry API ──────────────────────────────────────────────────────────────────
+
+export async function getInquiries(page = 0, size = 20, status?: string, q?: string): Promise<PageResponse<ConsoleProjectListItem>> {
+  const res = await client.get<PageResponse<ConsoleProjectListItem>>('/console/inquiries', {
+    params: { page, size, status: status || undefined, q: q || undefined },
+  })
+  return res.data
+}
+
+export async function getInquiryDetail(id: number): Promise<ConsoleProjectDetail> {
+  const res = await client.get<ConsoleProjectDetail>(`/console/inquiries/${id}`)
+  return res.data
+}
+
+export async function approveInquiry(id: number): Promise<ConsoleProjectListItem> {
+  const res = await client.post<ConsoleProjectListItem>(`/console/inquiries/${id}/approve`)
+  return res.data
+}
+
+export async function rejectInquiry(id: number, reason: string): Promise<ConsoleProjectListItem> {
+  const res = await client.post<ConsoleProjectListItem>(`/console/inquiries/${id}/reject`, { reason })
+  return res.data
+}
+
+export async function assignInquiryPartner(id: number, freelancerId: number): Promise<ConsoleProjectListItem> {
+  const res = await client.patch<ConsoleProjectListItem>(`/console/inquiries/${id}/assign`, { freelancerId })
+  return res.data
+}
+
+// ─── Product API ──────────────────────────────────────────────────────────────────
+
+export type ProductType = 'EBOOK' | 'BUSINESS_CARD' | 'OFFICE_SUPPLY' | 'DESIGN_TEMPLATE'
+
+export interface ConsoleProductListItem {
+  id: number
+  name: string
+  productType: ProductType
+  price: number
+  stock: number
+  imageUrl: string | null
+  visible: boolean
+  createdAt: string
+}
+
+export interface ProductUpsertRequest {
+  name: string
+  description?: string
+  productType: string
+  price: number
+  stock: number
+  imageUrl?: string
+  visible: boolean
+}
+
+export async function getProducts(page = 0, size = 20, type?: string, visible?: string, q?: string): Promise<PageResponse<ConsoleProductListItem>> {
+  const res = await client.get<PageResponse<ConsoleProductListItem>>('/console/products', {
+    params: { page, size, type: type || undefined, visible: visible || undefined, q: q || undefined },
+  })
+  return res.data
+}
+
+export async function createProduct(req: ProductUpsertRequest): Promise<ConsoleProductListItem> {
+  const res = await client.post<ConsoleProductListItem>('/console/products', req)
+  return res.data
+}
+
+export async function updateProduct(id: number, req: ProductUpsertRequest): Promise<ConsoleProductListItem> {
+  const res = await client.put<ConsoleProductListItem>(`/console/products/${id}`, req)
+  return res.data
+}
+
+export async function updateProductVisibility(id: number, visible: boolean): Promise<ConsoleProductListItem> {
+  const res = await client.patch<ConsoleProductListItem>(`/console/products/${id}/visibility`, { visible })
+  return res.data
+}
+
+export async function deleteProduct(id: number): Promise<void> {
+  await client.delete(`/console/products/${id}`)
+}
+
+// ─── Review API ───────────────────────────────────────────────────────────────────
+
+export interface ConsoleReviewListItem {
+  id: number
+  reviewerName: string
+  reviewerEmail: string | null
+  projectTitle: string | null
+  projectId: number | null
+  rating: number
+  contentPreview: string | null
+  visible: boolean
+  createdAt: string
+}
+
+export async function getReviews(page = 0, size = 20, visible?: string, q?: string): Promise<PageResponse<ConsoleReviewListItem>> {
+  const res = await client.get<PageResponse<ConsoleReviewListItem>>('/console/reviews', {
+    params: { page, size, visible: visible || undefined, q: q || undefined },
+  })
+  return res.data
+}
+
+export async function updateReviewVisibility(id: number, visible: boolean): Promise<ConsoleReviewListItem> {
+  const res = await client.patch<ConsoleReviewListItem>(`/console/reviews/${id}/visible`, { visible })
+  return res.data
+}
+
+export async function deleteReview(id: number): Promise<void> {
+  await client.delete(`/console/reviews/${id}`)
+}
+
+// ─── Chat API ─────────────────────────────────────────────────────────────────────
+
+export interface ConsoleChatRoomListItem {
+  id: number
+  projectId: number | null
+  projectTitle: string
+  ownerName: string
+  ownerEmail: string | null
+  messageCount: number
+  createdAt: string
+}
+
+export interface ConsoleChatMessageItem {
+  id: number
+  senderId: number | null
+  senderName: string
+  content: string | null
+  attachmentUrl: string | null
+  createdAt: string
+}
+
+export async function getChatRooms(page = 0, size = 20, q?: string): Promise<PageResponse<ConsoleChatRoomListItem>> {
+  const res = await client.get<PageResponse<ConsoleChatRoomListItem>>('/console/chat/rooms', {
+    params: { page, size, q: q || undefined },
+  })
+  return res.data
+}
+
+export async function getChatMessages(roomId: number, page = 0, size = 50): Promise<PageResponse<ConsoleChatMessageItem>> {
+  const res = await client.get<PageResponse<ConsoleChatMessageItem>>(`/console/chat/rooms/${roomId}/messages`, {
+    params: { page, size },
+  })
+  return res.data
+}
+
+// ─── Notification API ─────────────────────────────────────────────────────────────
+
+export interface ConsoleNotificationListItem {
+  id: number
+  eventType: string
+  status: string
+  recipientEmail: string
+  recipientName: string | null
+  subject: string | null
+  errorMessage: string | null
+  retryCount: number
+  createdAt: string
+  sentAt: string | null
+}
+
+export async function getNotifications(page = 0, size = 20, type?: string, status?: string): Promise<PageResponse<ConsoleNotificationListItem>> {
+  const res = await client.get<PageResponse<ConsoleNotificationListItem>>('/console/notifications', {
+    params: { page, size, type: type || undefined, status: status || undefined },
+  })
+  return res.data
+}
+
+export async function retryNotification(id: number): Promise<ConsoleNotificationListItem> {
+  const res = await client.post<ConsoleNotificationListItem>(`/console/notifications/${id}/retry`)
+  return res.data
+}
+
+// ─── Audit Log API ────────────────────────────────────────────────────────────────
+
+export interface ConsoleAuditLogListItem {
+  id: number
+  adminId: number | null
+  adminEmail: string | null
+  actionType: string
+  targetType: string | null
+  targetId: number | null
+  beforeValue: string | null
+  afterValue: string | null
+  ipAddress: string | null
+  createdAt: string
+}
+
+export async function getAuditLogs(
+  page = 0, size = 20,
+  adminId?: number, action?: string, targetType?: string,
+  from?: string, to?: string
+): Promise<PageResponse<ConsoleAuditLogListItem>> {
+  const res = await client.get<PageResponse<ConsoleAuditLogListItem>>('/console/audit-logs', {
+    params: { page, size, adminId: adminId || undefined, action: action || undefined, targetType: targetType || undefined, from: from || undefined, to: to || undefined },
+  })
+  return res.data
+}
+
+// ─── Settings API ─────────────────────────────────────────────────────────────────
+
+export interface SystemSettingItem {
+  id: number
+  settingKey: string
+  settingValue: string | null
+  description: string | null
+  updatedAt: string | null
+}
+
+export async function getSettings(): Promise<SystemSettingItem[]> {
+  const res = await client.get<SystemSettingItem[]>('/console/settings')
+  return res.data
+}
+
+export async function updateSetting(key: string, value: string): Promise<SystemSettingItem> {
+  const res = await client.put<SystemSettingItem>(`/console/settings/${key}`, { value })
+  return res.data
+}
+
 // ─── Order API ───────────────────────────────────────────────────────────────────
 
 export async function getOrders(

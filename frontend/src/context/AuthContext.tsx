@@ -15,6 +15,7 @@ interface AuthState {
 interface AuthContextValue extends AuthState {
   login: (data: LoginRequest) => Promise<void>
   register: (data: RegisterRequest) => Promise<void>
+  loginWithToken: (token: string, user: User) => void
   logout: () => void
 }
 
@@ -91,13 +92,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
+  const loginWithToken = useCallback((token: string, user: User) => {
+    writeStorage(token, user)
+    setState({ user, token, isAuthenticated: true, isLoading: false })
+  }, [])
+
   const logout = useCallback(() => {
     clearStorage()
     setState({ user: null, token: null, isAuthenticated: false, isLoading: false })
   }, [])
 
   return (
-    <AuthContext.Provider value={{ ...state, login, register, logout }}>
+    <AuthContext.Provider value={{ ...state, login, register, loginWithToken, logout }}>
       {children}
     </AuthContext.Provider>
   )

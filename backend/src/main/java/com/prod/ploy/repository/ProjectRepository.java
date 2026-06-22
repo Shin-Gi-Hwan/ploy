@@ -2,8 +2,12 @@ package com.prod.ploy.repository;
 
 import com.prod.ploy.model.Member;
 import com.prod.ploy.model.Project;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,4 +34,36 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     long countByStatusAndCreatedAtAfter(Project.ProjectStatus status, LocalDateTime dateTime);
     long countByStatusAndCreatedAtBetween(Project.ProjectStatus status, LocalDateTime start, LocalDateTime end);
     List<Project> findTop10ByOrderByCreatedAtDesc();
+
+    @Query(
+        value = """
+            SELECT p FROM Project p
+            LEFT JOIN p.member m
+            LEFT JOIN p.client c
+            WHERE (:status IS NULL OR p.status = :status)
+              AND (:q IS NULL
+                   OR LOWER(p.title)  LIKE LOWER(CONCAT('%',:q,'%'))
+                   OR LOWER(m.name)   LIKE LOWER(CONCAT('%',:q,'%'))
+                   OR LOWER(m.email)  LIKE LOWER(CONCAT('%',:q,'%'))
+                   OR LOWER(c.name)   LIKE LOWER(CONCAT('%',:q,'%'))
+                   OR LOWER(c.email)  LIKE LOWER(CONCAT('%',:q,'%')))
+            ORDER BY p.createdAt DESC
+        """,
+        countQuery = """
+            SELECT COUNT(p) FROM Project p
+            LEFT JOIN p.member m
+            LEFT JOIN p.client c
+            WHERE (:status IS NULL OR p.status = :status)
+              AND (:q IS NULL
+                   OR LOWER(p.title)  LIKE LOWER(CONCAT('%',:q,'%'))
+                   OR LOWER(m.name)   LIKE LOWER(CONCAT('%',:q,'%'))
+                   OR LOWER(m.email)  LIKE LOWER(CONCAT('%',:q,'%'))
+                   OR LOWER(c.name)   LIKE LOWER(CONCAT('%',:q,'%'))
+                   OR LOWER(c.email)  LIKE LOWER(CONCAT('%',:q,'%')))
+        """
+    )
+    Page<Project> searchProjects(
+            @Param("status") Project.ProjectStatus status,
+            @Param("q") String q,
+            Pageable pageable);
 }

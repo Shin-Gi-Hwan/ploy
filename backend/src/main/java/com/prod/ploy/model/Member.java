@@ -36,8 +36,16 @@ public class Member implements UserDetails {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
+    @Column  // nullable — social login users have no password
     private String passwordHash;
+
+    /** "google" | "naver" | "kakao" — null for email/password accounts */
+    @Column(length = 20)
+    private String oauthProvider;
+
+    /** Provider's unique user ID — used to look up returning social users */
+    @Column(length = 100)
+    private String oauthProviderId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

@@ -41,24 +41,49 @@ public class AuthService {
         Member member = memberRepository.findByEmail(req.email().trim().toLowerCase())
                 .orElseThrow(() -> new BadCredentialsException("Invalid email or password."));
 
-        if (!passwordEncoder.matches(req.password(), member.getPasswordHash())) {
+        // Social-only accounts have no password
+        if (member.getPasswordHash() == null
+                || !passwordEncoder.matches(req.password(), member.getPasswordHash())) {
             throw new BadCredentialsException("Invalid email or password.");
         }
 
         return toAuthResponse(member);
     }
 
-    private AuthResponse toAuthResponse(Member member) {
+    /** Find-or-create a Member from a social OAuth2 login. */
+    @Transactional
+    public Member processOAuthLogin(String email, String name,
+                                     String provider, String providerId) {
+        // 1. Look up by provider + providerId (fastest, most reliable)
+        return memberRepository
+                .findByOauthProviderAndOauthProviderId(provider, providerId)
+                .orElseGet(() -> {
+                    // 2. Same email already registered locally → link the social account
+                    return memberRepository.findByEmail(email.toLowerCase())
+                            .map(existing -> {
+                                existing.setOauthProvider(provider);
+                                existing.setOauthProviderId(providerId);
+                                return memberRepository.save(existing);
+                            })
+                            // 3. Brand-new user → create a Member (no passwordHash)
+                            .orElseGet(() -> {
+                                Member m = new Member();
+                                m.setEmail(email.toLowerCase());
+                                m.setName(name != null && !name.isBlank()
+                                        ? name : email.split("@")[0]);
+                                m.setPasswordHash(null);
+                                m.setRole(Member.UserRole.USER);
+                                m.setOauthProvider(provider);
+                                m.setOauthProviderId(providerId);
+                                return memberRepository.save(m);
+                            });
+                });
+    }
+
+    public AuthResponse toAuthResponse(Member member) {
         String token = jwtService.generateToken(member.getEmail(), member.getRole().name());
-        return new AuthResponse(
-                token,
-                new AuthResponse.UserView(
-                        member.getId(),
-                        member.getName(),
-                        member.getEmail(),
-                        member.getRole().name()
-                )
-        );
+        return new AuthResponse(token, new AuthResponse.UserView(
+                member.getId(), member.getName(), member.getEmail(), member.getRole().name()));
     }
 
     public static class EmailTakenException extends RuntimeException {

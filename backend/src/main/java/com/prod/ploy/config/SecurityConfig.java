@@ -1,6 +1,8 @@
 package com.prod.ploy.config;
 
+import com.prod.ploy.security.CustomOAuth2UserService;
 import com.prod.ploy.security.JwtAuthFilter;
+import com.prod.ploy.security.OAuthSuccessHandler;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,20 +26,25 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
 
 /*
- * Two parallel auth schemes, zero overlap:
+ * Three parallel auth schemes:
  *
  *  1. HTTP Basic  → /api/admin/**
- *     In-memory admin user, credentials from env vars.
- *     Used by the React admin SPA (legacy, unchanged).
+ *     In-memory admin user, credentials from env vars (legacy, unchanged).
  *
- *  2. JWT Bearer  → /api/client/**, /api/freelancer/**
+ *  2. JWT Bearer  → /api/client/**, /api/console/**, /api/freelancer/**
  *     JwtAuthFilter populates SecurityContext from the Bearer token.
- *     Members register/login via /api/auth/**.
+ *     Members register/login via /api/auth/** (email+password).
  *
- *  /api/auth/** and all public routes → permitAll
+ *  3. OAuth2 Login → /api/auth/oauth2/**
+ *     Spring Security handles the redirect/callback cycle.
+ *     OAuthSuccessHandler issues a JWT and redirects to the frontend.
+ *     Supported providers: Google, Naver, Kakao.
  *
- * CSRF disabled: stateless REST API, no session cookies.
- * TLS REQUIRED in production — HTTP Basic is cleartext without it.
+ * Session policy is IF_REQUIRED (not STATELESS) so OAuth2 can store
+ * the state parameter in the session during the authorization flow.
+ * All other auth (JWT, Basic) ignores the session.
+ *
+ * CSRF disabled: stateless REST API with no session cookies for auth.
  */
 @Configuration
 @EnableWebSecurity
@@ -53,23 +60,44 @@ public class SecurityConfig {
     private String frontendUrl;
 
     @Bean
-    SecurityFilterChain filterChain(HttpSecurity http, JwtAuthFilter jwtAuthFilter) throws Exception {
+    SecurityFilterChain filterChain(HttpSecurity http,
+                                    JwtAuthFilter jwtAuthFilter,
+                                    CustomOAuth2UserService oAuth2UserService,
+                                    OAuthSuccessHandler oAuthSuccessHandler) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
-                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // IF_REQUIRED: sessions are created during OAuth2 flow only
+                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
+                    // OAuth2 flow endpoints — must be public
+                    .requestMatchers("/api/auth/oauth2/**").permitAll()
+                    // Standard auth
                     .requestMatchers("/api/auth/**").permitAll()
+                    // Public data endpoints
                     .requestMatchers("/api/partners/**").permitAll()
+                    .requestMatchers("/api/projects/**").permitAll()
+                    .requestMatchers("/api/files/**").permitAll()
+                    // Role-protected
                     .requestMatchers("/api/admin/**").hasRole("ADMIN")
                     .requestMatchers("/api/console/**").hasRole("ADMIN")
                     .requestMatchers("/api/client/**").hasRole("USER")
                     .requestMatchers("/api/partner/**").hasAnyRole("USER", "OUTSOURCING_PARTNER")
                     .requestMatchers("/api/freelancer/**").hasRole("OUTSOURCING_PARTNER")
                     .anyRequest().permitAll())
-                // Add JWT filter before Spring's username/password filter
+                // JWT filter for Bearer token auth
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                // Keep HTTP Basic for the in-memory admin user (legacy admin UI)
+                // OAuth2 Login (Google, Naver, Kakao)
+                .oauth2Login(oauth2 -> oauth2
+                    .authorizationEndpoint(ep -> ep
+                        .baseUri("/api/auth/oauth2/authorization"))
+                    .redirectionEndpoint(ep -> ep
+                        .baseUri("/api/auth/oauth2/callback/*"))
+                    .userInfoEndpoint(ep -> ep
+                        .userService(oAuth2UserService))
+                    .successHandler(oAuthSuccessHandler)
+                    .failureUrl(frontendUrl + "/login?error=oauth_failed"))
+                // Keep HTTP Basic for the in-memory admin user (legacy /api/admin/**)
                 .httpBasic(Customizer.withDefaults())
                 .build();
     }
@@ -93,11 +121,6 @@ public class SecurityConfig {
         return source;
     }
 
-    /*
-     * In-memory user for legacy /api/admin/** Basic Auth.
-     * This does NOT affect JWT-authenticated member routes —
-     * those use MemberRepository directly in JwtAuthFilter.
-     */
     @Bean
     UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
         var admin = User.builder()

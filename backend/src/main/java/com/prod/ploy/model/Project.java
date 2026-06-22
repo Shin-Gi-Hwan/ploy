@@ -61,6 +61,12 @@ public class Project {
     @Column(nullable = false, unique = true, updatable = false)
     private String magicToken;
 
+    @Column(columnDefinition = "TEXT")
+    private String adminNote;
+
+    @Column(length = 1000)
+    private String rejectionReason;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

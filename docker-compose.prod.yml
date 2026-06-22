@@ -61,6 +61,13 @@ services:
       ADMIN_EMAIL: ${ADMIN_EMAIL}
       FRONTEND_URL: ${FRONTEND_URL}
       STORAGE_PATH: /data/uploads
+      OAUTH2_REDIRECT_BASE_URL: ${OAUTH2_REDIRECT_BASE_URL}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      NAVER_CLIENT_ID: ${NAVER_CLIENT_ID}
+      NAVER_CLIENT_SECRET: ${NAVER_CLIENT_SECRET}
+      KAKAO_CLIENT_ID: ${KAKAO_CLIENT_ID}
+      KAKAO_CLIENT_SECRET: ${KAKAO_CLIENT_SECRET}
     volumes:
       - uploads_prod:/data/uploads
     # NO ports: section — traffic reaches backend only through nginx
