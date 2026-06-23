@@ -32,20 +32,19 @@ spring:
           ssl:
             enable: true
 
-# ── Ploy custom properties ────────────────────────────────────────────────────
-spring:
+  # ── OAuth2 Social Login ─────────────────────────────────────────────────────
   security:
     oauth2:
       client:
         registration:
-          # ── Google (built-in provider) ──────────────────────────────────────────
+          # ── Google (built-in provider) ────────────────────────────────────────
           google:
             client-id: ${GOOGLE_CLIENT_ID}
             client-secret: ${GOOGLE_CLIENT_SECRET}
             scope: email, profile
             redirect-uri: "${ploy.oauth2.redirect-base-url}/api/auth/oauth2/callback/{registrationId}"
 
-          # ── Naver (custom provider) ─────────────────────────────────────────────
+          # ── Naver (custom provider) ───────────────────────────────────────────
           naver:
             client-id: ${NAVER_CLIENT_ID}
             client-secret: ${NAVER_CLIENT_SECRET}
@@ -54,7 +53,7 @@ spring:
             scope: name, email
             client-name: Naver
 
-          # ── Kakao (custom provider) ─────────────────────────────────────────────
+          # ── Kakao (custom provider) ───────────────────────────────────────────
           kakao:
             client-id: ${KAKAO_CLIENT_ID}
             client-secret: ${KAKAO_CLIENT_SECRET:}   # Kakao client secret is optional
@@ -77,9 +76,9 @@ spring:
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user-name-attribute: id         # Kakao numeric user ID
 
+# ── Ploy custom properties ────────────────────────────────────────────────────
 ploy:
   oauth2:
-    # Set this to https://ploy.co.kr in production, http://localhost:5173 in dev
     redirect-base-url: ${OAUTH2_REDIRECT_BASE_URL:http://localhost:5173}
 
   admin:
