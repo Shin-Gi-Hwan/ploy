@@ -583,3 +583,35 @@ export async function getOrderDetail(id: number): Promise<ConsoleOrderDetail> {
   const res = await client.get<ConsoleOrderDetail>(`/console/orders/${id}`)
   return res.data
 }
+
+// ─── Login Audit API ─────────────────────────────────────────────────────────────
+
+export interface ConsoleLoginAuditListItem {
+  id: number
+  memberId: number | null
+  memberEmail: string | null
+  memberName: string | null
+  provider: string          // google | kakao | naver | email
+  ipAddress: string | null
+  userAgent: string | null
+  success: boolean
+  failureReason: string | null
+  createdAt: string
+}
+
+export async function getLoginAudits(
+  page = 0, size = 20,
+  provider?: string, success?: boolean,
+  from?: string, to?: string
+): Promise<PageResponse<ConsoleLoginAuditListItem>> {
+  const res = await client.get<PageResponse<ConsoleLoginAuditListItem>>('/console/login-audits', {
+    params: {
+      page, size,
+      provider: provider || undefined,
+      success: success !== undefined ? success : undefined,
+      from: from || undefined,
+      to: to || undefined,
+    },
+  })
+  return res.data
+}

@@ -134,6 +134,17 @@ export function IcSettings({ size = 18 }: IconProps) {
   )
 }
 
+export function IcLoginHistory({ size = 18 }: IconProps) {
+  return (
+    <svg {...props(size)}>
+      <circle cx="12" cy="8" r="4"/>
+      <path d="M4 20c0-4 3.58-7 8-7"/>
+      <polyline points="17 17 20 20 23 17"/>
+      <line x1="20" y1="13" x2="20" y2="20"/>
+    </svg>
+  )
+}
+
 export function IcChevronLeft({ size = 18 }: IconProps) {
   return (
     <svg {...props(size)}>
@@ -202,6 +213,7 @@ export function NavIcon({ icon, size = 18 }: { icon: string; size?: number }) {
     case 'chat':           return <IcChat size={size} />
     case 'notifications':  return <IcNotifications size={size} />
     case 'audit':          return <IcAudit size={size} />
+    case 'login-history':  return <IcLoginHistory size={size} />
     case 'settings':       return <IcSettings size={size} />
     default:               return null
   }

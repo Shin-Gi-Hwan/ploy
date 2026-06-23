@@ -30,6 +30,7 @@ import ConsoleProjects     from './console/pages/Projects'
 import ConsoleChatMonitor  from './console/pages/ChatMonitor'
 import ConsoleReviews      from './console/pages/Reviews'
 import ConsoleNotifications from './console/pages/Notifications'
+import ConsoleLoginAudits  from './console/pages/LoginAudits'
 import ConsoleAuditLogs    from './console/pages/AuditLogs'
 import ConsoleSettings     from './console/pages/Settings'
 
@@ -126,6 +127,7 @@ function AppRoutes() {
         <Route path="chat"            element={<ConsoleChatMonitor />} />
         <Route path="reviews"         element={<ConsoleReviews />} />
         <Route path="notifications"   element={<ConsoleNotifications />} />
+        <Route path="login-audits"    element={<ConsoleLoginAudits />} />
         <Route path="audit"           element={<ConsoleAuditLogs />} />
         <Route path="settings"        element={<ConsoleSettings />} />
       </Route>

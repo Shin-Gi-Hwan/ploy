@@ -3,6 +3,7 @@ package com.prod.ploy.security;
 import com.prod.ploy.dto.AuthResponse;
 import com.prod.ploy.model.Member;
 import com.prod.ploy.service.AuthService;
+import com.prod.ploy.service.LoginAuditService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ import java.io.IOException;
 public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final AuthService authService;
+    private final LoginAuditService loginAuditService;
 
     @Value("${ploy.frontend-url:http://localhost:5173}")
     private String frontendUrl;
@@ -36,6 +38,8 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
                                         Authentication authentication) throws IOException {
         OAuthMemberPrincipal principal = (OAuthMemberPrincipal) authentication.getPrincipal();
         Member member = principal.getMember();
+        String provider = member.getOauthProvider() != null ? member.getOauthProvider() : "unknown";
+        loginAuditService.recordOAuthSuccess(member, provider, request);
 
         AuthResponse auth = authService.toAuthResponse(member);
 

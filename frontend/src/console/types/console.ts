@@ -43,9 +43,10 @@ export const NAV_GROUPS: NavGroup[] = [
   {
     label: '관리',
     items: [
-      { label: '알림',        path: '/console/notifications', icon: 'notifications' },
-      { label: '감사 로그',   path: '/console/audit',         icon: 'audit' },
-      { label: '설정',        path: '/console/settings',      icon: 'settings' },
+      { label: '알림',          path: '/console/notifications',  icon: 'notifications' },
+      { label: '로그인 이력',   path: '/console/login-audits',   icon: 'login-history' },
+      { label: '감사 로그',     path: '/console/audit',          icon: 'audit' },
+      { label: '설정',          path: '/console/settings',       icon: 'settings' },
     ],
   },
 ]
@@ -60,7 +61,8 @@ export const ROUTE_LABELS: Record<string, string> = {
   '/console/orders':       '주문 관리',
   '/console/reviews':      '리뷰 / 포트폴리오',
   '/console/chat':         '채팅 모니터',
-  '/console/notifications':'알림 관리',
-  '/console/audit':        '감사 로그',
-  '/console/settings':     '설정',
+  '/console/notifications': '알림 관리',
+  '/console/login-audits':  '로그인 이력',
+  '/console/audit':         '감사 로그',
+  '/console/settings':      '설정',
 }
