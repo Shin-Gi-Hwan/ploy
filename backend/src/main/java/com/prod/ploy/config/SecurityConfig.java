@@ -107,8 +107,8 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of(
                 "http://localhost:5173",
-                "https://ploy.co.kr",
-                "https://www.ploy.co.kr",
+                "https://ploy.kr",
+                "https://www.ploy.kr",
                 frontendUrl
         ));
         config.setAllowedMethods(List.of("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"));
