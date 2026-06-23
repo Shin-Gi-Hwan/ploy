@@ -3,7 +3,7 @@ import {
   getNotifications, retryNotification,
   type ConsoleNotificationListItem,
 } from '../api/consoleApi'
-import { Pagination, formatDate, formatDateTime } from '../components/ui/TablePage'
+import { Pagination, formatDateTime } from '../components/ui/TablePage'
 
 const EVENT_LABELS: Record<string, string> = {
   INQUIRY_SUBMITTED: '문의 접수', INQUIRY_APPROVED: '문의 승인', INQUIRY_REJECTED: '문의 거절',
