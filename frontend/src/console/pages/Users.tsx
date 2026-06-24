@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import {
-  getUsers, getUserDetail, updateUserRole, updateUserStatus,
+  getUsers, getUserDetail, updateUserRole, updateUserStatus, deleteUser,
   type MemberListItem, type MemberDetail, type UserRole,
 } from '../api/consoleApi'
 import Drawer from '../components/ui/Drawer'
@@ -72,10 +72,12 @@ function UserDrawer({
   userId,
   onClose,
   onUpdated,
+  onDeleted,
 }: {
   userId: number | null
   onClose: () => void
   onUpdated: (item: MemberListItem) => void
+  onDeleted: (id: number) => void
 }) {
   const [detail, setDetail] = useState<MemberDetail | null>(null)
   const [loading, setLoading] = useState(false)
@@ -108,6 +110,19 @@ function UserDrawer({
       const updated = await updateUserStatus(detail.id, !detail.active)
       setDetail(d => d ? { ...d, active: updated.active } : d)
       onUpdated(updated)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleDelete = async () => {
+    if (!detail) return
+    if (!confirm(`${detail.name} (${detail.email}) 회원을 영구 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.`)) return
+    setSaving(true)
+    try {
+      await deleteUser(detail.id)
+      onDeleted(detail.id)
+      onClose()
     } finally {
       setSaving(false)
     }
@@ -202,6 +217,24 @@ function UserDrawer({
               )
             }
           </div>
+
+          {/* Delete — only for inactive members */}
+          {!detail.active && (
+            <div className="cs-detail-section" style={{ borderTop: '1px solid #fee2e2', paddingTop: 16, marginTop: 8 }}>
+              <p className="cs-detail-section-title" style={{ color: '#e11d48' }}>위험 구역</p>
+              <p style={{ fontSize: 12, color: '#9ca39c', marginBottom: 12 }}>
+                비활성 회원을 영구적으로 삭제합니다. 되돌릴 수 없습니다.
+              </p>
+              <button
+                className="cs-btn"
+                disabled={saving}
+                onClick={handleDelete}
+                style={{ background: '#e11d48', color: '#fff', border: 'none', width: '100%' }}
+              >
+                {saving ? '삭제 중...' : '회원 영구 삭제'}
+              </button>
+            </div>
+          )}
         </>
       )}
     </Drawer>
@@ -245,6 +278,12 @@ export default function Users() {
 
   const handleUpdated = (updated: MemberListItem) => {
     setItems(prev => prev.map(m => m.id === updated.id ? updated : m))
+  }
+
+  const handleDeleted = (id: number) => {
+    setItems(prev => prev.filter(m => m.id !== id))
+    setTotal(prev => prev - 1)
+    setSelectedId(null)
   }
 
   return (
@@ -338,6 +377,7 @@ export default function Users() {
         userId={selectedId}
         onClose={() => setSelectedId(null)}
         onUpdated={handleUpdated}
+        onDeleted={handleDeleted}
       />
     </div>
   )

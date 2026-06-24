@@ -253,6 +253,10 @@ export async function updateUserStatus(id: number, active: boolean): Promise<Mem
   return res.data
 }
 
+export async function deleteUser(id: number): Promise<void> {
+  await client.delete(`/console/users/${id}`)
+}
+
 // ─── Partner API ─────────────────────────────────────────────────────────────────
 
 export async function getPartners(

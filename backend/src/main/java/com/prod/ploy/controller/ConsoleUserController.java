@@ -49,4 +49,12 @@ public class ConsoleUserController {
             @AuthenticationPrincipal Member admin) {
         return ResponseEntity.ok(service.updateStatus(id, req, admin.getId(), admin.getEmail()));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteMember(
+            @PathVariable Long id,
+            @AuthenticationPrincipal Member admin) {
+        service.deleteMember(id, admin.getId(), admin.getEmail());
+        return ResponseEntity.noContent().build();
+    }
 }

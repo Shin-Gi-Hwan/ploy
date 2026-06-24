@@ -72,6 +72,26 @@ public class ConsoleUserService {
         return MemberListItem.from(m);
     }
 
+    /** Hard-delete a member — only allowed if the account is inactive */
+    @Transactional
+    public void deleteMember(Long id, Long adminId, String adminEmail) {
+        Member m = memberRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."));
+
+        if (m.isActive()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "비활성화된 회원만 삭제할 수 있습니다.");
+        }
+        if (id.equals(adminId)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "자기 자신을 삭제할 수 없습니다.");
+        }
+
+        String snapshot = m.getName() + " <" + m.getEmail() + ">";
+        memberRepository.delete(m);
+
+        auditLogService.log(adminId, adminEmail, "DELETED", "MEMBER", id,
+                snapshot, null, null, null);
+    }
+
     /** Activate or deactivate a member account */
     @Transactional
     public MemberListItem updateStatus(Long id, MemberStatusUpdateRequest req, Long adminId, String adminEmail) {
