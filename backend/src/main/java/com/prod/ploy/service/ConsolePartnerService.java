@@ -25,6 +25,7 @@ public class ConsolePartnerService {
 
     private final PartnerApplicationRepository applicationRepository;
     private final PartnerProfileRepository     profileRepository;
+    private final ConsoleAuditLogService       auditLogService;
 
     @Transactional(readOnly = true)
     public Page<ConsolePartnerListItem> listPartners(int page, int size, String statusStr, String q) {
@@ -53,7 +54,7 @@ public class ConsolePartnerService {
     }
 
     @Transactional
-    public ConsolePartnerListItem approve(Long applicationId) {
+    public ConsolePartnerListItem approve(Long applicationId, Long adminId, String adminEmail) {
         PartnerApplication app = applicationRepository.findById(applicationId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "파트너 신청을 찾을 수 없습니다."));
 
@@ -64,14 +65,16 @@ public class ConsolePartnerService {
         app.setStatus(PartnerApplication.ApplicationStatus.APPROVED);
         app.setReviewedAt(LocalDateTime.now());
         applicationRepository.save(app);
-        // TODO: audit log
+
+        auditLogService.log(adminId, adminEmail, "APPROVED", "PARTNER", applicationId,
+                "PENDING", "APPROVED", null, null);
 
         PartnerProfile profile = profileRepository.findByMemberId(app.getMember().getId()).orElse(null);
         return ConsolePartnerListItem.from(app, profile);
     }
 
     @Transactional
-    public ConsolePartnerListItem reject(Long applicationId, PartnerRejectRequest req) {
+    public ConsolePartnerListItem reject(Long applicationId, PartnerRejectRequest req, Long adminId, String adminEmail) {
         if (req.reason() == null || req.reason().isBlank()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "거절 사유를 입력해주세요.");
         }
@@ -87,14 +90,16 @@ public class ConsolePartnerService {
         app.setRejectionReason(req.reason());
         app.setReviewedAt(LocalDateTime.now());
         applicationRepository.save(app);
-        // TODO: audit log, send rejection email notification
+
+        auditLogService.log(adminId, adminEmail, "REJECTED", "PARTNER", applicationId,
+                "PENDING", "REJECTED: " + req.reason(), null, null);
 
         PartnerProfile profile = profileRepository.findByMemberId(app.getMember().getId()).orElse(null);
         return ConsolePartnerListItem.from(app, profile);
     }
 
     @Transactional
-    public ConsolePartnerListItem updateActive(Long applicationId, PartnerActiveRequest req) {
+    public ConsolePartnerListItem updateActive(Long applicationId, PartnerActiveRequest req, Long adminId, String adminEmail) {
         PartnerApplication app = applicationRepository.findById(applicationId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "파트너 신청을 찾을 수 없습니다."));
 
@@ -103,9 +108,12 @@ public class ConsolePartnerService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "파트너 프로필이 아직 없습니다.");
         }
 
+        String before = String.valueOf(profile.getVisible());
         profile.setVisible(req.active());
         profileRepository.save(profile);
-        // TODO: audit log
+
+        auditLogService.log(adminId, adminEmail, "VISIBILITY_CHANGED", "PARTNER", applicationId,
+                before, String.valueOf(req.active()), null, null);
 
         // If disabling, also set application status to DISABLED
         if (!req.active()) {

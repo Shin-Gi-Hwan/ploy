@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 public record ConsoleProductListItem(
         Long id,
         String name,
+        String description,
         String productType,
         BigDecimal price,
         Integer stock,
@@ -17,7 +18,7 @@ public record ConsoleProductListItem(
 ) {
     public static ConsoleProductListItem from(Product p) {
         return new ConsoleProductListItem(
-                p.getId(), p.getName(), p.getProductType().name(),
+                p.getId(), p.getName(), p.getDescription(), p.getProductType().name(),
                 p.getPrice(), p.getStock(), p.getImageUrl(),
                 p.getVisible(), p.getCreatedAt()
         );

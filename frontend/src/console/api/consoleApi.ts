@@ -386,6 +386,7 @@ export type ProductType = 'EBOOK' | 'BUSINESS_CARD' | 'OFFICE_SUPPLY' | 'DESIGN_
 export interface ConsoleProductListItem {
   id: number
   name: string
+  description: string | null
   productType: ProductType
   price: number
   stock: number
@@ -539,11 +540,11 @@ export interface ConsoleAuditLogListItem {
 
 export async function getAuditLogs(
   page = 0, size = 20,
-  adminId?: number, action?: string, targetType?: string,
+  adminEmail?: string, action?: string, targetType?: string,
   from?: string, to?: string
 ): Promise<PageResponse<ConsoleAuditLogListItem>> {
   const res = await client.get<PageResponse<ConsoleAuditLogListItem>>('/console/audit-logs', {
-    params: { page, size, adminId: adminId || undefined, action: action || undefined, targetType: targetType || undefined, from: from || undefined, to: to || undefined },
+    params: { page, size, adminEmail: adminEmail || undefined, action: action || undefined, targetType: targetType || undefined, from: from || undefined, to: to || undefined },
   })
   return res.data
 }

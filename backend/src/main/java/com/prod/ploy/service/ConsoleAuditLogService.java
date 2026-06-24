@@ -22,7 +22,7 @@ public class ConsoleAuditLogService {
     @Transactional(readOnly = true)
     public Page<ConsoleAuditLogListItem> listLogs(
             int page, int size,
-            Long adminId, String actionType, String targetType,
+            String adminEmail, String actionType, String targetType,
             String fromStr, String toStr) {
 
         LocalDateTime from = (fromStr != null && !fromStr.isBlank())
@@ -30,11 +30,12 @@ public class ConsoleAuditLogService {
         LocalDateTime to = (toStr != null && !toStr.isBlank())
                 ? LocalDate.parse(toStr).plusDays(1).atStartOfDay() : null;
 
-        String action = (actionType != null && !actionType.isBlank()) ? actionType : null;
-        String target = (targetType != null && !targetType.isBlank()) ? targetType : null;
+        String email  = (adminEmail  != null && !adminEmail.isBlank())  ? adminEmail.trim()  : null;
+        String action = (actionType  != null && !actionType.isBlank())  ? actionType  : null;
+        String target = (targetType  != null && !targetType.isBlank())  ? targetType  : null;
 
         PageRequest pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        return auditLogRepository.search(adminId, action, target, from, to, pageable)
+        return auditLogRepository.search(email, action, target, from, to, pageable)
                 .map(ConsoleAuditLogListItem::from);
     }
 

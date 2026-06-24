@@ -39,7 +39,7 @@ public class ConsoleUserController {
             @PathVariable Long id,
             @RequestBody MemberRoleUpdateRequest req,
             @AuthenticationPrincipal Member admin) {
-        return ResponseEntity.ok(service.updateRole(id, req, admin.getId()));
+        return ResponseEntity.ok(service.updateRole(id, req, admin.getId(), admin.getEmail()));
     }
 
     @PatchMapping("/{id}/status")
@@ -47,6 +47,6 @@ public class ConsoleUserController {
             @PathVariable Long id,
             @RequestBody MemberStatusUpdateRequest req,
             @AuthenticationPrincipal Member admin) {
-        return ResponseEntity.ok(service.updateStatus(id, req, admin.getId()));
+        return ResponseEntity.ok(service.updateStatus(id, req, admin.getId(), admin.getEmail()));
     }
 }

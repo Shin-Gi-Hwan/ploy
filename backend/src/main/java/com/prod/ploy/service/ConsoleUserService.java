@@ -20,6 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class ConsoleUserService {
 
     private final MemberRepository memberRepository;
+    private final ConsoleAuditLogService auditLogService;
 
     /** Paged, filtered, searchable member list */
     public Page<MemberListItem> listMembers(int page, int size,
@@ -51,7 +52,7 @@ public class ConsoleUserService {
 
     /** Change a member's role */
     @Transactional
-    public MemberListItem updateRole(Long id, MemberRoleUpdateRequest req, Long adminId) {
+    public MemberListItem updateRole(Long id, MemberRoleUpdateRequest req, Long adminId, String adminEmail) {
         Member m = memberRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."));
 
@@ -61,16 +62,19 @@ public class ConsoleUserService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "유효하지 않은 역할: " + req.role());
         }
 
+        String before = m.getRole().name();
         m.setRole(newRole);
         memberRepository.save(m);
-        // TODO: write to audit log when audit infrastructure is implemented
+
+        auditLogService.log(adminId, adminEmail, "ROLE_CHANGED", "MEMBER", id,
+                before, newRole.name(), null, null);
 
         return MemberListItem.from(m);
     }
 
     /** Activate or deactivate a member account */
     @Transactional
-    public MemberListItem updateStatus(Long id, MemberStatusUpdateRequest req, Long adminId) {
+    public MemberListItem updateStatus(Long id, MemberStatusUpdateRequest req, Long adminId, String adminEmail) {
         Member m = memberRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."));
 
@@ -78,9 +82,12 @@ public class ConsoleUserService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "자기 자신을 비활성화할 수 없습니다.");
         }
 
+        String before = String.valueOf(m.isActive());
         m.setActive(req.active());
         memberRepository.save(m);
-        // TODO: write to audit log when audit infrastructure is implemented
+
+        auditLogService.log(adminId, adminEmail, "STATUS_TOGGLED", "MEMBER", id,
+                before, String.valueOf(req.active()), null, null);
 
         return MemberListItem.from(m);
     }

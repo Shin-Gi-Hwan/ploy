@@ -18,11 +18,11 @@ public class ConsoleAuditLogController {
     public ResponseEntity<Page<ConsoleAuditLogListItem>> list(
             @RequestParam(defaultValue = "0")  int    page,
             @RequestParam(defaultValue = "20") int    size,
-            @RequestParam(required = false)    Long   adminId,
+            @RequestParam(required = false)    String adminEmail,
             @RequestParam(required = false)    String action,
             @RequestParam(required = false)    String targetType,
             @RequestParam(required = false)    String from,
             @RequestParam(required = false)    String to) {
-        return ResponseEntity.ok(service.listLogs(page, size, adminId, action, targetType, from, to));
+        return ResponseEntity.ok(service.listLogs(page, size, adminEmail, action, targetType, from, to));
     }
 }

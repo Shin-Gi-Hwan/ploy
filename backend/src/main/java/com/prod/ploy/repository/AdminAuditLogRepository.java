@@ -14,7 +14,7 @@ public interface AdminAuditLogRepository extends JpaRepository<AdminAuditLog, Lo
     @Query(
         value = """
             SELECT a FROM AdminAuditLog a
-            WHERE (:adminId IS NULL OR a.adminId = :adminId)
+            WHERE (:adminEmail IS NULL OR LOWER(a.adminEmail) LIKE LOWER(CONCAT('%', :adminEmail, '%')))
               AND (:actionType IS NULL OR a.actionType = :actionType)
               AND (:targetType IS NULL OR a.targetType = :targetType)
               AND (:from IS NULL OR a.createdAt >= :from)
@@ -23,7 +23,7 @@ public interface AdminAuditLogRepository extends JpaRepository<AdminAuditLog, Lo
         """,
         countQuery = """
             SELECT COUNT(a) FROM AdminAuditLog a
-            WHERE (:adminId IS NULL OR a.adminId = :adminId)
+            WHERE (:adminEmail IS NULL OR LOWER(a.adminEmail) LIKE LOWER(CONCAT('%', :adminEmail, '%')))
               AND (:actionType IS NULL OR a.actionType = :actionType)
               AND (:targetType IS NULL OR a.targetType = :targetType)
               AND (:from IS NULL OR a.createdAt >= :from)
@@ -31,7 +31,7 @@ public interface AdminAuditLogRepository extends JpaRepository<AdminAuditLog, Lo
         """
     )
     Page<AdminAuditLog> search(
-            @Param("adminId") Long adminId,
+            @Param("adminEmail") String adminEmail,
             @Param("actionType") String actionType,
             @Param("targetType") String targetType,
             @Param("from") LocalDateTime from,

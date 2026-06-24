@@ -37,7 +37,7 @@ export default function AuditLogs() {
   const load = useCallback(async () => {
     setLoading(true)
     try {
-      const res = await getAuditLogs(page, SIZE, undefined, actionFilter || undefined, targetTypeFilter || undefined, fromDate || undefined, toDate || undefined)
+      const res = await getAuditLogs(page, SIZE, debouncedAdmin || undefined, actionFilter || undefined, targetTypeFilter || undefined, fromDate || undefined, toDate || undefined)
       setItems(res.content); setTotal(res.totalElements); setTotalPages(res.totalPages)
     } finally { setLoading(false) }
   }, [page, actionFilter, targetTypeFilter, fromDate, toDate, debouncedAdmin])

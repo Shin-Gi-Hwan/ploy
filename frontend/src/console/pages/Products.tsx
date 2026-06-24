@@ -26,7 +26,7 @@ function ProductModal({ open, initial, onClose, onSaved }: {
     if (!open) { setError(''); return }
     if (initial) {
       setForm({
-        name: initial.name, description: '',
+        name: initial.name, description: initial.description ?? '',
         productType: initial.productType, price: initial.price,
         stock: initial.stock, imageUrl: initial.imageUrl ?? '', visible: initial.visible,
       })
