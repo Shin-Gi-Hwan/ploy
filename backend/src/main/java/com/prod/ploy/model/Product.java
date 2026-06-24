@@ -54,6 +54,7 @@ public class Product {
     void preUpdate() { updatedAt = LocalDateTime.now(); }
 
     public enum ProductType {
-        EBOOK, BUSINESS_CARD, OFFICE_SUPPLY, DESIGN_TEMPLATE
+        EBOOK, BUSINESS_CARD, OFFICE_SUPPLY, DESIGN_TEMPLATE,
+        DIY_FURNITURE, SMALL_APPLIANCE, DAILY_SUPPLIES
     }
 }

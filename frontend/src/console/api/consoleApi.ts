@@ -385,7 +385,7 @@ export async function assignInquiryPartner(id: number, freelancerId: number): Pr
 
 // ─── Product API ──────────────────────────────────────────────────────────────────
 
-export type ProductType = 'EBOOK' | 'BUSINESS_CARD' | 'OFFICE_SUPPLY' | 'DESIGN_TEMPLATE'
+export type ProductType = 'EBOOK' | 'BUSINESS_CARD' | 'OFFICE_SUPPLY' | 'DESIGN_TEMPLATE' | 'DIY_FURNITURE' | 'SMALL_APPLIANCE' | 'DAILY_SUPPLIES'
 
 export interface ConsoleProductListItem {
   id: number

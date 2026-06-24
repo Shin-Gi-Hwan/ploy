@@ -19,6 +19,7 @@ interface PageResponse<T> { content: T[]; totalElements: number; totalPages: num
 
 const TYPE_LABELS: Record<string, string> = {
   EBOOK: '전자책', BUSINESS_CARD: '명함', OFFICE_SUPPLY: '사무용품', DESIGN_TEMPLATE: '디자인 템플릿',
+  DIY_FURNITURE: 'DIY/가구', SMALL_APPLIANCE: '소형가전', DAILY_SUPPLIES: '생활잡화',
 }
 
 function Stars({ value, onChange }: { value: number; onChange?: (v: number) => void }) {
@@ -109,7 +110,8 @@ export default function ProductDetail() {
   if (!product) return null
 
   const soldOut = product.stock === 0
-  const isPurchasable = ['EBOOK', 'OFFICE_SUPPLY'].includes(product.productType)
+  const isFree = product.price === 0
+  const isPurchasable = ['EBOOK', 'OFFICE_SUPPLY', 'DIY_FURNITURE', 'SMALL_APPLIANCE', 'DAILY_SUPPLIES'].includes(product.productType)
   const avgRating = reviews.length ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1) : null
 
   return (
@@ -165,11 +167,11 @@ export default function ProductDetail() {
               style={{
                 padding: '14px 28px', borderRadius: 10, border: 'none', fontSize: 15, fontWeight: 700,
                 cursor: soldOut ? 'not-allowed' : 'pointer',
-                background: soldOut ? '#e5e7e5' : isPurchasable ? '#1a2e1a' : '#3DD9B3',
+                background: soldOut ? '#e5e7e5' : isFree ? '#3DD9B3' : isPurchasable ? '#1a2e1a' : '#3DD9B3',
                 color: soldOut ? '#9ca39c' : '#fff',
               }}
             >
-              {soldOut ? '품절' : isPurchasable ? '구매하기' : '문의하기'}
+              {soldOut ? '품절' : isFree ? '무료로 받기' : isPurchasable ? '구매하기' : '문의하기'}
             </button>
           </div>
         </motion.div>

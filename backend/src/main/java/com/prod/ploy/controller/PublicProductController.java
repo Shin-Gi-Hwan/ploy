@@ -19,17 +19,25 @@ public class PublicProductController {
 
     private final ProductRepository productRepository;
 
-    /** Public product list — visible=true only, optionally filtered by type */
+    /** Public product list — visible=true only, optionally filtered by type and free/paid */
     @GetMapping
-    public List<PublicProductDto> list(@RequestParam(required = false) String type) {
+    public List<PublicProductDto> list(
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) Boolean free) {
         Product.ProductType productType = null;
         if (type != null && !type.isBlank()) {
             try { productType = Product.ProductType.valueOf(type.toUpperCase()); }
             catch (IllegalArgumentException ignored) {}
         }
         PageRequest pageable = PageRequest.of(0, 200, Sort.by(Sort.Direction.DESC, "createdAt"));
-        return productRepository.searchProducts(productType, true, null, pageable)
-                .stream().map(PublicProductDto::from).toList();
+        var stream = productRepository.searchProducts(productType, true, null, pageable)
+                .stream().map(PublicProductDto::from);
+        if (free != null) {
+            stream = free
+                ? stream.filter(p -> p.price().compareTo(java.math.BigDecimal.ZERO) == 0)
+                : stream.filter(p -> p.price().compareTo(java.math.BigDecimal.ZERO) > 0);
+        }
+        return stream.toList();
     }
 
     /** Single product detail */

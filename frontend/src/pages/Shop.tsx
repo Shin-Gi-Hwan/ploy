@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import axios from 'axios'
 import Layout from '../components/layout/Layout'
@@ -24,6 +24,9 @@ const TYPE_LABELS: Record<string, string> = {
   BUSINESS_CARD: '명함',
   OFFICE_SUPPLY: '사무용품',
   DESIGN_TEMPLATE: '디자인 템플릿',
+  DIY_FURNITURE: 'DIY/가구',
+  SMALL_APPLIANCE: '소형가전',
+  DAILY_SUPPLIES: '생활잡화',
 }
 
 const TYPE_COLORS: Record<string, { bg: string; text: string }> = {
@@ -31,9 +34,12 @@ const TYPE_COLORS: Record<string, { bg: string; text: string }> = {
   BUSINESS_CARD:   { bg: '#eff6ff', text: '#1e40af' },
   OFFICE_SUPPLY:   { bg: '#fff7ed', text: '#9a3412' },
   DESIGN_TEMPLATE: { bg: '#faf5ff', text: '#6b21a8' },
+  DIY_FURNITURE:   { bg: '#fef9c3', text: '#854d0e' },
+  SMALL_APPLIANCE: { bg: '#f0f9ff', text: '#075985' },
+  DAILY_SUPPLIES:  { bg: '#fdf2f8', text: '#831843' },
 }
 
-const ALL_TYPES = ['EBOOK', 'BUSINESS_CARD', 'OFFICE_SUPPLY', 'DESIGN_TEMPLATE']
+const ALL_TYPES = ['EBOOK', 'BUSINESS_CARD', 'OFFICE_SUPPLY', 'DESIGN_TEMPLATE', 'DIY_FURNITURE', 'SMALL_APPLIANCE', 'DAILY_SUPPLIES']
 
 // ── Product Card ───────────────────────────────────────────────────────────────
 
@@ -111,20 +117,21 @@ function ProductCard({ product }: { product: PublicProduct }) {
 
         {/* Price + CTA */}
         {(() => {
-          const isPurchasable = ['EBOOK', 'OFFICE_SUPPLY'].includes(product.productType)
-          const btnLabel = soldOut ? '품절' : isPurchasable ? '구매하기' : '문의하기'
+          const isFree = product.price === 0
+          const isPurchasable = ['EBOOK', 'OFFICE_SUPPLY', 'DIY_FURNITURE', 'SMALL_APPLIANCE', 'DAILY_SUPPLIES'].includes(product.productType)
+          const btnLabel = soldOut ? '품절' : isFree ? '무료로 받기' : isPurchasable ? '구매하기' : '문의하기'
           const btnHref  = isPurchasable ? '/shop/purchase' : '/start'
           return (
             <div style={{ marginTop: 'auto', paddingTop: 12, borderTop: '1px solid #f0f4f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span style={{ fontSize: 17, fontWeight: 800, color: '#1a2e1a' }}>
-                {product.price === 0 ? '무료' : `${Number(product.price).toLocaleString()}원`}
+                {isFree ? '무료' : `${Number(product.price).toLocaleString()}원`}
               </span>
               <button
                 disabled={soldOut}
                 onClick={e => { e.stopPropagation(); window.location.href = btnHref }}
                 style={{
                   padding: '8px 16px', borderRadius: 8, border: 'none',
-                  background: soldOut ? '#e5e7e5' : isPurchasable ? '#1a2e1a' : '#3DD9B3',
+                  background: soldOut ? '#e5e7e5' : isFree ? '#3DD9B3' : isPurchasable ? '#1a2e1a' : '#3DD9B3',
                   color: soldOut ? '#9ca39c' : '#fff',
                   fontSize: 13, fontWeight: 600, cursor: soldOut ? 'not-allowed' : 'pointer',
                   transition: 'background 0.15s',
@@ -154,18 +161,24 @@ function ProductPlaceholder({ type }: { type: string }) {
 // ── Main Page ──────────────────────────────────────────────────────────────────
 
 export default function Shop() {
+  const [searchParams] = useSearchParams()
   const [products, setProducts] = useState<PublicProduct[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [typeFilter, setTypeFilter] = useState('')
+  const [typeFilter, setTypeFilter] = useState(searchParams.get('type') ?? '')
+
+  const freeParam = searchParams.get('free')
 
   useEffect(() => {
     setLoading(true)
-    axios.get<PublicProduct[]>('/api/products', { params: { type: typeFilter || undefined } })
+    const params: Record<string, string> = {}
+    if (typeFilter) params.type = typeFilter
+    if (freeParam !== null) params.free = freeParam
+    axios.get<PublicProduct[]>('/api/products', { params })
       .then(r => setProducts(r.data))
       .catch(() => setError('상품을 불러오지 못했습니다.'))
       .finally(() => setLoading(false))
-  }, [typeFilter])
+  }, [typeFilter, freeParam])
 
   return (
     <Layout>

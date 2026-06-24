@@ -7,8 +7,9 @@ import { Pagination, SearchIcon, useDebounce, formatDate } from '../components/u
 
 const TYPE_LABELS: Record<string, string> = {
   EBOOK: '전자책', BUSINESS_CARD: '명함', OFFICE_SUPPLY: '사무용품', DESIGN_TEMPLATE: '디자인템플릿',
+  DIY_FURNITURE: 'DIY/가구', SMALL_APPLIANCE: '소형가전', DAILY_SUPPLIES: '생활잡화',
 }
-const ALL_TYPES = ['EBOOK', 'BUSINESS_CARD', 'OFFICE_SUPPLY', 'DESIGN_TEMPLATE']
+const ALL_TYPES = ['EBOOK', 'BUSINESS_CARD', 'OFFICE_SUPPLY', 'DESIGN_TEMPLATE', 'DIY_FURNITURE', 'SMALL_APPLIANCE', 'DAILY_SUPPLIES']
 
 const EMPTY_FORM: ProductUpsertRequest = { name: '', description: '', productType: 'EBOOK', price: 0, stock: 0, imageUrl: '', visible: true }
 
