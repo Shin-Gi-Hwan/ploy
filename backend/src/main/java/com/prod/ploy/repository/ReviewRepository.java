@@ -38,4 +38,14 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             @Param("visible") Boolean visible,
             @Param("q") String q,
             Pageable pageable);
+
+    @Query("""
+        SELECT r FROM Review r LEFT JOIN FETCH r.member
+        WHERE r.productId = :productId
+          AND r.deleted = false AND r.visible = true
+        ORDER BY r.createdAt DESC
+    """)
+    Page<Review> findVisibleByProductId(@Param("productId") Long productId, Pageable pageable);
+
+    boolean existsByMemberIdAndProductId(Long memberId, Long productId);
 }

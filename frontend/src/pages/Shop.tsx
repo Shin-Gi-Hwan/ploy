@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import axios from 'axios'
 import Layout from '../components/layout/Layout'
@@ -37,6 +38,7 @@ const ALL_TYPES = ['EBOOK', 'BUSINESS_CARD', 'OFFICE_SUPPLY', 'DESIGN_TEMPLATE']
 // ── Product Card ───────────────────────────────────────────────────────────────
 
 function ProductCard({ product }: { product: PublicProduct }) {
+  const navigate = useNavigate()
   const typeColor = TYPE_COLORS[product.productType] ?? { bg: '#f3f4f6', text: '#374151' }
   const soldOut = product.stock === 0
 
@@ -45,7 +47,8 @@ function ProductCard({ product }: { product: PublicProduct }) {
       initial={{ opacity: 0, y: 18 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.22 }}
-      whileHover={!soldOut ? { y: -4, boxShadow: '0 8px 32px rgba(0,0,0,0.10)' } : {}}
+      whileHover={{ y: -4, boxShadow: '0 8px 32px rgba(0,0,0,0.10)' }}
+      onClick={() => navigate(`/shop/${product.id}`)}
       style={{
         background: '#fff',
         border: '1px solid #e4e9e4',
@@ -55,6 +58,7 @@ function ProductCard({ product }: { product: PublicProduct }) {
         flexDirection: 'column',
         opacity: soldOut ? 0.65 : 1,
         transition: 'box-shadow 0.18s',
+        cursor: 'pointer',
       }}
     >
       {/* Image */}
@@ -117,7 +121,7 @@ function ProductCard({ product }: { product: PublicProduct }) {
               </span>
               <button
                 disabled={soldOut}
-                onClick={() => { window.location.href = btnHref }}
+                onClick={e => { e.stopPropagation(); window.location.href = btnHref }}
                 style={{
                   padding: '8px 16px', borderRadius: 8, border: 'none',
                   background: soldOut ? '#e5e7e5' : isPurchasable ? '#1a2e1a' : '#3DD9B3',

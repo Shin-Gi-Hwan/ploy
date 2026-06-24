@@ -92,6 +92,9 @@ export default function Navbar() {
                 <Link to={dashboardHref} className="navbar-link">
                   {t('nav.dashboard')}
                 </Link>
+                <Link to={user?.role === 'ADMIN' ? '/console/notifications' : '/client/notifications'} className="navbar-link" title="알림">
+                  🔔
+                </Link>
                 <button
                   onClick={handleLogout}
                   className="navbar-link"

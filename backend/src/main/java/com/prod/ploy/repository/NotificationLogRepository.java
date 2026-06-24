@@ -26,4 +26,6 @@ public interface NotificationLogRepository extends JpaRepository<NotificationLog
             @Param("eventType") NotificationLog.NotificationEvent eventType,
             @Param("status") NotificationLog.NotificationStatus status,
             Pageable pageable);
+
+    Page<NotificationLog> findByRecipientEmailOrderByCreatedAtDesc(String email, Pageable pageable);
 }

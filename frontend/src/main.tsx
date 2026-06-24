@@ -16,8 +16,10 @@ import FreelancerDashboard from './pages/freelancer/Dashboard'
 import Partners          from './pages/Partners'
 import PartnerDetail     from './pages/PartnerDetail'
 import PartnerApply      from './pages/PartnerApply'
-import OAuthCallback     from './pages/OAuthCallback'
-import Shop             from './pages/Shop'
+import OAuthCallback      from './pages/OAuthCallback'
+import Shop              from './pages/Shop'
+import ProductDetail     from './pages/ProductDetail'
+import ClientNotifications from './pages/client/Notifications'
 
 // ─── Admin Console (Phase 1) ──────────────────────────────────────────────────
 import ConsoleLayout       from './console/components/layout/ConsoleLayout'
@@ -88,6 +90,7 @@ function AppRoutes() {
 
       {/* Public shop */}
       <Route path="/shop" element={<Shop />} />
+      <Route path="/shop/:id" element={<ProductDetail />} />
 
       {/* Public partner pages */}
       <Route path="/partners"     element={<Partners />} />
@@ -99,6 +102,7 @@ function AppRoutes() {
         <RequireAuth role="USER">
           <Routes>
             <Route index element={<ClientDashboard />} />
+            <Route path="notifications" element={<ClientNotifications />} />
             <Route path="projects"  element={<ClientDashboard />} />
             <Route path="request"   element={<ClientDashboard />} />
             <Route path="orders"    element={<ClientDashboard />} />
@@ -131,6 +135,7 @@ function AppRoutes() {
         <Route path="chat"            element={<ConsoleChatMonitor />} />
         <Route path="reviews"         element={<ConsoleReviews />} />
         <Route path="notifications"   element={<ConsoleNotifications />} />
+
         <Route path="login-audits"    element={<ConsoleLoginAudits />} />
         <Route path="audit"           element={<ConsoleAuditLogs />} />
         <Route path="settings"        element={<ConsoleSettings />} />

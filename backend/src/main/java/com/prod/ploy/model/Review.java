@@ -20,6 +20,10 @@ public class Review {
     @JoinColumn(name = "project_id")
     private Project project;
 
+    /** Set for product reviews (null for project reviews) */
+    @Column(name = "product_id")
+    private Long productId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;

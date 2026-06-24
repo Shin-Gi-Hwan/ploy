@@ -39,4 +39,14 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     Page<Order> searchOrders(@Param("status") Order.OrderStatus status,
                              @Param("q")      String q,
                              Pageable pageable);
+
+    @Query("""
+        SELECT COUNT(o) > 0 FROM Order o JOIN o.items i
+        WHERE o.member.id = :memberId
+          AND i.productId = :productId
+          AND o.status IN :statuses
+    """)
+    boolean hasPurchasedProduct(@Param("memberId")  Long memberId,
+                                @Param("productId") Long productId,
+                                @Param("statuses")  java.util.List<Order.OrderStatus> statuses);
 }
