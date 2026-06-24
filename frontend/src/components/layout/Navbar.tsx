@@ -16,6 +16,7 @@ export default function Navbar() {
     { label: t('nav.portfolio'),  href: '/#portfolio' },
     { label: t('nav.reviews'),    href: '/#reviews' },
     { label: t('nav.services'),   href: '/#services' },
+    { label: '상품',              href: '/shop' },
     { label: t('nav.howItWorks'), href: '/#how-it-works' },
     { label: t('nav.faq'),        href: '/#faq' },
   ]

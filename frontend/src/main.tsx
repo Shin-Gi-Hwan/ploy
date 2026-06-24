@@ -17,6 +17,7 @@ import Partners          from './pages/Partners'
 import PartnerDetail     from './pages/PartnerDetail'
 import PartnerApply      from './pages/PartnerApply'
 import OAuthCallback     from './pages/OAuthCallback'
+import Shop             from './pages/Shop'
 
 // ─── Admin Console (Phase 1) ──────────────────────────────────────────────────
 import ConsoleLayout       from './console/components/layout/ConsoleLayout'
@@ -84,6 +85,9 @@ function AppRoutes() {
 
       {/* Legacy intake — keep accessible but prefer /client/request */}
       <Route path="/start" element={<Intake />} />
+
+      {/* Public shop */}
+      <Route path="/shop" element={<Shop />} />
 
       {/* Public partner pages */}
       <Route path="/partners"     element={<Partners />} />
