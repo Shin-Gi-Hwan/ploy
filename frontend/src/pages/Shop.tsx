@@ -106,27 +106,31 @@ function ProductCard({ product }: { product: PublicProduct }) {
         )}
 
         {/* Price + CTA */}
-        <div style={{ marginTop: 'auto', paddingTop: 12, borderTop: '1px solid #f0f4f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontSize: 17, fontWeight: 800, color: '#1a2e1a' }}>
-            {product.price === 0 ? '무료' : `${Number(product.price).toLocaleString()}원`}
-          </span>
-          <button
-            disabled={soldOut}
-            onClick={() => {
-              // 문의 플로우 또는 추후 구매 연동
-              window.location.href = '/start'
-            }}
-            style={{
-              padding: '8px 16px', borderRadius: 8, border: 'none',
-              background: soldOut ? '#e5e7e5' : '#3DD9B3',
-              color: soldOut ? '#9ca39c' : '#fff',
-              fontSize: 13, fontWeight: 600, cursor: soldOut ? 'not-allowed' : 'pointer',
-              transition: 'background 0.15s',
-            }}
-          >
-            {soldOut ? '품절' : '문의하기'}
-          </button>
-        </div>
+        {(() => {
+          const isPurchasable = ['EBOOK', 'OFFICE_SUPPLY'].includes(product.productType)
+          const btnLabel = soldOut ? '품절' : isPurchasable ? '구매하기' : '문의하기'
+          const btnHref  = isPurchasable ? '/shop/purchase' : '/start'
+          return (
+            <div style={{ marginTop: 'auto', paddingTop: 12, borderTop: '1px solid #f0f4f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: 17, fontWeight: 800, color: '#1a2e1a' }}>
+                {product.price === 0 ? '무료' : `${Number(product.price).toLocaleString()}원`}
+              </span>
+              <button
+                disabled={soldOut}
+                onClick={() => { window.location.href = btnHref }}
+                style={{
+                  padding: '8px 16px', borderRadius: 8, border: 'none',
+                  background: soldOut ? '#e5e7e5' : isPurchasable ? '#1a2e1a' : '#3DD9B3',
+                  color: soldOut ? '#9ca39c' : '#fff',
+                  fontSize: 13, fontWeight: 600, cursor: soldOut ? 'not-allowed' : 'pointer',
+                  transition: 'background 0.15s',
+                }}
+              >
+                {btnLabel}
+              </button>
+            </div>
+          )
+        })()}
       </div>
     </motion.div>
   )
