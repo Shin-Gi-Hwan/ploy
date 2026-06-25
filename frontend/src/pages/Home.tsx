@@ -199,10 +199,10 @@ export default function Home() {
             </Link>
 
             <nav className="ploy-nav">
-              <Link to="/shop">카테고리</Link>
+              <Link to="/shop">상품</Link>
+              <Link to="/shop?type=EBOOK">전자책</Link>
               <Link to="/partners">포트폴리오</Link>
               <a href="#how-it-works">이용 방법</a>
-              <a href="#pricing">요금</a>
             </nav>
 
             <div className="ploy-header-actions">
@@ -289,13 +289,17 @@ export default function Home() {
             <div className="ploy-categories-grid">
               {[
                 { name: '명함', desc: '브랜드의 첫 악수', type: 'BUSINESS_CARD', icon: <div style={{ width: 18, height: 14, borderRadius: 3, background: '#2ec4b6' }} /> },
-                { name: '전자책', desc: '읽고 싶게 만드는 편집', type: 'PRESENTATION', icon: <div style={{ width: 14, height: 18, borderRadius: 3, background: '#2ec4b6' }} /> },
+                { name: '전자책', desc: '읽고 싶게 만드는 편집', type: 'EBOOK', icon: <div style={{ width: 14, height: 18, borderRadius: 3, background: '#2ec4b6' }} /> },
                 { name: 'PPT · 제안서', desc: '설득되는 한 장', type: 'PRESENTATION', icon: <div style={{ width: 18, height: 18, borderRadius: '50%', background: '#2ec4b6' }} /> },
                 { name: '로고 · 브랜딩', desc: '기억되는 상징', type: 'LOGO', icon: <div style={{ width: 18, height: 18, borderRadius: 5, background: '#2ec4b6', transform: 'rotate(45deg)' }} /> },
                 { name: '상세페이지', desc: '전환을 만드는 흐름', type: 'DETAIL_PAGE', icon: <div style={{ width: 20, height: 12, borderRadius: 3, background: '#2ec4b6' }} /> },
                 { name: '웹 · 앱', desc: '작동하는 경험', type: 'WEBSITE', icon: <div style={{ width: 18, height: 18, borderRadius: 4, border: '3px solid #2ec4b6' }} /> },
               ].map((c, i) => (
-                <Link key={i} to={`/client/request?type=${c.type}`} className="ploy-cat-card">
+                <Link
+                  key={i}
+                  to={c.type === 'EBOOK' ? `/shop?type=EBOOK` : `/client/request?type=${c.type}`}
+                  className="ploy-cat-card"
+                >
                   <div className="ploy-cat-icon">{c.icon}</div>
                   <div className="ploy-cat-name">{c.name}</div>
                   <div className="ploy-cat-desc">{c.desc}</div>
