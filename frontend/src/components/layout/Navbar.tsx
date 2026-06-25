@@ -1,22 +1,20 @@
 import { useState, useRef } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
-import Button from '../ui/Button'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 
-const DROPDOWN_MENUS = {
-  shop: [
-    { label: 'DIY/가구',  href: '/shop?type=DIY_FURNITURE' },
-    { label: '소형가전',   href: '/shop?type=SMALL_APPLIANCE' },
-    { label: '생활잡화',   href: '/shop?type=DAILY_SUPPLIES' },
-  ],
-  ebook: [
-    { label: '무료',  href: '/shop?type=EBOOK&free=true' },
-    { label: '유료',  href: '/shop?type=EBOOK&free=false' },
-  ],
-}
+const SHOP_ITEMS = [
+  { label: '전체 상품',    href: '/shop' },
+  { label: '명함',         href: '/shop?type=BUSINESS_CARD' },
+  { label: '디자인 템플릿', href: '/shop?type=DESIGN_TEMPLATE' },
+  { label: '사무용품',     href: '/shop?type=OFFICE_SUPPLY' },
+]
 
-function DropdownNav({ label, items, href }: { label: string; items: { label: string; href: string }[]; href?: string }) {
+const EBOOK_ITEMS = [
+  { label: '무료 전자책', href: '/shop?type=EBOOK&free=true' },
+  { label: '유료 전자책', href: '/shop?type=EBOOK&free=false' },
+]
+
+function DropdownNav({ label, href, items }: { label: string; href: string; items: { label: string; href: string }[] }) {
   const [open, setOpen] = useState(false)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -29,55 +27,33 @@ function DropdownNav({ label, items, href }: { label: string; items: { label: st
   }
 
   return (
-    <div
-      style={{ position: 'relative', display: 'inline-block' }}
-      onMouseEnter={show}
-      onMouseLeave={hide}
-    >
-      <a
-        href={href ?? items[0]?.href}
-        className="navbar-link"
-        style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
-        onClick={e => { if (!href) e.preventDefault() }}
-      >
+    <div style={{ position: 'relative' }} onMouseEnter={show} onMouseLeave={hide}>
+      <Link to={href} style={{
+        fontSize: 15, color: '#3c4a48', fontWeight: 500, textDecoration: 'none',
+        display: 'inline-flex', alignItems: 'center', gap: 3,
+      }}>
         {label}
-        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style={{ opacity: 0.55, marginTop: 1 }}>
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style={{ opacity: 0.5, marginTop: 1 }}>
           <path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
-      </a>
+      </Link>
       {open && (
-        <div
-          style={{
-            position: 'absolute', top: '100%', left: 0, paddingTop: 6,
-            zIndex: 100,
-          }}
-          onMouseEnter={show}
-          onMouseLeave={hide}
-        >
+        <div style={{ position: 'absolute', top: '100%', left: 0, paddingTop: 8, zIndex: 200 }}
+          onMouseEnter={show} onMouseLeave={hide}>
           <div style={{
-            background: '#fff',
-            border: '1px solid #e4e9e4',
-            borderRadius: 10,
-            boxShadow: '0 8px 24px rgba(0,0,0,0.09)',
-            minWidth: 140,
-            overflow: 'hidden',
+            background: '#fff', border: '1px solid #eaf0ef', borderRadius: 10,
+            boxShadow: '0 8px 24px rgba(15,46,42,0.10)', minWidth: 150, overflow: 'hidden',
           }}>
             {items.map(item => (
-              <a
-                key={item.href}
-                href={item.href}
-                style={{
-                  display: 'block', padding: '10px 16px',
-                  fontSize: 14, color: '#1a2e1a', textDecoration: 'none',
-                  transition: 'background 0.12s',
-                  fontFamily: 'var(--font-sans)',
-                  whiteSpace: 'nowrap',
-                }}
-                onMouseEnter={e => (e.currentTarget.style.background = '#f4f8f4')}
+              <Link key={item.href} to={item.href} style={{
+                display: 'block', padding: '10px 16px', fontSize: 14,
+                color: '#3c4a48', textDecoration: 'none', whiteSpace: 'nowrap',
+              }}
+                onMouseEnter={e => (e.currentTarget.style.background = '#f4faf9')}
                 onMouseLeave={e => (e.currentTarget.style.background = '')}
               >
                 {item.label}
-              </a>
+              </Link>
             ))}
           </div>
         </div>
@@ -88,38 +64,16 @@ function DropdownNav({ label, items, href }: { label: string; items: { label: st
 
 export default function Navbar() {
   const [open, setOpen] = useState(false)
-  const location = useLocation()
   const navigate = useNavigate()
-  const isHome = location.pathname === '/'
-  const { t, i18n } = useTranslation()
   const { isAuthenticated, user, logout } = useAuth()
 
-  const NAV_LINKS = [
-    { label: t('nav.portfolio'),  href: '/#portfolio' },
-    { label: t('nav.reviews'),    href: '/#reviews' },
-    { label: t('nav.services'),   href: '/#services' },
-    { label: t('nav.howItWorks'), href: '/#how-it-works' },
-    { label: t('nav.faq'),        href: '/#faq' },
-  ]
+  const ctaHref = isAuthenticated ? '/client/request' : '/login'
 
   const dashboardHref = user?.role === 'ADMIN'
-    ? '/admin'
+    ? '/console'
     : user?.role === 'OUTSOURCING_PARTNER'
       ? '/freelancer'
       : '/client'
-
-  function scrollTo(e: React.MouseEvent<HTMLAnchorElement>, href: string) {
-    if (href.startsWith('/#') && isHome) {
-      e.preventDefault()
-      const id = href.slice(2)
-      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      setOpen(false)
-    }
-  }
-
-  function toggleLang() {
-    i18n.changeLanguage(i18n.language === 'ko' ? 'en' : 'ko')
-  }
 
   function handleLogout() {
     logout()
@@ -128,165 +82,104 @@ export default function Navbar() {
   }
 
   return (
-    <header className="navbar" role="banner">
-      <div className="container">
-        <nav className="navbar-inner" aria-label={t('nav.ariaLabel')}>
-          {/* Logo */}
-          <Link to="/" className="navbar-logo" aria-label={t('nav.ariaHome')}>
-            Ploy
-          </Link>
+    <header style={{
+      height: 74, borderBottom: '1px solid #ecf1f0',
+      background: '#fff', position: 'sticky', top: 0, zIndex: 100,
+    }}>
+      <div style={{
+        maxWidth: 1240, margin: '0 auto', padding: '0 48px',
+        height: '100%', display: 'flex', alignItems: 'center', gap: 40,
+      }}>
+        {/* Logo */}
+        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', flexShrink: 0 }}>
+          <div style={{ width: 28, height: 28, borderRadius: 8, background: '#2ec4b6', flexShrink: 0 }} />
+          <span style={{ fontWeight: 800, fontSize: 21, letterSpacing: '-0.01em', color: '#0f2e2a' }}>PLOY</span>
+        </Link>
 
-          {/* Desktop nav links */}
-          <div className="navbar-links" role="list">
-            {NAV_LINKS.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                role="listitem"
-                className="navbar-link"
-                onClick={(e) => scrollTo(e, link.href)}
-              >
-                {link.label}
-              </a>
-            ))}
-            <DropdownNav label="상품" href="/shop" items={DROPDOWN_MENUS.shop} />
-            <DropdownNav label="전자책" items={DROPDOWN_MENUS.ebook} />
-          </div>
-
-          {/* Desktop actions */}
-          <div className="navbar-actions">
-            {/* Language switcher */}
-            <button
-              onClick={toggleLang}
-              className="navbar-link"
-              style={{
-                background: 'none', border: '1px solid var(--border-default)',
-                borderRadius: 'var(--radius-sm)', padding: '4px 10px',
-                fontSize: 13, cursor: 'pointer', color: 'var(--text-secondary)',
-                fontFamily: 'var(--font-sans)',
-              }}
-              aria-label={t('lang.switchTo')}
-            >
-              {i18n.language === 'ko' ? 'EN' : '한'}
-            </button>
-
-            {isAuthenticated ? (
-              <>
-                <Link to={dashboardHref} className="navbar-link">
-                  {t('nav.dashboard')}
-                </Link>
-                <Link to={user?.role === 'ADMIN' ? '/console/notifications' : '/client/notifications'} className="navbar-link" title="알림">
-                  🔔
-                </Link>
-                <button
-                  onClick={handleLogout}
-                  className="navbar-link"
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-sans)' }}
-                >
-                  {t('auth.logout')}
-                </button>
-              </>
-            ) : (
-              <>
-                <Link to="/login" className="navbar-link">
-                  {t('nav.login')}
-                </Link>
-                <Button as="a" href="/register" size="sm">
-                  {t('nav.startProject')}
-                </Button>
-              </>
-            )}
-          </div>
-
-          {/* Mobile hamburger */}
-          <button
-            className={`navbar-hamburger${open ? ' open' : ''}`}
-            aria-label={open ? t('nav.ariaCloseMenu') : t('nav.ariaOpenMenu')}
-            aria-expanded={open}
-            aria-controls="mobile-menu"
-            onClick={() => setOpen((v) => !v)}
-          >
-            <span />
-            <span />
-            <span />
-          </button>
+        {/* Desktop nav */}
+        <nav className="navbar-links" style={{ display: 'none', alignItems: 'center', gap: 28 }}>
+          <DropdownNav label="상품" href="/shop" items={SHOP_ITEMS} />
+          <DropdownNav label="전자책" href="/shop?type=EBOOK" items={EBOOK_ITEMS} />
+          <Link to="/partners" style={{ fontSize: 15, color: '#3c4a48', fontWeight: 500, textDecoration: 'none' }}>포트폴리오</Link>
+          <a href="/#how-it-works" style={{ fontSize: 15, color: '#3c4a48', fontWeight: 500, textDecoration: 'none' }}>이용 방법</a>
         </nav>
 
-        {/* Mobile menu */}
-        <div
-          id="mobile-menu"
-          className={`navbar-mobile-menu${open ? ' open' : ''}`}
-          aria-hidden={!open}
-        >
-          {NAV_LINKS.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className="navbar-mobile-link"
-              onClick={(e) => scrollTo(e, link.href)}
-            >
-              {link.label}
-            </a>
-          ))}
-          <a href="/shop" className="navbar-mobile-link" onClick={() => setOpen(false)}>상품</a>
-          {DROPDOWN_MENUS.shop.map(item => (
-            <a key={item.href} href={item.href} className="navbar-mobile-link" style={{ paddingLeft: 20, fontSize: 14, color: 'var(--text-secondary)' }} onClick={() => setOpen(false)}>
-              — {item.label}
-            </a>
-          ))}
-          <span className="navbar-mobile-link" style={{ fontSize: 15, color: 'var(--text-secondary)', display: 'block' }}>전자책</span>
-          {DROPDOWN_MENUS.ebook.map(item => (
-            <a key={item.href} href={item.href} className="navbar-mobile-link" style={{ paddingLeft: 20, fontSize: 14, color: 'var(--text-secondary)' }} onClick={() => setOpen(false)}>
-              — {item.label}
-            </a>
-          ))}
-          <button
-            onClick={() => { toggleLang(); setOpen(false) }}
-            className="navbar-mobile-link"
-            style={{
-              background: 'none', border: 'none', textAlign: 'left',
-              cursor: 'pointer', fontFamily: 'var(--font-sans)',
-              fontSize: 15, color: 'var(--text-secondary)', padding: 0,
-            }}
-          >
-            {i18n.language === 'ko' ? t('lang.en') : t('lang.ko')}
-          </button>
-
+        {/* Desktop actions */}
+        <div className="navbar-actions" style={{ marginLeft: 'auto', display: 'none', alignItems: 'center', gap: 18 }}>
           {isAuthenticated ? (
             <>
-              <Link
-                to={dashboardHref}
-                className="navbar-mobile-link"
-                onClick={() => setOpen(false)}
-              >
-                {t('nav.dashboard')}
+              <Link to={dashboardHref} style={{ fontSize: 15, color: '#3c4a48', fontWeight: 500, textDecoration: 'none' }}>대시보드</Link>
+              <button onClick={handleLogout} style={{
+                fontSize: 15, color: '#3c4a48', fontWeight: 500, background: 'none',
+                border: 'none', cursor: 'pointer', fontFamily: 'inherit', padding: 0,
+              }}>로그아웃</button>
+            </>
+          ) : (
+            <Link to="/login" style={{ fontSize: 15, color: '#3c4a48', fontWeight: 500, textDecoration: 'none' }}>로그인</Link>
+          )}
+          <Link to={ctaHref} style={{
+            fontSize: 15, fontWeight: 600, color: '#fff', background: '#2ec4b6',
+            padding: '10px 20px', borderRadius: 8, textDecoration: 'none',
+          }}>의뢰하기</Link>
+        </div>
+
+        {/* Mobile hamburger */}
+        <button
+          className="navbar-hamburger"
+          style={{ marginLeft: 'auto' }}
+          aria-label="메뉴"
+          onClick={() => setOpen(v => !v)}
+        >
+          <span /><span /><span />
+        </button>
+      </div>
+
+      {/* Mobile menu */}
+      {open && (
+        <div style={{
+          position: 'absolute', top: 74, left: 0, right: 0,
+          background: '#fff', borderTop: '1px solid #ecf1f0',
+          borderBottom: '1px solid #ecf1f0',
+          padding: '16px 20px 20px', display: 'flex', flexDirection: 'column', gap: 4,
+          zIndex: 99,
+        }}>
+          {[
+            { label: '상품', href: '/shop' },
+            { label: '전자책', href: '/shop?type=EBOOK' },
+            { label: '포트폴리오', href: '/partners' },
+            { label: '이용 방법', href: '/#how-it-works' },
+          ].map(item => (
+            <Link key={item.href} to={item.href}
+              onClick={() => setOpen(false)}
+              style={{ padding: '10px 4px', fontSize: 15, color: '#3c4a48', fontWeight: 500, textDecoration: 'none', borderRadius: 8 }}
+            >
+              {item.label}
+            </Link>
+          ))}
+          <div style={{ height: 1, background: '#f0f4f3', margin: '8px 0' }} />
+          {isAuthenticated ? (
+            <>
+              <Link to={dashboardHref} onClick={() => setOpen(false)}
+                style={{ padding: '10px 4px', fontSize: 15, color: '#3c4a48', fontWeight: 500, textDecoration: 'none' }}>
+                대시보드
               </Link>
-              <button
-                onClick={handleLogout}
-                className="navbar-mobile-link"
-                style={{ background: 'none', border: 'none', textAlign: 'left', cursor: 'pointer', fontFamily: 'var(--font-sans)', fontSize: 15, color: 'var(--text-secondary)', padding: 0 }}
-              >
-                {t('auth.logout')}
+              <button onClick={handleLogout}
+                style={{ padding: '10px 4px', fontSize: 15, color: '#3c4a48', fontWeight: 500, textAlign: 'left', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}>
+                로그아웃
               </button>
             </>
           ) : (
-            <>
-              <Link
-                to="/login"
-                className="navbar-mobile-link"
-                onClick={() => setOpen(false)}
-              >
-                {t('nav.login')}
-              </Link>
-              <div style={{ paddingTop: 'var(--space-2)' }}>
-                <Button as="a" href="/register" size="md" style={{ width: '100%' }}>
-                  {t('nav.startProject')}
-                </Button>
-              </div>
-            </>
+            <Link to="/login" onClick={() => setOpen(false)}
+              style={{ padding: '10px 4px', fontSize: 15, color: '#3c4a48', fontWeight: 500, textDecoration: 'none' }}>
+              로그인
+            </Link>
           )}
+          <Link to={ctaHref} onClick={() => setOpen(false)}
+            style={{ marginTop: 8, padding: '12px 20px', fontSize: 15, fontWeight: 600, color: '#fff', background: '#2ec4b6', borderRadius: 8, textDecoration: 'none', textAlign: 'center' }}>
+            의뢰하기
+          </Link>
         </div>
-      </div>
+      )}
     </header>
   )
 }

@@ -48,17 +48,15 @@ img, svg { display: block; max-width: 100%; }
   position: sticky;
   top: 0;
   z-index: var(--z-navbar);
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border-default);
+  background: #fff;
+  border-bottom: 1px solid #ecf1f0;
 }
 
 .navbar-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 60px;
+  height: 74px;
 }
 
 .navbar-logo {
@@ -80,16 +78,15 @@ img, svg { display: block; max-width: 100%; }
 
 .navbar-link {
   padding: var(--space-2) var(--space-3);
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 500;
-  color: var(--text-secondary);
+  color: #3c4a48;
   border-radius: var(--radius-sm);
-  transition: color var(--transition-fast), background var(--transition-fast);
+  transition: color var(--transition-fast);
 }
 
 .navbar-link:hover {
-  color: var(--text-primary);
-  background: var(--bg-subtle);
+  color: #2ec4b6;
 }
 
 .navbar-actions {

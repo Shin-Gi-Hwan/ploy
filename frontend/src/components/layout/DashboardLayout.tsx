@@ -78,7 +78,10 @@ export default function DashboardLayout({ children, title }: Props) {
       {/* ── Sidebar ── */}
       <aside className={`dash-sidebar${sidebarOpen ? ' open' : ''}`}>
         <div className="dash-sidebar-header">
-          <a href="/" className="dash-logo">Ploy</a>
+          <a href="/" className="dash-logo" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
+              <div style={{ width: 22, height: 22, borderRadius: 6, background: '#2ec4b6', flexShrink: 0 }} />
+              <span style={{ fontWeight: 800, fontSize: 17, letterSpacing: '-0.01em', color: '#0f2e2a' }}>PLOY</span>
+            </a>
           <button
             className="dash-sidebar-close"
             onClick={() => setSidebarOpen(false)}
