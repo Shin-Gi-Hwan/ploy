@@ -1,4 +1,5 @@
-import { Link } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
 const COL_A = [
@@ -24,7 +25,14 @@ const COL_C = [
 
 export default function Home() {
   const { isAuthenticated } = useAuth()
+  const navigate = useNavigate()
   const ctaHref = isAuthenticated ? '/client/request' : '/login'
+  const [searchQuery, setSearchQuery] = useState('')
+
+  function handleSearch(e: React.FormEvent) {
+    e.preventDefault()
+    navigate(isAuthenticated ? '/client/request' : '/login')
+  }
 
   return (
     <>
@@ -222,10 +230,16 @@ export default function Home() {
                 PPT · 로고 · 명함 · 상세페이지 · 웹사이트까지,<br />
                 목적에 맞는 결과물을 제공합니다.
               </p>
-              <div className="ploy-search-bar">
-                <span>어떤 결과물이 필요하세요?</span>
-                <Link to={ctaHref} className="ploy-search-btn">의뢰 시작</Link>
-              </div>
+              <form className="ploy-search-bar" onSubmit={handleSearch}>
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  placeholder="어떤 결과물이 필요하세요?"
+                  style={{ border: 'none', outline: 'none', flex: 1, fontSize: 16, color: '#3c4a48', background: 'transparent' }}
+                />
+                <button type="submit" className="ploy-search-btn" style={{ border: 'none', cursor: 'pointer' }}>의뢰 시작</button>
+              </form>
               <div className="ploy-social-proof">
                 이미 <b>2,400+</b> 기업이 PLOY와 함께하고 있습니다
               </div>
@@ -274,14 +288,14 @@ export default function Home() {
             <div><p>자주 의뢰되는 카테고리</p></div>
             <div className="ploy-categories-grid">
               {[
-                { name: '명함', desc: '브랜드의 첫 악수', icon: <div style={{ width: 18, height: 14, borderRadius: 3, background: '#2ec4b6' }} /> },
-                { name: '전자책', desc: '읽고 싶게 만드는 편집', icon: <div style={{ width: 14, height: 18, borderRadius: 3, background: '#2ec4b6' }} /> },
-                { name: 'PPT · 제안서', desc: '설득되는 한 장', icon: <div style={{ width: 18, height: 18, borderRadius: '50%', background: '#2ec4b6' }} /> },
-                { name: '로고 · 브랜딩', desc: '기억되는 상징', icon: <div style={{ width: 18, height: 18, borderRadius: 5, background: '#2ec4b6', transform: 'rotate(45deg)' }} /> },
-                { name: '상세페이지', desc: '전환을 만드는 흐름', icon: <div style={{ width: 20, height: 12, borderRadius: 3, background: '#2ec4b6' }} /> },
-                { name: '웹 · 앱', desc: '작동하는 경험', icon: <div style={{ width: 18, height: 18, borderRadius: 4, border: '3px solid #2ec4b6' }} /> },
+                { name: '명함', desc: '브랜드의 첫 악수', type: 'BUSINESS_CARD', icon: <div style={{ width: 18, height: 14, borderRadius: 3, background: '#2ec4b6' }} /> },
+                { name: '전자책', desc: '읽고 싶게 만드는 편집', type: 'PRESENTATION', icon: <div style={{ width: 14, height: 18, borderRadius: 3, background: '#2ec4b6' }} /> },
+                { name: 'PPT · 제안서', desc: '설득되는 한 장', type: 'PRESENTATION', icon: <div style={{ width: 18, height: 18, borderRadius: '50%', background: '#2ec4b6' }} /> },
+                { name: '로고 · 브랜딩', desc: '기억되는 상징', type: 'LOGO', icon: <div style={{ width: 18, height: 18, borderRadius: 5, background: '#2ec4b6', transform: 'rotate(45deg)' }} /> },
+                { name: '상세페이지', desc: '전환을 만드는 흐름', type: 'DETAIL_PAGE', icon: <div style={{ width: 20, height: 12, borderRadius: 3, background: '#2ec4b6' }} /> },
+                { name: '웹 · 앱', desc: '작동하는 경험', type: 'WEBSITE', icon: <div style={{ width: 18, height: 18, borderRadius: 4, border: '3px solid #2ec4b6' }} /> },
               ].map((c, i) => (
-                <Link key={i} to={ctaHref} className="ploy-cat-card">
+                <Link key={i} to={`/client/request?type=${c.type}`} className="ploy-cat-card">
                   <div className="ploy-cat-icon">{c.icon}</div>
                   <div className="ploy-cat-name">{c.name}</div>
                   <div className="ploy-cat-desc">{c.desc}</div>

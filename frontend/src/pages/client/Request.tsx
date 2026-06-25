@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import DashboardLayout from '../../components/layout/DashboardLayout'
 import { submitServiceRequest } from '../../lib/api'
 import type { ServiceType } from '../../types/api'
@@ -32,10 +32,19 @@ const EMPTY: FormData = {
 
 export default function ClientRequest() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const [step, setStep] = useState<Step>('type')
   const [form, setForm] = useState<FormData>(EMPTY)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    const typeParam = searchParams.get('type') as ServiceType | null
+    if (typeParam && SERVICE_OPTIONS.some(o => o.value === typeParam)) {
+      setForm(prev => ({ ...prev, serviceType: typeParam }))
+      setStep('detail')
+    }
+  }, [])
 
   function set(key: keyof FormData, value: string) {
     setForm(prev => ({ ...prev, [key]: value }))

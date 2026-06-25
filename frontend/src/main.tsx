@@ -54,7 +54,7 @@ function RequireAuth({ children, role }: { children: React.ReactNode; role?: Use
   const location = useLocation()
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location.pathname }} replace />
+    return <Navigate to="/login" state={{ from: location.pathname + location.search }} replace />
   }
 
   if (role && user?.role !== role) {
