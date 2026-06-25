@@ -6,6 +6,7 @@ import com.prod.ploy.model.Brief;
 import com.prod.ploy.model.Deliverable;
 import com.prod.ploy.model.Member;
 import com.prod.ploy.model.Project;
+import com.prod.ploy.repository.MemberRepository;
 import com.prod.ploy.repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,11 +19,18 @@ import java.util.List;
 public class ClientProjectService {
 
     private final ProjectRepository projectRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional
     public ClientProjectResponse createServiceRequest(ServiceRequestPayload req, Member member) {
+        // Re-attach the detached member entity to the current Hibernate session.
+        // @AuthenticationPrincipal injects a Member loaded in the security filter
+        // (outside a transaction), which becomes detached. Hibernate 6 requires all
+        // associated entities to be managed during persist.
+        Member managedMember = memberRepository.getReferenceById(member.getId());
+
         Project project = new Project();
-        project.setMember(member);
+        project.setMember(managedMember);
         project.setType(req.serviceType());
         project.setTitle(req.title());
         project.setStatus(Project.ProjectStatus.REQUESTED);
