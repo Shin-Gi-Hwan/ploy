@@ -97,7 +97,7 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop nav */}
-        <nav className="navbar-links" style={{ display: 'none', alignItems: 'center', gap: 28 }}>
+        <nav className="navbar-links" style={{ alignItems: 'center', gap: 28 }}>
           <DropdownNav label="상품" href="/shop" items={SHOP_ITEMS} />
           <DropdownNav label="전자책" href="/shop?type=EBOOK" items={EBOOK_ITEMS} />
           <Link to="/partners" style={{ fontSize: 15, color: '#3c4a48', fontWeight: 500, textDecoration: 'none' }}>포트폴리오</Link>
@@ -105,7 +105,7 @@ export default function Navbar() {
         </nav>
 
         {/* Desktop actions */}
-        <div className="navbar-actions" style={{ marginLeft: 'auto', display: 'none', alignItems: 'center', gap: 18 }}>
+        <div className="navbar-actions" style={{ marginLeft: 'auto', alignItems: 'center', gap: 18 }}>
           {isAuthenticated ? (
             <>
               <Link to={dashboardHref} style={{ fontSize: 15, color: '#3c4a48', fontWeight: 500, textDecoration: 'none' }}>대시보드</Link>
