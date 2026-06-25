@@ -44,7 +44,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String token = authHeader.substring(7);
         String email = jwtService.extractEmail(token);
 
-        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        // Always use the JWT when a valid Bearer token is present.
+        // Removing the getAuthentication() == null guard ensures that a JWT
+        // from a newer login (e.g. admin) always takes precedence over a stale
+        // session-based auth (e.g. previous USER session cookie), which would
+        // otherwise cause 403s even though the correct token is supplied.
+        if (email != null) {
             UserDetails user = memberRepository.findByEmail(email).orElse(null);
 
             if (user != null && jwtService.isValid(token)) {
