@@ -1,12 +1,16 @@
 package com.prod.ploy.controller;
 
+import com.prod.ploy.dto.ClientOrderListItem;
 import com.prod.ploy.dto.ClientProjectResponse;
 import com.prod.ploy.dto.ServiceRequestPayload;
 import com.prod.ploy.model.Member;
+import com.prod.ploy.repository.OrderRepository;
 import com.prod.ploy.service.ClientProjectService;
 import com.prod.ploy.service.ProjectService.ProjectNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,6 +28,7 @@ import java.util.List;
 public class ClientController {
 
     private final ClientProjectService clientProjectService;
+    private final OrderRepository orderRepository;
 
     /** POST /api/client/service-requests — submit a new service request */
     @PostMapping("/service-requests")
@@ -46,6 +51,14 @@ public class ClientController {
             @PathVariable Long id,
             @AuthenticationPrincipal Member member) {
         return clientProjectService.getProjectForMember(id, member);
+    }
+
+    /** GET /api/client/orders — list this member's orders, newest first */
+    @GetMapping("/orders")
+    public List<ClientOrderListItem> getOrders(@AuthenticationPrincipal Member member) {
+        PageRequest pageable = PageRequest.of(0, 100, Sort.by(Sort.Direction.DESC, "createdAt"));
+        return orderRepository.findByMemberId(member.getId(), pageable)
+                .stream().map(ClientOrderListItem::from).toList();
     }
 
     @ExceptionHandler(ProjectNotFoundException.class)

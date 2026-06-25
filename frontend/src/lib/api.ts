@@ -65,7 +65,7 @@ export async function getTracking(token: string): Promise<TrackingResponse> {
 export async function submitServiceRequest(
   data: ServiceRequestPayload,
 ): Promise<ServiceRequestResponse> {
-  const res = await client.post<ServiceRequestResponse>('/service-requests', data)
+  const res = await client.post<ServiceRequestResponse>('/client/service-requests', data)
   return res.data
 }
 
@@ -76,6 +76,21 @@ export async function getMyProjects(): Promise<Project[]> {
 
 export async function getMyProject(id: number): Promise<Project> {
   const res = await client.get<Project>(`/client/projects/${id}`)
+  return res.data
+}
+
+export interface ClientOrder {
+  id: number
+  orderNo: string
+  orderType: string
+  status: string
+  totalPaymentAmount: number
+  createdAt: string
+  items: { productId: number | null; productName: string; quantity: number; unitPrice: number }[]
+}
+
+export async function getMyOrders(): Promise<ClientOrder[]> {
+  const res = await client.get<ClientOrder[]>('/client/orders')
   return res.data
 }
 

@@ -11,15 +11,23 @@ import Tracking          from './pages/Tracking'
 import Admin             from './pages/Admin'
 import Login             from './pages/Login'
 import Register          from './pages/Register'
-import ClientDashboard   from './pages/client/Dashboard'
-import FreelancerDashboard from './pages/freelancer/Dashboard'
-import Partners          from './pages/Partners'
-import PartnerDetail     from './pages/PartnerDetail'
-import PartnerApply      from './pages/PartnerApply'
-import OAuthCallback      from './pages/OAuthCallback'
-import Shop              from './pages/Shop'
-import ProductDetail     from './pages/ProductDetail'
-import ClientNotifications from './pages/client/Notifications'
+import ClientDashboard      from './pages/client/Dashboard'
+import ClientProjects       from './pages/client/Projects'
+import ClientProjectDetail  from './pages/client/ProjectDetail'
+import ClientRequest        from './pages/client/Request'
+import ClientOrders         from './pages/client/Orders'
+import ClientMessages       from './pages/client/Messages'
+import ClientFiles          from './pages/client/Files'
+import ClientReviews        from './pages/client/Reviews'
+import ClientSettings       from './pages/client/Settings'
+import ClientNotifications  from './pages/client/Notifications'
+import FreelancerDashboard  from './pages/freelancer/Dashboard'
+import Partners             from './pages/Partners'
+import PartnerDetail        from './pages/PartnerDetail'
+import PartnerApply         from './pages/PartnerApply'
+import OAuthCallback        from './pages/OAuthCallback'
+import Shop                 from './pages/Shop'
+import ProductDetail        from './pages/ProductDetail'
 
 // ─── Admin Console (Phase 1) ──────────────────────────────────────────────────
 import ConsoleLayout       from './console/components/layout/ConsoleLayout'
@@ -101,15 +109,16 @@ function AppRoutes() {
       <Route path="/client/*" element={
         <RequireAuth role="USER">
           <Routes>
-            <Route index element={<ClientDashboard />} />
-            <Route path="notifications" element={<ClientNotifications />} />
-            <Route path="projects"  element={<ClientDashboard />} />
-            <Route path="request"   element={<ClientDashboard />} />
-            <Route path="orders"    element={<ClientDashboard />} />
-            <Route path="messages"  element={<ClientDashboard />} />
-            <Route path="files"     element={<ClientDashboard />} />
-            <Route path="reviews"   element={<ClientDashboard />} />
-            <Route path="settings"  element={<ClientDashboard />} />
+            <Route index                    element={<ClientDashboard />} />
+            <Route path="notifications"     element={<ClientNotifications />} />
+            <Route path="projects"          element={<ClientProjects />} />
+            <Route path="projects/:id"      element={<ClientProjectDetail />} />
+            <Route path="request"           element={<ClientRequest />} />
+            <Route path="orders"            element={<ClientOrders />} />
+            <Route path="messages"          element={<ClientMessages />} />
+            <Route path="files"             element={<ClientFiles />} />
+            <Route path="reviews"           element={<ClientReviews />} />
+            <Route path="settings"          element={<ClientSettings />} />
           </Routes>
         </RequireAuth>
       } />
