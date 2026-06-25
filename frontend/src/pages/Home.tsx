@@ -1,6 +1,27 @@
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
+const COL_A = [
+  { text: '제안서 하나 바꿨을 뿐인데 미팅 성사율이 달라졌어요. 첫인상이 결과를 바꾼다는 말, 진짜였습니다.', name: '김OO 대표', type: 'PPT · 제안서 의뢰' },
+  { text: '로고부터 명함까지 톤을 맞춰 받았어요. 브랜드 첫인상이 확실히 정돈된 느낌이라 재의뢰했습니다.', name: '박OO 실장', type: '로고 · 브랜딩 의뢰' },
+  { text: '웹사이트 디자인이 완성된 후 고객 문의가 눈에 띄게 늘었어요. 퀄리티 대비 가격이 합리적입니다.', name: '정OO 대표', type: '웹사이트 의뢰' },
+  { text: '전자책 레이아웃이 너무 깔끔하게 나왔어요. 독자 반응도 좋고 재구매율도 올랐습니다.', name: '최OO 작가', type: '전자책 의뢰' },
+]
+
+const COL_B = [
+  { text: '상세페이지를 새로 만들고 구매 전환율이 눈에 띄게 올랐습니다. 흐름 설계까지 챙겨주셔서 만족해요.', name: '이OO 마케터', type: '상세페이지 의뢰' },
+  { text: '명함 하나가 이렇게 달라 보일 줄 몰랐어요. 거래처 반응이 확실히 달라졌습니다.', name: '윤OO 팀장', type: '명함 의뢰' },
+  { text: '브랜딩 작업을 맡겼는데 생각보다 훨씬 빠르게, 원하던 방향 그대로 완성돼서 놀랐어요.', name: '강OO 대표', type: '브랜딩 의뢰' },
+  { text: 'PPT 발표 자료를 맡겼는데 시각적 완성도가 높아서 임원진 반응이 좋았습니다. 재의뢰 예정이에요.', name: '조OO 팀장', type: 'PPT 의뢰' },
+]
+
+const COL_C = [
+  { text: '처음엔 반신반의했는데 결과물 보고 바로 추가 의뢰했어요. 디테일이 살아 있어서 만족스럽습니다.', name: '한OO 대표', type: '상세페이지 의뢰' },
+  { text: '커뮤니케이션이 원활하고 수정 요청도 빠르게 반영돼서 스트레스 없이 진행했어요.', name: '오OO 실장', type: '로고 의뢰' },
+  { text: '인스타그램 카드뉴스 디자인을 의뢰했는데 팔로워 반응이 이전과 확연히 달라졌습니다.', name: '서OO 마케터', type: '콘텐츠 디자인 의뢰' },
+  { text: '발표 자료가 달라지니 투자자 미팅 분위기가 달랐어요. 첫인상의 힘을 실감했습니다.', name: '임OO 대표', type: 'IR 자료 의뢰' },
+]
+
 export default function Home() {
   const { isAuthenticated } = useAuth()
   const ctaHref = isAuthenticated ? '/client/request' : '/login'
@@ -42,21 +63,35 @@ export default function Home() {
         .ploy-social-proof b { color: #1aa396; }
         .ploy-hero-visual { aspect-ratio: 4/3; border-radius: 16px; background: repeating-linear-gradient(135deg, #e9f2f0 0px, #e9f2f0 13px, #f6fbfa 13px, #f6fbfa 26px); display: flex; align-items: center; justify-content: center; color: #9cafac; font: 500 13px ui-monospace, monospace; letter-spacing: 0.04em; border: 1px solid #e6eeec; }
 
-        /* Reviews */
-        .ploy-reviews { border-top: 1px solid #f0f4f3; background: #fbfdfc; padding: 60px 0; }
+        /* Reviews — infinite scroll columns */
+        @keyframes ploy-scroll-up { from { transform: translateY(0); } to { transform: translateY(-50%); } }
+        .ploy-reviews { border-top: 1px solid #f0f4f3; background: #fbfdfc; padding: 60px 0; overflow: hidden; }
         .ploy-reviews-inner { max-width: 1240px; margin: 0 auto; padding: 0 48px; }
-        .ploy-reviews-header { display: flex; align-items: center; gap: 14px; margin-bottom: 28px; }
+        .ploy-reviews-header { display: flex; align-items: center; gap: 14px; margin-bottom: 36px; }
         .ploy-reviews-header h2 { margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.02em; color: #0f2e2a; }
         .ploy-rating { font-size: 15px; font-weight: 700; color: #1aa396; }
         .ploy-reviews-count { font-size: 14px; color: #8a9894; }
-        .ploy-reviews-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-        .ploy-review-card { background: #fff; border: 1px solid #eaf0ef; border-radius: 14px; padding: 24px; }
-        .ploy-stars { color: #2ec4b6; font-size: 15px; letter-spacing: 2px; }
-        .ploy-review-card p { margin: 14px 0 18px; font-size: 15px; line-height: 1.6; color: #3c4a48; }
+        .ploy-reviews-cols { display: flex; gap: 20px; max-height: 600px; overflow: hidden;
+          mask-image: linear-gradient(to bottom, transparent, black 18%, black 82%, transparent);
+          -webkit-mask-image: linear-gradient(to bottom, transparent, black 18%, black 82%, transparent); }
+        .ploy-reviews-col { flex: 1; display: flex; flex-direction: column; gap: 16px; }
+        .ploy-reviews-col--2 { display: none; }
+        .ploy-reviews-col--3 { display: none; }
+        @media (min-width: 768px) { .ploy-reviews-col--2 { display: flex; } }
+        @media (min-width: 1024px) { .ploy-reviews-col--3 { display: flex; } }
+        .ploy-col-track { display: flex; flex-direction: column; gap: 16px;
+          animation: ploy-scroll-up linear infinite; }
+        .ploy-col-track--a { animation-duration: 22s; }
+        .ploy-col-track--b { animation-duration: 28s; }
+        .ploy-col-track--c { animation-duration: 25s; }
+        .ploy-col-track:hover { animation-play-state: paused; }
+        .ploy-review-card { background: #fff; border: 1px solid #eaf0ef; border-radius: 14px; padding: 22px 24px; flex-shrink: 0; }
+        .ploy-stars { color: #2ec4b6; font-size: 14px; letter-spacing: 2px; }
+        .ploy-review-card p { margin: 12px 0 16px; font-size: 14px; line-height: 1.65; color: #3c4a48; }
         .ploy-reviewer { display: flex; align-items: center; gap: 10px; }
-        .ploy-avatar { width: 34px; height: 34px; border-radius: 50%; background: #e2f5f1; flex-shrink: 0; }
-        .ploy-reviewer-name { font-size: 14px; font-weight: 700; color: #152c29; }
-        .ploy-reviewer-type { font-size: 12px; color: #9cafac; }
+        .ploy-avatar { width: 32px; height: 32px; border-radius: 50%; background: #e2f5f1; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #1aa396; }
+        .ploy-reviewer-name { font-size: 13px; font-weight: 700; color: #152c29; }
+        .ploy-reviewer-type { font-size: 11px; color: #9cafac; }
 
         /* Categories */
         .ploy-categories { padding: 72px 0; }
@@ -113,7 +148,7 @@ export default function Home() {
 
           .ploy-reviews-inner { padding: 0 20px; }
           .ploy-reviews { padding: 36px 0; }
-          .ploy-reviews-grid { grid-template-columns: 1fr; }
+          .ploy-reviews-cols { max-height: 480px; }
           .ploy-reviews-header h2 { font-size: 20px; }
 
           .ploy-categories-inner { padding: 0 20px; }
@@ -199,7 +234,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── Reviews ────────────────────────────────────────────── */}
+        {/* ── Reviews — infinite scroll columns ─────────────────── */}
         <section className="ploy-reviews">
           <div className="ploy-reviews-inner">
             <div className="ploy-reviews-header">
@@ -207,21 +242,24 @@ export default function Home() {
               <span className="ploy-rating">★ 4.9</span>
               <span className="ploy-reviews-count">· 12,800+ 후기</span>
             </div>
-            <div className="ploy-reviews-grid">
-              {[
-                { text: '제안서 하나 바꿨을 뿐인데 미팅 성사율이 달라졌어요. 첫인상이 결과를 바꾼다는 말, 진짜였습니다.', name: '김OO 대표', type: 'PPT · 제안서 의뢰' },
-                { text: '상세페이지를 새로 만들고 구매 전환율이 눈에 띄게 올랐습니다. 흐름 설계까지 챙겨주셔서 만족해요.', name: '이OO 마케터', type: '상세페이지 의뢰' },
-                { text: '로고부터 명함까지 톤을 맞춰 받았어요. 브랜드 첫인상이 확실히 정돈된 느낌이라 재의뢰했습니다.', name: '박OO 실장', type: '로고 · 브랜딩 의뢰' },
-              ].map((r, i) => (
-                <div key={i} className="ploy-review-card">
-                  <div className="ploy-stars">★★★★★</div>
-                  <p>{r.text}</p>
-                  <div className="ploy-reviewer">
-                    <div className="ploy-avatar" />
-                    <div>
-                      <div className="ploy-reviewer-name">{r.name}</div>
-                      <div className="ploy-reviewer-type">{r.type}</div>
-                    </div>
+            <div className="ploy-reviews-cols">
+              {[COL_A, COL_B, COL_C].map((col, ci) => (
+                <div key={ci} className={`ploy-reviews-col${ci === 1 ? ' ploy-reviews-col--2' : ci === 2 ? ' ploy-reviews-col--3' : ''}`}>
+                  {/* Duplicate track for seamless loop */}
+                  <div className={`ploy-col-track ploy-col-track--${['a','b','c'][ci]}`}>
+                    {[...col, ...col].map((r, i) => (
+                      <div key={i} className="ploy-review-card">
+                        <div className="ploy-stars">★★★★★</div>
+                        <p>{r.text}</p>
+                        <div className="ploy-reviewer">
+                          <div className="ploy-avatar">{r.name.charAt(0)}</div>
+                          <div>
+                            <div className="ploy-reviewer-name">{r.name}</div>
+                            <div className="ploy-reviewer-type">{r.type}</div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               ))}
