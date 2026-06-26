@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom'
+import ployIcon from '../../assets/images/ploy-icon.png'
+import ployMark from '../../assets/images/ploy-mark.png'
 
 const FOOTER_LINKS = [
   { label: '상품',     href: '/shop' },
@@ -16,8 +18,8 @@ export default function Footer() {
         {/* Brand */}
         <div>
           <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-            <div style={{ width: 22, height: 22, borderRadius: 6, background: '#2ec4b6', flexShrink: 0 }} />
-            <span style={{ fontWeight: 800, fontSize: 18, letterSpacing: '-0.01em', color: '#0f2e2a' }}>PLOY</span>
+            <img src={ployIcon} alt="PLOY 아이콘" style={{ width: 22, height: 22, borderRadius: 6, objectFit: 'cover' }} />
+            <img src={ployMark} alt="PLOY" style={{ height: 16, objectFit: 'contain' }} />
           </Link>
           <p style={{ marginTop: 10, fontSize: 13, color: '#9cafac', lineHeight: 1.6 }}>
             목적에 맞는 결과물을,<br />검증된 전문가와 함께.

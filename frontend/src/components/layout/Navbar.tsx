@@ -1,6 +1,8 @@
 import { useState, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import ployIcon from '../../assets/images/ploy-icon.png'
+import ployMark from '../../assets/images/ploy-mark.png'
 
 const SHOP_ITEMS = [
   { label: '전체 상품',    href: '/shop' },
@@ -92,8 +94,8 @@ export default function Navbar() {
       }}>
         {/* Logo */}
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', flexShrink: 0 }}>
-          <div style={{ width: 28, height: 28, borderRadius: 8, background: '#2ec4b6', flexShrink: 0 }} />
-          <span style={{ fontWeight: 800, fontSize: 21, letterSpacing: '-0.01em', color: '#0f2e2a' }}>PLOY</span>
+          <img src={ployIcon} alt="PLOY 아이콘" style={{ width: 28, height: 28, borderRadius: 8, objectFit: 'cover' }} />
+          <img src={ployMark} alt="PLOY" style={{ height: 20, objectFit: 'contain' }} />
         </Link>
 
         {/* Desktop nav */}

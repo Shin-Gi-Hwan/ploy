@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
+import ployIcon from '../../assets/images/ploy-icon.png'
+import ployMark from '../../assets/images/ploy-mark.png'
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
@@ -79,8 +81,8 @@ export default function DashboardLayout({ children, title }: Props) {
       <aside className={`dash-sidebar${sidebarOpen ? ' open' : ''}`}>
         <div className="dash-sidebar-header">
           <a href="/" className="dash-logo" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
-              <div style={{ width: 22, height: 22, borderRadius: 6, background: '#2ec4b6', flexShrink: 0 }} />
-              <span style={{ fontWeight: 800, fontSize: 17, letterSpacing: '-0.01em', color: '#0f2e2a' }}>PLOY</span>
+              <img src={ployIcon} alt="PLOY 아이콘" style={{ width: 22, height: 22, borderRadius: 6, objectFit: 'cover' }} />
+              <img src={ployMark} alt="PLOY" style={{ height: 16, objectFit: 'contain' }} />
             </a>
           <button
             className="dash-sidebar-close"
