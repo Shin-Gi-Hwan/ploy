@@ -1,9 +1,8 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import ployIcon from '../assets/images/ploy-icon.png'
-import ployMark from '../assets/images/ploy-mark.png'
 import ployMokup from '../assets/images/ploy-mokup.png'
+import ployLogin from '../assets/images/ploy-login.png'
 
 const SHOP_ITEMS = [
   { label: '전체 상품',     href: '/shop' },
@@ -73,11 +72,25 @@ const COL_C = [
   { text: '발표 자료가 달라지니 투자자 미팅 분위기가 달랐어요. 첫인상의 힘을 실감했습니다.', name: '임OO 대표', type: 'IR 자료 의뢰' },
 ]
 
+const HERO_SLIDES = [
+  { src: ployMokup, alt: 'PLOY 웹사이트 결과물 목업' },
+  { src: ployLogin, alt: 'PLOY 로그인 화면 목업' },
+]
+
 export default function Home() {
   const { isAuthenticated } = useAuth()
   const navigate = useNavigate()
   const ctaHref = isAuthenticated ? '/client/request' : '/login'
   const [searchQuery, setSearchQuery] = useState('')
+  const [slideIndex, setSlideIndex] = useState(0)
+  const slideTimer = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  useEffect(() => {
+    slideTimer.current = setInterval(() => {
+      setSlideIndex(i => (i + 1) % HERO_SLIDES.length)
+    }, 3500)
+    return () => { if (slideTimer.current) clearInterval(slideTimer.current) }
+  }, [])
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault()
@@ -119,8 +132,14 @@ export default function Home() {
         .ploy-search-btn:hover { background: #28b0a3; }
         .ploy-social-proof { margin-top: 22px; font-size: 14px; color: #8a9894; }
         .ploy-social-proof b { color: #1aa396; }
+        /* Hero carousel */
         .ploy-hero-visual { position: relative; }
-        .ploy-mokup-img { width: 100%; border-radius: 16px; box-shadow: 0 24px 64px rgba(15,46,42,0.16), 0 4px 16px rgba(15,46,42,0.08); display: block; }
+        .ploy-carousel { border-radius: 16px; overflow: hidden; box-shadow: 0 24px 64px rgba(15,46,42,0.16), 0 4px 16px rgba(15,46,42,0.08); }
+        .ploy-carousel-track { display: flex; transition: transform 0.55s cubic-bezier(0.4,0,0.2,1); }
+        .ploy-carousel-track img { width: 100%; flex-shrink: 0; display: block; object-fit: cover; }
+        .ploy-carousel-dots { display: flex; justify-content: center; gap: 7px; margin-top: 14px; }
+        .ploy-carousel-dot { width: 7px; height: 7px; border-radius: 50%; background: #d4e4e1; border: none; padding: 0; cursor: pointer; transition: background 0.2s, transform 0.2s; }
+        .ploy-carousel-dot.active { background: #2ec4b6; transform: scale(1.25); }
 
         /* Reviews — infinite scroll columns */
         @keyframes ploy-scroll-up { from { transform: translateY(0); } to { transform: translateY(-50%); } }
@@ -245,8 +264,7 @@ export default function Home() {
         <header className="ploy-header">
           <div className="ploy-header-inner">
             <Link to="/" className="ploy-logo">
-              <img src={ployIcon} alt="PLOY 아이콘" style={{ width: 28, height: 28, borderRadius: 8, objectFit: 'cover' }} />
-              <img src={ployMark} alt="PLOY" style={{ height: 20, objectFit: 'contain' }} />
+              <span className="ploy-logo-text">PLOY</span>
             </Link>
 
             <nav className="ploy-nav">
@@ -296,7 +314,29 @@ export default function Home() {
               </div>
             </div>
             <div className="ploy-hero-visual">
-              <img src={ployMokup} alt="PLOY 결과물 목업" className="ploy-mokup-img" />
+              <div className="ploy-carousel">
+                <div
+                  className="ploy-carousel-track"
+                  style={{ transform: `translateX(-${slideIndex * 100}%)` }}
+                >
+                  {HERO_SLIDES.map((s, i) => (
+                    <img key={i} src={s.src} alt={s.alt} />
+                  ))}
+                </div>
+              </div>
+              <div className="ploy-carousel-dots">
+                {HERO_SLIDES.map((_, i) => (
+                  <button
+                    key={i}
+                    className={`ploy-carousel-dot${i === slideIndex ? ' active' : ''}`}
+                    onClick={() => {
+                      setSlideIndex(i)
+                      if (slideTimer.current) clearInterval(slideTimer.current)
+                      slideTimer.current = setInterval(() => setSlideIndex(n => (n + 1) % HERO_SLIDES.length), 3500)
+                    }}
+                  />
+                ))}
+              </div>
             </div>
           </div>
         </section>
