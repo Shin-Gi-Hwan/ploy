@@ -116,7 +116,39 @@ export default function Home() {
         .ploy-search-btn:hover { background: #28b0a3; }
         .ploy-social-proof { margin-top: 22px; font-size: 14px; color: #8a9894; }
         .ploy-social-proof b { color: #1aa396; }
-        .ploy-hero-visual { aspect-ratio: 4/3; border-radius: 16px; background: repeating-linear-gradient(135deg, #e9f2f0 0px, #e9f2f0 13px, #f6fbfa 13px, #f6fbfa 26px); display: flex; align-items: center; justify-content: center; color: #9cafac; font: 500 13px ui-monospace, monospace; letter-spacing: 0.04em; border: 1px solid #e6eeec; }
+        /* Browser mockup */
+        .ploy-hero-visual { position: relative; }
+        .ploy-browser { border-radius: 14px; overflow: hidden; box-shadow: 0 24px 64px rgba(15,46,42,0.16), 0 4px 16px rgba(15,46,42,0.08); transform: perspective(1000px) rotateY(-4deg) rotateX(2deg); background: #fff; border: 1px solid #d8e6e3; }
+        .ploy-browser-bar { background: #f0f4f3; padding: 11px 16px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #e2ece9; }
+        .ploy-browser-dots { display: flex; gap: 6px; }
+        .ploy-browser-dots span { width: 11px; height: 11px; border-radius: 50%; display: block; }
+        .ploy-browser-url { flex: 1; background: #fff; border-radius: 6px; padding: 5px 12px; font-size: 12px; color: #8a9894; border: 1px solid #dce6e4; letter-spacing: 0.01em; }
+        .ploy-browser-body { padding: 20px; background: #fafcfb; }
+        /* Mockup site inside browser */
+        .pmock-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+        .pmock-logo { display: flex; align-items: center; gap: 7px; }
+        .pmock-logo-dot { width: 16px; height: 16px; border-radius: 5px; background: #2ec4b6; }
+        .pmock-logo-text { width: 32px; height: 8px; border-radius: 4px; background: #0f2e2a; }
+        .pmock-nav { display: flex; gap: 10px; }
+        .pmock-nav span { width: 28px; height: 7px; border-radius: 3px; background: #d4e4e1; }
+        .pmock-btn-sm { width: 52px; height: 24px; border-radius: 6px; background: #2ec4b6; }
+        .pmock-hero { background: linear-gradient(135deg, #e8f8f5 0%, #f4fbfa 100%); border-radius: 10px; padding: 22px 20px 20px; margin-bottom: 16px; }
+        .pmock-tag { width: 80px; height: 7px; border-radius: 3px; background: #a8ddd8; margin-bottom: 12px; }
+        .pmock-h1-a { width: 85%; height: 13px; border-radius: 4px; background: #0f2e2a; margin-bottom: 8px; }
+        .pmock-h1-b { width: 65%; height: 13px; border-radius: 4px; background: #0f2e2a; margin-bottom: 14px; }
+        .pmock-desc-a { width: 90%; height: 7px; border-radius: 3px; background: #c4d8d5; margin-bottom: 6px; }
+        .pmock-desc-b { width: 70%; height: 7px; border-radius: 3px; background: #c4d8d5; margin-bottom: 18px; }
+        .pmock-cta { width: 88px; height: 30px; border-radius: 7px; background: #2ec4b6; }
+        .pmock-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .pmock-card { background: #fff; border: 1px solid #e6eeec; border-radius: 9px; padding: 12px; }
+        .pmock-card-icon { width: 24px; height: 24px; border-radius: 6px; background: #e2f5f1; margin-bottom: 10px; }
+        .pmock-card-title { width: 60%; height: 7px; border-radius: 3px; background: #1a3530; margin-bottom: 7px; }
+        .pmock-card-sub { width: 80%; height: 6px; border-radius: 3px; background: #d4e4e1; }
+        /* Floating badge */
+        .ploy-browser-badge { position: absolute; bottom: -14px; right: -16px; background: #fff; border: 1px solid #eaf0ef; border-radius: 12px; padding: 10px 14px; display: flex; align-items: center; gap: 10px; box-shadow: 0 8px 24px rgba(15,46,42,0.12); }
+        .ploy-badge-icon { width: 32px; height: 32px; border-radius: 8px; background: #e2f5f1; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+        .ploy-badge-text-a { width: 72px; height: 8px; border-radius: 3px; background: #152c29; margin-bottom: 5px; }
+        .ploy-badge-text-b { width: 52px; height: 6px; border-radius: 3px; background: #c4d8d5; }
 
         /* Reviews — infinite scroll columns */
         @keyframes ploy-scroll-up { from { transform: translateY(0); } to { transform: translateY(-50%); } }
@@ -291,7 +323,65 @@ export default function Home() {
                 이미 <b>2,400+</b> 기업이 PLOY와 함께하고 있습니다
               </div>
             </div>
-            <div className="ploy-hero-visual">[ 히어로 비주얼 / 결과물 목업 ]</div>
+            <div className="ploy-hero-visual">
+              <div className="ploy-browser">
+                {/* Browser chrome */}
+                <div className="ploy-browser-bar">
+                  <div className="ploy-browser-dots">
+                    <span style={{ background: '#ff5f57' }} />
+                    <span style={{ background: '#ffbd2e' }} />
+                    <span style={{ background: '#28c840' }} />
+                  </div>
+                  <div className="ploy-browser-url">ploy.kr · 웹사이트 결과물 미리보기</div>
+                </div>
+
+                {/* Mockup content */}
+                <div className="ploy-browser-body">
+                  {/* Fake site header */}
+                  <div className="pmock-header">
+                    <div className="pmock-logo">
+                      <div className="pmock-logo-dot" />
+                      <div className="pmock-logo-text" />
+                    </div>
+                    <div className="pmock-nav">
+                      <span /><span /><span />
+                    </div>
+                    <div className="pmock-btn-sm" />
+                  </div>
+
+                  {/* Fake hero section */}
+                  <div className="pmock-hero">
+                    <div className="pmock-tag" />
+                    <div className="pmock-h1-a" />
+                    <div className="pmock-h1-b" />
+                    <div className="pmock-desc-a" />
+                    <div className="pmock-desc-b" />
+                    <div className="pmock-cta" />
+                  </div>
+
+                  {/* Fake cards */}
+                  <div className="pmock-cards">
+                    {['#e2f5f1', '#fef3c7', '#ede9fe'].map((bg, i) => (
+                      <div key={i} className="pmock-card">
+                        <div className="pmock-card-icon" style={{ background: bg }} />
+                        <div className="pmock-card-title" />
+                        <div className="pmock-card-sub" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Floating "완성" badge */}
+              <div className="ploy-browser-badge">
+                <div className="ploy-badge-icon">✅</div>
+                <div>
+                  <div className="ploy-badge-text-a" />
+                  <div className="ploy-badge-text-b" />
+                </div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#1aa396', marginLeft: 4 }}>완성</div>
+              </div>
+            </div>
           </div>
         </section>
 
